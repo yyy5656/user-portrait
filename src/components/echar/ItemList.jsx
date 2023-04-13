@@ -11,7 +11,6 @@ export default function ItemList() {
 
     return (
         <>
-            <div className={styles.count_items}>共x条数据</div>
             <div className={styles.item_big_box}>
                 <div
                     style={{backgroundColor: colorBgContainer}}
@@ -53,7 +52,7 @@ export default function ItemList() {
                     </div>
                 </div>
             </div>
-
+            <div className={styles.count_items}>共x条数据</div>
         </>
     );
 }
