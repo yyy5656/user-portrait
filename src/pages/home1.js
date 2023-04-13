@@ -1,7 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import Head from "next/head";
 import AddConnectionForm from "@/components/AddConnectionForm";
-import ShowDataRegion from "@/components/ShowDataRegion";
 
 import {Button, Layout, Menu, theme, Modal, message} from "antd";
 
