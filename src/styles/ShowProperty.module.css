@@ -1,0 +1,11 @@
+.property_div {
+  width: 50%;
+  border: 1px solid #d7dbdf;
+  /* margin-top: 20px; */
+  border-radius: 8px;
+}
+
+.title {
+  padding: 10px;
+  border-bottom: 1px solid #d7dbdf;
+}

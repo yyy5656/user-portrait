@@ -1,0 +1,12 @@
+.site_layout_content_show {
+  min-height: 350px;
+}
+
+.property_containe {
+  min-height: 180px;
+  width: 100%;
+  border-radius: 8px;
+  /* background-color: #d7dbdf; */
+  display: flex;
+  justify-content: space-around;
+}
