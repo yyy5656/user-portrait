@@ -169,7 +169,7 @@ const Home = () => {
                                     {
                                         label: "可视化数据",
                                         key: "1",
-                                        children: linkList.length ? <CharContent/> : <Empty/>
+                                        children: linkList.length ? <CharContent/> : <Empty className={styles.empty}/>
                                     },
                                     {
                                         label: "管理",
@@ -192,7 +192,7 @@ const Home = () => {
                                 textAlign: "center"
                             }}
                         >
-                            Ant Design ©2023 Created by Ant UED
+                            User Portrait ©2023 Created by Hunter Li & Zhenyue Wang
                         </Footer>
                     </Layout>
                     {isConnectionModalOpen && (
