@@ -1,19 +1,13 @@
-import {theme} from "antd";
-import styles2 from "@/styles/ShowDataRegion.module.scss";
 import styles from "@/styles/CharContent.module.scss";
-import ShowProperty from "./ShowProperty";
-import PropertyGroup from "./PropertyGroup";
-import BasicBar from "./BasicBar";
+import ShowProperty from "@/components/echar/ShowProperty";
 import ItemList from "@/components/echar/ItemList";
+import PropertyGroup from "@/components/echar/PropertyGroup"
+import BasicBar from "@/components/echar/BasicBar";
 
 export default function CharContent(props) {
-    const {
-        token: {colorBgContainer}
-    } = theme.useToken();
-
     return (
         <div
-            className={styles2.site_layout_content_show}
+            className={styles.site_layout_content_show}
         >
             <div className={styles.title}>这里是任务名</div>
             <ShowProperty/>
