@@ -3,7 +3,7 @@ import {TagOutlined, SendOutlined} from "@ant-design/icons";
 
 import styles from "@/styles/ItemList.module.scss";
 
-export default function ItemList() {
+export default function ItemList(props) {
 
     const {
         token: {colorBgContainer}

@@ -1,6 +1,6 @@
 import {FileOutlined, PlusOutlined, UserOutlined} from "@ant-design/icons";
 import {Layout, Menu, theme, Tabs, Button, Modal, Empty} from "antd";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {useRouter} from "next/router";
 import styles from "@/styles/Home.module.scss";
 
@@ -43,6 +43,8 @@ const Home = () => {
     const [linkList, setLinklist] = useState([]);
     const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
 
+    const missionName = useRef(null);
+
     /**
      * 获取左侧表名数据
      * @returns {Promise<void>}
@@ -70,6 +72,9 @@ const Home = () => {
     };
 
     const handleClick = (e) => {
+        missionName.current = connectionItemList.find((element) => {
+            return element.connectionId === parseInt(e.key);
+        }).tableName;
         if (e.keyPath && e.keyPath.includes(MENU_CONFIG.MY_TASK)) {
             fetchLinkData(e.key);
         } else if (e.keyPath && e.keyPath.includes(MENU_CONFIG.CREATE_TASK)) {
@@ -169,7 +174,8 @@ const Home = () => {
                                     {
                                         label: "可视化数据",
                                         key: "1",
-                                        children: linkList.length ? <CharContent/> : <Empty className={styles.empty}/>
+                                        children: linkList.length ? <CharContent linklist={linkList} missionName={missionName}/> :
+                                            <Empty className={styles.empty}/>
                                     },
                                     {
                                         label: "管理",
