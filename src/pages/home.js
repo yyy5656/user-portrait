@@ -83,7 +83,7 @@ const Home = () => {
   const handleClick = (e) => {
     missionName.current = connectionItemList.find((element) => {
       return element.connectionId === parseInt(e.key);
-    }).tableName;
+    })?.tableName;
     if (e.keyPath && e.keyPath.includes(MENU_CONFIG.MY_TASK)) {
       fetchLinkData(e.key);
       setConnectionId(e.key);
