@@ -40,7 +40,10 @@ const Home = () => {
   //  connectionId: number,
   //}[]
   const [linkList, setLinklist] = useState([]);
+  const [connectionId, setConnectionId] = useState();
+  const [username, setUsername] = useState("用户名");
   const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
+
   const fetchData = async () => {
     const res = (await api.getConnection()).data;
     console.log(res);
@@ -48,10 +51,10 @@ const Home = () => {
   };
   useEffect(() => {
     fetchData();
+    setUsername(localStorage.getItem("userName"));
     return () => {
       setConnectionItemList([]);
     };
-    // 拿这个做依赖项会导致重复请求，算了 就这样吧
   }, []);
 
   // 这个是请求属性
@@ -69,6 +72,7 @@ const Home = () => {
   const handleClick = (e) => {
     if (e.keyPath && e.keyPath.includes(MENU_CONFIG.MY_TASK)) {
       fetchLinkData(e.key);
+      setConnectionId(e.key);
     } else if (e.keyPath && e.keyPath.includes(MENU_CONFIG.CREATE_TASK)) {
       setIsConnectionModalOpen(true);
     }
@@ -134,8 +138,7 @@ const Home = () => {
             background: colorBgContainer,
           }}
         >
-          {/* TODO: 直接将用户信息存在localstorage */}
-          <div>用户名</div>
+          <div>{username}</div>
           <Button onClick={showConfirm}>退出</Button>
         </Header>
         <Content
@@ -150,7 +153,7 @@ const Home = () => {
               {
                 label: "可视化数据",
                 key: "1",
-                children: linkList.length ? <CharContent /> : <Empty />,
+                children: linkList.length ? <CharContent linkList={linkList} connectionId={connectionId}/> : <Empty />,
               },
               {
                 label: "管理",
@@ -176,6 +179,16 @@ const Home = () => {
           Ant Design ©2023 Created by Ant UED
         </Footer>
       </Layout>
+      <Button
+        shape={"circle"}
+        type={"primary"}
+        className={styles.add_connection_button}
+        onClick={() => {
+          setIsConnectionModalOpen(true);
+        }}
+      >
+        +
+      </Button>
       {isConnectionModalOpen && (
         <AddConnectionForm
           setIsConnectionModalOpen={setIsConnectionModalOpen}

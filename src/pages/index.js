@@ -37,6 +37,7 @@ import api from "@/utils/api";
                 } else {
                     // 放入token
                     localStorage.setItem("token", res.data.data);
+                    localStorage.setItem("userName",values.login_username);
                     // 跳转界面
                     route.replace({pathname: "/home", query: {}});
                     // 登录成功
