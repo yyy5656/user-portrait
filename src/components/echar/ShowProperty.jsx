@@ -1,38 +1,47 @@
-import { Collapse, Tag, theme } from "antd";
-// import styles from "@/styles/ShowProperty.module.scss";
-const { Panel } = Collapse;
+import {Collapse, Tag, theme} from "antd";
+import styles from "@/styles/ShowProperty.module.scss";
 
-export default function ShowProperty() {
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
+const {Panel} = Collapse;
 
-  return (
-    <div>
-      <Collapse
-        expandIconPosition="end"
-        style={{ backgroundColor: colorBgContainer }}
-      >
-        <Panel header="已导入属性" key="1">
-          <Tag color="#6e84c9" style={{ padding: "3px 15px" }} key={1}>
-            姓名
-          </Tag>
-          <Tag color="#6e84c9" style={{ padding: "3px 15px" }} key={2}>
-            性别
-          </Tag>
-        </Panel>
-      </Collapse>
-    </div>
-    // <div className={styles.property_div}>
+export default function ShowProperty(props) {
+    const {
+        token: {colorBgContainer}
+    } = theme.useToken();
 
-    //   <div className={styles.title}>已导入属性</div>
-    //   <Space size={[0, 8]} wrap style={{ padding: "10px" }}>
-    //     {/* {props.linkList.map((item, index) => (
-    //       <Tag color="#6e84c9" style={{ padding: "3px 15px" }} key={index}>
-    //         {item.linkComment}
-    //       </Tag>
-    //     ))} */}
-    //   </Space>
-    // </div>
-  );
+    const property = props.property;
+
+    return (
+        <div>
+            <Collapse
+                expandIconPosition="end"
+                style={{backgroundColor: colorBgContainer}}
+            >
+                <Panel header={
+                    <>
+                        <span>已导入属性：</span>
+                        {
+                            property.map((value, index) => {
+                                return (
+                                    <Tag key={index}>
+                                        {value}
+                                    </Tag>
+                                );
+                            })
+                        }
+                    </>
+                } key="1">
+                    {
+                        property.map((value, index) => {
+                            return (
+                                <Tag color="#6e84c9" style={{padding: "3px 15px", marginBottom:"5px"}} key={index}>
+                                    {value}
+                                </Tag>
+                            );
+                        })
+                    }
+                </Panel>
+            </Collapse>
+            <div className={styles.count_items}>共{property.length}条数据</div>
+        </div>
+    );
 }

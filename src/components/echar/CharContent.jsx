@@ -1,8 +1,8 @@
 import { theme } from "antd";
-import styles from "@/styles/ShowDataRegion.module.scss";
+import styles from "@/styles/CharContent.module.scss";
 import ShowProperty from "./ShowProperty";
 import AddChar from "./AddChar";
-import PropertyGroup from "./PropertyGroup";
+import ItemList from "@/components/echar/ItemList";
 import BasicBar from "./BasicBar";
 import { useState } from "react";
 import { charListData } from "./constant";
@@ -12,13 +12,18 @@ export default function CharContent(props) {
   const addCharList = (value) => {
     setCharList([...charList, value]);
   };
+  const handlePropsData = () => {
+    return props.linkList.map((value) => {
+      return value.linkComment;
+    });
+  };
 
   console.log(props);
   return (
     <div className={styles.site_layout_content_show}>
       <div>这里是任务名</div>
-      <ShowProperty />
-      {/* <PropertyGroup /> */}
+      <ShowProperty property={handlePropsData()} />
+      <ItemList />
       <AddChar connectionId={props.connectionId} addCharList={addCharList} />
       {charList.length
         ? charList.map((item, index) => {

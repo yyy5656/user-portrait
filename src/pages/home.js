@@ -1,6 +1,6 @@
 import { FileOutlined, PlusOutlined, UserOutlined } from "@ant-design/icons";
 import { Layout, Menu, theme, Tabs, Button, Modal, Empty } from "antd";
-import { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import styles from "@/styles/Home.module.scss";
 
@@ -9,6 +9,7 @@ import { MENU_CONFIG } from "@/utils/constant";
 
 import CharContent from "../components/echar/CharContent";
 import AddConnectionForm from "../components/AddConnectionForm";
+import Head from "next/head";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { confirm } = Modal;
@@ -44,11 +45,18 @@ const Home = () => {
   const [username, setUsername] = useState("用户名");
   const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
 
+  const missionName = useRef(null);
+
+  /**
+   * 获取左侧表名数据
+   * @returns {Promise<void>}
+   */
   const fetchData = async () => {
     const res = (await api.getConnection()).data;
     console.log(res);
     res.data && setConnectionItemList(res.data);
   };
+
   useEffect(() => {
     fetchData();
     setUsername(localStorage.getItem("userName"));
@@ -56,8 +64,11 @@ const Home = () => {
       setConnectionItemList([]);
     };
   }, []);
-
-  // 这个是请求属性
+  /**
+   * 这个是请求属性
+   * @param id
+   * @returns {Promise<void>}
+   */
   const fetchLinkData = async (id) => {
     const res = await api.chooseToken({ connectionId: id });
     if (res.status === 200 && res.data.data) {
@@ -70,6 +81,9 @@ const Home = () => {
   };
 
   const handleClick = (e) => {
+    missionName.current = connectionItemList.find((element) => {
+      return element.connectionId === parseInt(e.key);
+    }).tableName;
     if (e.keyPath && e.keyPath.includes(MENU_CONFIG.MY_TASK)) {
       fetchLinkData(e.key);
       setConnectionId(e.key);
@@ -99,6 +113,14 @@ const Home = () => {
   const addConnection = () => {
     fetchData();
   };
+
+  useEffect(() => {
+    fetchData();
+    return () => {
+      setConnectionItemList([]);
+    };
+    // 拿这个做依赖项会导致重复请求，算了 就这样吧
+  }, []);
 
   return (
     <Layout
@@ -153,7 +175,14 @@ const Home = () => {
               {
                 label: "可视化数据",
                 key: "1",
-                children: linkList.length ? <CharContent linkList={linkList} connectionId={connectionId}/> : <Empty />,
+                children: linkList.length ? (
+                  <CharContent
+                    linkList={linkList}
+                    connectionId={connectionId}
+                  />
+                ) : (
+                  <Empty />
+                ),
               },
               {
                 label: "管理",

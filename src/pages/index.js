@@ -259,6 +259,6 @@ import api from "@/utils/api";
             </main>
         </>
     );
-};
+}
 
 export default Login;

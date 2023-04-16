@@ -137,7 +137,7 @@ export default function AddChar(props) {
           <span>输入图表名称：</span>
           <Input
             placeholder="输入图表名称"
-            width={"70%"}
+            style={{ width: "300px", marginLeft: "20px" }}
             onChange={(e) => {
               setName(e.target.value);
             }}
@@ -146,7 +146,7 @@ export default function AddChar(props) {
         <div>
           生成图表类型:
           <Select
-            style={{ width: 200 }}
+            style={{ width: 300, marginLeft: "20px" }}
             onChange={(value) => {
               setSelectCharType(value);
             }}

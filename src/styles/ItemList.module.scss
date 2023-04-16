@@ -1,0 +1,45 @@
+.count_items {
+  margin-top: 0.25vh;
+  margin-right: 0.5vw;
+  text-align: right;
+}
+
+.item_big_box {
+  display: flex;
+
+  .item_box {
+    width: 13vw;
+    border-radius: 0.25vw;
+    margin-right: 1vw;
+
+    .table_name {
+      margin: 1vh 0 0 1vw;
+    }
+    .table_information{
+      margin: 0.25vh 0;
+    }
+
+    .last_line {
+      display: flex;
+      align-items: center;
+      margin-top: 2vh;
+      margin-left: 1.5vw;
+
+      .status_light {
+        width: 5px;
+        height: 5px;
+        border-radius: 5px;
+      }
+
+      .open_status {
+        margin-left: 10px;
+        font-size: 10px;
+      }
+
+      .open_button {
+        font-size: 10px;
+        margin-left: 10px;
+      }
+    }
+  }
+}
