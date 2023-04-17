@@ -27,12 +27,11 @@ export default function AddConnectionForm(props) {
   const uploadProps = {
     name: "file",
     accept: ".xlsx,.xls", // 支持的文件类型
-    action: BASE_URL + router.uploadData, // 上传的地址
     showUploadList: false, // 展示浏览器的默认选择文件框？
     customRequest(event) {
       const formData = new FormData();
       formData.append("excel", event.file);
-      api.uploadData(formData).then((res) => {
+      api.getProperty(formData).then((res) => {
         console.log(res.data);
         message.success("上传成功！");
         setIsUpload(true);
@@ -77,7 +76,7 @@ export default function AddConnectionForm(props) {
 
   const handleConnectionOk = () => {
     api
-      .importProperty({
+      .importPropertyByLine({
         start: "2",
         end: "3",
         sheetIndex: 0,

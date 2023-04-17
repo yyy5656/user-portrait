@@ -10,6 +10,7 @@ import {MENU_CONFIG} from "@/utils/constant";
 import CharContent from "../components/echar/CharContent";
 import AddConnectionForm from "../components/AddConnectionForm";
 import Head from "next/head";
+import Manage from "@/components/manage/Manage";
 
 const {Header, Content, Footer, Sider} = Layout;
 const {confirm} = Modal;
@@ -61,7 +62,7 @@ const Home = () => {
      * @returns {Promise<void>}
      */
     const fetchLinkData = async (id) => {
-        const res = await api.chooseToken({connectionId: id});
+        const res = await api.chooseConnection({connectionId: id});
         if (res.status === 200 && res.data.data) {
             localStorage.setItem("token", res.data.data);
         }
@@ -174,13 +175,16 @@ const Home = () => {
                                     {
                                         label: "可视化数据",
                                         key: "1",
-                                        children: linkList.length ? <CharContent linklist={linkList} missionName={missionName}/> :
+                                        children: linkList.length ?
+                                            <CharContent linklist={linkList} missionName={missionName}/> :
                                             <Empty className={styles.empty}/>
                                     },
                                     {
                                         label: "管理",
                                         key: "2",
-                                        children: "Tab 2"
+                                        children: linkList.length ?
+                                            <Manage missionName={missionName}/> :
+                                            <Empty className={styles.empty}/>
                                     },
                                     {
                                         label: "个人中心",
