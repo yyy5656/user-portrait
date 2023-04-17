@@ -30,21 +30,23 @@ const Home = () => {
     } = theme.useToken();
     const route = useRouter();
 
-    // connectionId: number
-    // linkName: null
-    // tableName: string
-    // userId: number
-    const [connectionItemList, setConnectionItemList] = useState([]); // 左侧边栏列表
-    // linkList的类型是这个,没有ts难受 就这样写吧 懒的加ts
-    //{
-    //  linkId: number,
-    //  linkComment: string,
-    //  connectionId: number,
-    //}[]
-    const [linkList, setLinklist] = useState([]);
-    const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
+  // connectionId: number
+  // linkName: null
+  // tableName: string
+  // userId: number
+  const [connectionItemList, setConnectionItemList] = useState([]); // 左侧边栏列表
+  // linkList的类型是这个,没有ts难受 就这样写吧 懒的加ts
+  //{
+  //  linkId: number,
+  //  linkComment: string,
+  //  connectionId: number,
+  //}[]
+  const [linkList, setLinklist] = useState([]);
+  const [connectionId, setConnectionId] = useState();
+  const [username, setUsername] = useState("用户名");
+  const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
 
-    const missionName = useRef(null);
+  const missionName = useRef(null);
 
     /**
      * 获取左侧表名数据
@@ -72,16 +74,17 @@ const Home = () => {
         }
     };
 
-    const handleClick = (e) => {
-        missionName.current = connectionItemList.find((element) => {
-            return element.connectionId === parseInt(e.key);
-        }).tableName;
-        if (e.keyPath && e.keyPath.includes(MENU_CONFIG.MY_TASK)) {
-            fetchLinkData(e.key);
-        } else if (e.keyPath && e.keyPath.includes(MENU_CONFIG.CREATE_TASK)) {
-            setIsConnectionModalOpen(true);
-        }
-    };
+  const handleClick = (e) => {
+    missionName.current = connectionItemList.find((element) => {
+      return element.connectionId === parseInt(e.key);
+    })?.tableName;
+    if (e.keyPath && e.keyPath.includes(MENU_CONFIG.MY_TASK)) {
+      fetchLinkData(e.key);
+      setConnectionId(e.key);
+    } else if (e.keyPath && e.keyPath.includes(MENU_CONFIG.CREATE_TASK)) {
+      setIsConnectionModalOpen(true);
+    }
+  };
 
     // 退出登录
     const showConfirm = () => {
@@ -159,8 +162,7 @@ const Home = () => {
                                 background: colorBgContainer
                             }}
                         >
-                            {/* TODO: 直接将用户信息存在localstorage */}
-                            <div>用户名</div>
+                            <div>{username}</div>
                             <Button onClick={showConfirm}>退出</Button>
                         </Header>
                         <Content
@@ -175,8 +177,7 @@ const Home = () => {
                                     {
                                         label: "可视化数据",
                                         key: "1",
-                                        children: linkList.length ?
-                                            <CharContent linklist={linkList} missionName={missionName}/> :
+                                        children: linkList.length ? <CharContent linklist={linkList} missionName={missionName}/> :
                                             <Empty className={styles.empty}/>
                                     },
                                     {
@@ -205,6 +206,16 @@ const Home = () => {
                             User Portrait ©2023 Created by Hunter Li & Zhenyue Wang
                         </Footer>
                     </Layout>
+                    <Button
+                        shape={"circle"}
+                        type={"primary"}
+                        className={styles.add_connection_button}
+                        onClick={() => {
+                            setIsConnectionModalOpen(true);
+                        }}
+                    >
+                        +
+                    </Button>
                     {isConnectionModalOpen && (
                         <AddConnectionForm
                             setIsConnectionModalOpen={setIsConnectionModalOpen}

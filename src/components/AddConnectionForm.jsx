@@ -8,6 +8,7 @@ import {
   Upload,
   Select,
   Modal,
+  InputNumber,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { BASE_URL } from "@/utils/constant";
@@ -20,6 +21,10 @@ export default function AddConnectionForm(props) {
   const [value, setValue] = useState();
   const [list, setList] = useState([]);
   const [selectList, setSelectList] = useState([]);
+  const [sheetIndex, setSheetIndex] = useState(-1);
+  const [minNum, setMinNum] = useState(2);
+  const [maxNum, setMaxNum] = useState(2);
+
   const [isFinisedCreate, setIsFinisedCreate] = useState(false);
   const [isUpload, setIsUpload] = useState(false);
   const [isImport, setIsImport] = useState(false);
@@ -35,9 +40,7 @@ export default function AddConnectionForm(props) {
         console.log(res.data);
         message.success("上传成功！");
         setIsUpload(true);
-        setList(
-          transfromListToSelect(res.data.data.sheetList?.[0].categoryList)
-        );
+        setList(res.data.data);
       });
     },
     beforeUpload(file) {
@@ -77,9 +80,9 @@ export default function AddConnectionForm(props) {
   const handleConnectionOk = () => {
     api
       .importPropertyByLine({
-        start: "2",
-        end: "3",
-        sheetIndex: 0,
+        start: minNum,
+        end: maxNum,
+        sheetIndex,
         category: transfromSelectToAipList(selectList),
       })
       .then((res) => {
@@ -90,11 +93,11 @@ export default function AddConnectionForm(props) {
   };
 
   const handleChange = (value, option) => {
-    if (value.length > 0) {
-      setIsImport(true);
-    } else {
-      setIsImport(false);
-    }
+    setSheetIndex(value);
+    console.log(list.sheetList[value]);
+  };
+
+  const handlePropertyChange = (value, option) => {
     setSelectList(option);
   };
 
@@ -153,16 +156,71 @@ export default function AddConnectionForm(props) {
     {
       title: "选择字段",
       content: (
-        <Select
-          mode="multiple"
-          allowClear
-          style={{ width: "100%" }}
-          placeholder="Please select"
-          onChange={handleChange}
-          options={list}
-        />
+        <div>
+          当前表格为：{list.fileName}
+          <div>
+            <span>选择表格：</span>
+            <Select
+              allowClear
+              // style={{ width: "100%" }}
+              placeholder="Please select"
+              onChange={handleChange}
+              options={
+                list.sheetList &&
+                list.sheetList.map((item) => {
+                  return {
+                    value: item.sheetIndex,
+                    label: item.sheetName,
+                  };
+                })
+              }
+            />
+          </div>
+          {sheetIndex >= 0 && (
+            <>
+              <div>
+                <span>选择属性</span>
+                <Select
+                  mode="multiple"
+                  allowClear
+                  style={{ width: "80%" }}
+                  placeholder="选择属性"
+                  onChange={handlePropertyChange}
+                  options={
+                    list.sheetList?.[sheetIndex] &&
+                    list.sheetList?.[sheetIndex].categoryList.map((item) => {
+                      return {
+                        value: item.categoryIndex,
+                        label: item.categoryName,
+                      };
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <span>
+                  选择导入数据行数,总计{list.sheetList?.[sheetIndex].dataLine}条数据
+                </span>
+                <InputNumber
+                  min={2}
+                  max={Number(list.sheetList?.[sheetIndex].dataLine)}
+                  onChange={(value)=>setMinNum(value)}
+                  keyboard={true}
+                  defaultValue={2}
+                />
+                <InputNumber
+                  min={2}
+                  max={Number(list.sheetList?.[sheetIndex].dataLine)}
+                  onChange={(value)=>setMaxNum(value)}
+                  keyboard={true}
+                  defaultValue={Number(list.sheetList?.[sheetIndex].dataLine)}
+                />
+              </div>
+            </>
+          )}
+        </div>
       ),
-      disabled: !isImport,
+      disabled: !selectList ,
       buttonName: "完成",
     },
   ];
