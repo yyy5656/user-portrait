@@ -8,7 +8,6 @@ import {
   Upload,
   Select,
   Modal,
-  InputNumber,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { BASE_URL } from "@/utils/constant";
@@ -21,10 +20,6 @@ export default function AddConnectionForm(props) {
   const [value, setValue] = useState();
   const [list, setList] = useState([]);
   const [selectList, setSelectList] = useState([]);
-  const [sheetIndex, setSheetIndex] = useState(-1);
-  const [minNum, setMinNum] = useState(2);
-  const [maxNum, setMaxNum] = useState(2);
-
   const [isFinisedCreate, setIsFinisedCreate] = useState(false);
   const [isUpload, setIsUpload] = useState(false);
   const [isImport, setIsImport] = useState(false);
@@ -32,16 +27,17 @@ export default function AddConnectionForm(props) {
   const uploadProps = {
     name: "file",
     accept: ".xlsx,.xls", // 支持的文件类型
-    action: BASE_URL + router.uploadData, // 上传的地址
     showUploadList: false, // 展示浏览器的默认选择文件框？
     customRequest(event) {
       const formData = new FormData();
       formData.append("excel", event.file);
-      api.uploadData(formData).then((res) => {
+      api.getProperty(formData).then((res) => {
         console.log(res.data);
         message.success("上传成功！");
         setIsUpload(true);
-        setList(res.data.data);
+        setList(
+          transfromListToSelect(res.data.data.sheetList?.[0].categoryList)
+        );
       });
     },
     beforeUpload(file) {
@@ -68,6 +64,7 @@ export default function AddConnectionForm(props) {
         // 更新token
         localStorage.setItem("token", res.data.data);
         message.success("任务创建成功！");
+        // setStepIndex(1);
         setIsFinisedCreate(true);
       },
       (err) => {
@@ -76,12 +73,13 @@ export default function AddConnectionForm(props) {
     );
   };
 
+
   const handleConnectionOk = () => {
     api
-      .importProperty({
-        start: minNum,
-        end: maxNum,
-        sheetIndex,
+      .importPropertyByLine({
+        start: "2",
+        end: "3",
+        sheetIndex: 0,
         category: transfromSelectToAipList(selectList),
       })
       .then((res) => {
@@ -92,11 +90,11 @@ export default function AddConnectionForm(props) {
   };
 
   const handleChange = (value, option) => {
-    setSheetIndex(value);
-    console.log(list.sheetList[value]);
-  };
-
-  const handlePropertyChange = (value, option) => {
+    if (value.length > 0) {
+      setIsImport(true);
+    } else {
+      setIsImport(false);
+    }
     setSelectList(option);
   };
 
@@ -155,71 +153,16 @@ export default function AddConnectionForm(props) {
     {
       title: "选择字段",
       content: (
-        <div>
-          当前表格为：{list.fileName}
-          <div>
-            <span>选择表格：</span>
-            <Select
-              allowClear
-              // style={{ width: "100%" }}
-              placeholder="Please select"
-              onChange={handleChange}
-              options={
-                list.sheetList &&
-                list.sheetList.map((item) => {
-                  return {
-                    value: item.sheetIndex,
-                    label: item.sheetName,
-                  };
-                })
-              }
-            />
-          </div>
-          {sheetIndex >= 0 && (
-            <>
-              <div>
-                <span>选择属性</span>
-                <Select
-                  mode="multiple"
-                  allowClear
-                  style={{ width: "80%" }}
-                  placeholder="选择属性"
-                  onChange={handlePropertyChange}
-                  options={
-                    list.sheetList?.[sheetIndex] &&
-                    list.sheetList?.[sheetIndex].categoryList.map((item) => {
-                      return {
-                        value: item.categoryIndex,
-                        label: item.categoryName,
-                      };
-                    })
-                  }
-                />
-              </div>
-              <div>
-                <span>
-                  选择导入数据行数,总计{list.sheetList?.[sheetIndex].dataLine}条数据
-                </span>
-                <InputNumber
-                  min={2}
-                  max={Number(list.sheetList?.[sheetIndex].dataLine)}
-                  onChange={(value)=>setMinNum(value)}
-                  keyboard={true}
-                  defaultValue={2}
-                />
-                <InputNumber
-                  min={2}
-                  max={Number(list.sheetList?.[sheetIndex].dataLine)}
-                  onChange={(value)=>setMaxNum(value)}
-                  keyboard={true}
-                  defaultValue={Number(list.sheetList?.[sheetIndex].dataLine)}
-                />
-              </div>
-            </>
-          )}
-        </div>
+        <Select
+          mode="multiple"
+          allowClear
+          style={{ width: "100%" }}
+          placeholder="Please select"
+          onChange={handleChange}
+          options={list}
+        />
       ),
-      disabled: !selectList ,
+      disabled: !isImport,
       buttonName: "完成",
     },
   ];
