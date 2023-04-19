@@ -9,8 +9,8 @@ export default function deleteConnection(id, callbackFn) {
         content: "删除任务后该任务无法恢复，是否继续？",
         onOk() {
             console.log("OK");
-            api.removeProperty({
-                "linkId": id.current
+            api.deleteConnection({
+                "connectionId": id.current
             }).then(
                 (res) => {
                     callbackFn();

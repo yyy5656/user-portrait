@@ -75,7 +75,6 @@ const Home = () => {
     };
 
     const handleClick = (e) => {
-        console.log(e.key);
         if (e.key !== MENU_CONFIG.CREATE_TASK) {
             let findResult = connectionItemList.find((element) => {
                 return element.connectionId === parseInt(e.key);

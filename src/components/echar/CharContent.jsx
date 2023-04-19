@@ -22,14 +22,12 @@ export default function CharContent(props) {
         });
     };
 
-    console.log("x", props);
     return (
         <div className={styles.site_layout_content_show}>
             <div className={styles.title}>
                 <span>{props.missionName.current}</span>
                 <Button
                     onClick={() => {deleteConnection(props.connectionId.current, props.fetchData);}}
-                    className={styles.delete_property_btn}
                 >删除任务</Button></div>
             <ShowProperty property={handlePropsData()}/>
             <ItemList/>

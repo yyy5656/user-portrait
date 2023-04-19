@@ -30,7 +30,6 @@ export default function Manage(props) {
                 <span>{props.missionName.current}</span>
                 <Button
                     onClick={() => {deleteConnection(props.connectionId.current, props.fetchData);}}
-                    className={styles.delete_property_btn}
                 >删除任务</Button></div>
             <div>属性类别（点击切换标签类别）</div>
             <Button>导入</Button><Button>导入数据</Button>
