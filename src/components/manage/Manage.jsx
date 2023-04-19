@@ -1,6 +1,7 @@
 import styles from "@/styles/Manage.module.scss";
 import {Button, Collapse, Dropdown, Input, message, Space, Table} from "antd";
 import {DownOutlined} from "@ant-design/icons"
+import deleteConnection from "@/utils/deleteConnection";
 export default function Manage(props) {
     const items = [
         {
@@ -25,7 +26,12 @@ export default function Manage(props) {
 
     return (
         <div className={styles.site_layout_content_show}>
-            <div className={styles.title}>{props.missionName.current}</div>
+            <div className={styles.title}>
+                <span>{props.missionName.current}</span>
+                <Button
+                    onClick={() => {deleteConnection(props.connectionId.current, props.fetchData);}}
+                    className={styles.delete_property_btn}
+                >删除任务</Button></div>
             <div>属性类别（点击切换标签类别）</div>
             <Button>导入</Button><Button>导入数据</Button>
             <Collapse>

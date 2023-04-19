@@ -42,8 +42,10 @@ const Home = () => {
     //  connectionId: number,
     //}[]
     const [linkList, setLinklist] = useState([]);
+    const [username, setUsername] = useState("用户名");
     const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
 
+    const connectionId = useRef(null);
     const missionName = useRef(null);
 
     /**
@@ -73,9 +75,14 @@ const Home = () => {
     };
 
     const handleClick = (e) => {
-        missionName.current = connectionItemList.find((element) => {
-            return element.connectionId === parseInt(e.key);
-        }).tableName;
+        console.log(e.key);
+        if (e.key !== MENU_CONFIG.CREATE_TASK) {
+            let findResult = connectionItemList.find((element) => {
+                return element.connectionId === parseInt(e.key);
+            });
+            connectionId.current = findResult.connectionId;
+            missionName.current = findResult.tableName;
+        }
         if (e.keyPath && e.keyPath.includes(MENU_CONFIG.MY_TASK)) {
             fetchLinkData(e.key);
         } else if (e.keyPath && e.keyPath.includes(MENU_CONFIG.CREATE_TASK)) {
@@ -107,6 +114,7 @@ const Home = () => {
 
     useEffect(() => {
         fetchData();
+        setUsername(localStorage.getItem("userName"));
         return () => {
             setConnectionItemList([]);
         };
@@ -159,8 +167,7 @@ const Home = () => {
                                 background: colorBgContainer
                             }}
                         >
-                            {/* TODO: 直接将用户信息存在localstorage */}
-                            <div>用户名</div>
+                            <div>{username}</div>
                             <Button onClick={showConfirm}>退出</Button>
                         </Header>
                         <Content
@@ -176,14 +183,20 @@ const Home = () => {
                                         label: "可视化数据",
                                         key: "1",
                                         children: linkList.length ?
-                                            <CharContent linklist={linkList} missionName={missionName}/> :
+                                            <CharContent linklist={linkList}
+                                                         connectionId={connectionId}
+                                                         missionName={missionName}
+                                                         fetchData={fetchData}/> :
                                             <Empty className={styles.empty}/>
                                     },
                                     {
                                         label: "管理",
                                         key: "2",
                                         children: linkList.length ?
-                                            <Manage missionName={missionName}/> :
+                                            <Manage missionName={missionName}
+                                                    connectionId={connectionId}
+                                                    fetchData={fetchData}
+                                            /> :
                                             <Empty className={styles.empty}/>
                                     },
                                     {
