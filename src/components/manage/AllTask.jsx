@@ -1,7 +1,7 @@
 import { CloseOutlined } from "@ant-design/icons";
 import styles from "@/styles/PublicManager.module.scss";
 import { useEffect, useState } from "react";
-import { Divider, Space, Tag, Empty, Modal, Select } from "antd";
+import { Divider, Space, Tag, Empty, Modal, Select, message } from "antd";
 import api from "@/utils/api";
 
 export default function AllTask(props) {
@@ -13,14 +13,18 @@ export default function AllTask(props) {
   // model用
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskInfo, setTaskInfo] = useState();
+  const [taskType, setTaskType] = useState();
+  const [userList, setUserList] = useState([]);
+  const [sharedUserId, setSharedUserId] = useState();
+  const [shareType, setSharedType] = useState();
 
-  const taskType = {
+  const taskTypeConfig = {
     all: "-1",
     public: "0",
     order: "1",
   };
 
-  const handleFetch = (response) => {
+  const handleFetch = (response, handleFn = () => {}) => {
     console.log(response);
     if (
       response.status === 200 &&
@@ -29,41 +33,54 @@ export default function AllTask(props) {
     ) {
       return response.data.data;
     } else {
+      handleFn();
       return response.data;
     }
   };
 
+  const fetchData = () => {
+    const fetchList = [
+      {
+        type: taskTypeConfig.all,
+        handleRes: (value) => {
+          console.log(value);
+          setAllTaskList(value);
+        },
+      },
+      {
+        type: taskTypeConfig.public,
+        handleRes: (value) => setPublicTaskList(value),
+      },
+      {
+        type: taskTypeConfig.order,
+        handleRes: (value) => setOrderTaskList(value),
+      },
+    ];
+    fetchList.map(async (item) => {
+      item.handleRes(
+        handleFetch(
+          await api.getConnectionsByType({
+            connectionType: item.type,
+          })
+        )
+      );
+    });
+  };
+
   useEffect(() => {
-    const fetchData = () => {
-      const fetchList = [
-        {
-          type: taskType.all,
-          handleRes: (value) => {
-            console.log(value);
-            setAllTaskList(value);
-          },
-        },
-        {
-          type: taskType.public,
-          handleRes: (value) => setPublicTaskList(value),
-        },
-        {
-          type: taskType.order,
-          handleRes: (value) => setOrderTaskList(value),
-        },
-      ];
-      fetchList.map(async (item) => {
-        item.handleRes(
-          handleFetch(
-            await api.getConnectionsByType({
-              connectionType: item.type,
-            })
-          )
-        );
-      });
-    };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const res = await api.getOtherALlUser();
+      const data = handleFetch(res);
+      setUserList(data);
+    };
+    if (isModalOpen) {
+      fetchUserData();
+    }
+  }, [isModalOpen]);
 
   const handleClick = (task) => {
     console.log(task);
@@ -71,12 +88,31 @@ export default function AllTask(props) {
     setIsModalOpen(true);
   };
 
+  // modal用
   const handleOk = () => {
     setIsModalOpen(false);
+    const params = {
+      connectionId: taskInfo.connectionId,
+      connectionType: taskType,
+      shareInfo: {
+        sharedUserId,
+        shareType,
+      },
+    };
+    handleFetch(api.changeConnectionType(params), () => {
+      message.success("设置成功");
+      fetchData();
+    });
+    // api.changeConnectionType(params).then((res) => {});
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
+  };
+
+  const handleChange = (value) => {
+    console.log(`selected ${value}`);
+    setTaskType(value);
   };
 
   return (
@@ -105,7 +141,15 @@ export default function AllTask(props) {
         <Space size={[0, 8]} wrap>
           {publicTaskList?.length ? (
             publicTaskList.map((item) => (
-              <Tag key={item.connectionId}>{item.tableName}</Tag>
+              <Tag
+                key={item.connectionId}
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  handleClick(item);
+                }}
+              >
+                {item.tableName}
+              </Tag>
             ))
           ) : (
             <Empty description="没有数据" />
@@ -115,10 +159,18 @@ export default function AllTask(props) {
         <Space size={[0, 8]} wrap>
           {orderTaskList?.length ? (
             orderTaskList.map((item) => (
-              <Tag key={item.connectionId}>{item.tableName}</Tag>
+              <Tag
+                key={item.connectionId}
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  handleClick(item);
+                }}
+              >
+                {item.tableName}
+              </Tag>
             ))
           ) : (
-            <Empty />
+            <Empty description="没有数据"/>
           )}
         </Space>
       </div>
@@ -137,7 +189,7 @@ export default function AllTask(props) {
           <Select
             defaultValue={taskInfo?.connectionType}
             style={{ width: 120 }}
-            // onChange={handleChange}
+            onChange={handleChange}
             options={[
               { value: "-1", label: "私有" },
               { value: "0", label: "公开" },
@@ -145,30 +197,37 @@ export default function AllTask(props) {
             ]}
           />
         </div>
-        <div className={styles.modal_container}>
-          <span>指定用户：</span>
-          <Select
-            // defaultValue={taskInfo?.connectionType}
-            style={{ width: 120 }}
-            // onChange={handleChange}
-            options={[
-              { value: "只读", label: "只读" },
-              { value: "修改视图", label: "修改视图" },
-            ]}
-          />
-        </div>
-        <div className={styles.modal_container}>
-          <span>用户权限：</span>
-          <Select
-            // defaultValue={taskInfo?.connectionType}
-            style={{ width: 120 }}
-            // onChange={handleChange}
-            options={[
-              { value: "只读", label: "只读" },
-              { value: "修改视图", label: "修改视图" },
-            ]}
-          />
-        </div>
+        {taskType === taskTypeConfig.order ? (
+          <>
+            <div className={styles.modal_container}>
+              <span>指定用户：</span>
+              <Select
+                style={{ width: 120 }}
+                onChange={(value) => {
+                  console.log(value);
+                  setSharedUserId(value);
+                }}
+                options={userList?.map((item) => ({
+                  label: item.username,
+                  value: item.userId,
+                }))}
+              />
+            </div>
+            <div className={styles.modal_container}>
+              <span>用户权限：</span>
+              <Select
+                style={{ width: 120 }}
+                onChange={(value) => {
+                  setSharedType(value);
+                }}
+                options={[
+                  { value: "0", label: "只读" },
+                  { value: "1", label: "修改视图" },
+                ]}
+              />
+            </div>
+          </>
+        ) : null}
       </Modal>
     </>
   );

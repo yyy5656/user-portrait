@@ -342,9 +342,37 @@ const api = {
       data,
     });
   },
-  getOtherALlUser(data) {
+  getOtherALlUser() {
     return HTTP({
       url: "/share/getOtherALlUser",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+    });
+  },
+  getShareList() {
+    return HTTP({
+      url: "/share/getShareList",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+    });
+  },
+  changeConnectionType(data) {
+    return HTTP({
+      url: "/share/changeConnectionType",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+      data,
+    });
+  },
+  deleteShareById(data) {
+    return HTTP({
+      url: "/share/deleteShareById",
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=UTF-8",

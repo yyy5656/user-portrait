@@ -1,10 +1,13 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { CloseOutlined } from "@ant-design/icons";
 import styles from "@/styles/PublicManager.module.scss";
-import { Table, Space, Tag } from "antd";
+import { Table, Space, Tag, message } from "antd";
+import api from "@/utils/api";
 
 export default function TaskAuthority(props) {
   console.log(props);
+  const [dataSource, setDataSource] = useState([]);
+
   const columns = [
     {
       title: "任务名",
@@ -36,7 +39,15 @@ export default function TaskAuthority(props) {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <a>
+          <a
+            onClick={() => {
+              console.log(record);
+              const { shareId } = record;
+              api.deleteShareById({ shareId }).then(res=>{
+                message.success(res.data.msg)
+              });
+            }}
+          >
             <CloseOutlined />
           </a>
         </Space>
@@ -44,27 +55,31 @@ export default function TaskAuthority(props) {
     },
   ];
 
-  const dataSource = [
-    {
-      key: 1,
-      taskName: "任务一",
-      userName: "用户1",
-      shared: "用户2",
-      authority: "已读",
-    },
-    {
-      key: 2,
-      taskName: "任务二",
-      userName: "用户1",
-      shared: "用户2",
-      authority: "已读",
-    },
-  ];
+  const shareTypeConfig = {
+    0: "已读",
+    1: "修改视图",
+  };
+
+  useEffect(() => {
+    api.getShareList().then((res) => {
+      const data = res.data.data;
+      setDataSource(
+        data.map((item) => ({
+          key: item.connectionId,
+          taskName: item.data.tableName,
+          userName: item.username,
+          shared: "何科伟差了一个字段啊啊啊啊啊烦死了",
+          authority: shareTypeConfig[item.shareType],
+          shareId: item.shareId,
+        }))
+      );
+    });
+  }, []);
 
   return (
     <>
       <div className={styles.allTask_container}>
-        <div className={styles.title}>指定可见详情</div>
+        <div className={styles.title}>指定可见任务详情</div>
         <Table columns={columns} dataSource={dataSource} />
       </div>
     </>
