@@ -1,5 +1,5 @@
 import styles from "@/styles/Manage.module.scss";
-import {Button, Collapse, Dropdown, Input, message, Space, Table, theme} from "antd";
+import {Button, Collapse, Dropdown, Input, message, Space, Table, Tag, theme} from "antd";
 import {DownOutlined, SearchOutlined} from "@ant-design/icons";
 import deleteConnection from "@/utils/deleteConnection";
 
@@ -18,6 +18,8 @@ export default function Manage(props) {
             key: "2"
         }
     ];
+
+    const test = ["a", "b", "c", "d", "e", "f"];
 
     const handleMenuClick = (e) => {
         message.info("click!");
@@ -52,14 +54,66 @@ export default function Manage(props) {
             >
                 <Collapse.Panel key={1} header={
                     <>
-                        <span>名词类</span>
+                        <span className={styles.collapse_panel_span}>名词类</span>
+                        {
+                            test.slice(0, 5).map((value, index) => {
+                                return (
+                                    <Tag key={index}>
+                                        {value}
+                                    </Tag>
+                                );
+                            })
+                        }
                     </>
-                }>123</Collapse.Panel>
+                }>
+                    {
+                        test.map((value, index) => {
+                            return (
+                                <Tag
+                                    color="#6e84c9"
+                                    style={{padding: "3px 15px", marginBottom: "5px"}}
+                                    key={index}
+                                    onClick={() => {
+                                        console.log(1.1);
+                                    }}
+                                >
+                                    {value}
+                                </Tag>
+                            );
+                        })
+                    }
+                </Collapse.Panel>
                 <Collapse.Panel key={2} header={
                     <>
-                        <span>数值类</span>
+                        <span className={styles.collapse_panel_span}>数值类</span>
+                        {
+                            test.slice(0, 5).map((value, index) => {
+                                return (
+                                    <Tag key={index}>
+                                        {value}
+                                    </Tag>
+                                );
+                            })
+                        }
                     </>
-                }>456</Collapse.Panel>
+                }>
+                    {
+                        test.map((value, index) => {
+                            return (
+                                <Tag
+                                    color="#6e84c9"
+                                    style={{padding: "3px 15px", marginBottom: "5px"}}
+                                    key={index}
+                                    onClick={() => {
+                                        console.log(2.1);
+                                    }}
+                                >
+                                    {value}
+                                </Tag>
+                            );
+                        })
+                    }
+                </Collapse.Panel>
             </Collapse>
             <div className={styles.show_data_box}>
                 <div className={styles.show_data_title}>数据展示</div>
@@ -77,7 +131,7 @@ export default function Manage(props) {
                         className={styles.search_box}
                         placeholder={"你想查询的内容..."}
                     />
-                    <Button className={styles.search_btn} type={"primary"}><SearchOutlined /></Button>
+                    <Button className={styles.search_btn} type={"primary"}><SearchOutlined/></Button>
                 </div>
             </div>
             <Table
