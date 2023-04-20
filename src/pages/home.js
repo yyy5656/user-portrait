@@ -153,7 +153,7 @@ const Home = () => {
                                         };
                                     })
                                 ),
-                                getItem("可查看任务", MENU_CONFIG.INQUIRE_TASK, <FileOutlined/>)
+                                getItem("共享管理", MENU_CONFIG.INQUIRE_TASK, <FileOutlined/>)
                             ]}
                             defaultOpenKeys={[MENU_CONFIG.MY_TASK]}
                             onClick={handleClick}
@@ -205,7 +205,7 @@ const Home = () => {
                                     }
                                 ]}
                                 style={{
-                                    lineType: "none"
+                                    lineType: "none",
                                 }}
                             />
                         </Content>
