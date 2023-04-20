@@ -28,6 +28,7 @@ export default function CharContent(props) {
                 <span>{props.missionName.current}</span>
                 <Button
                     onClick={() => {deleteConnection(props.connectionId.current, props.fetchData);}}
+                    className={styles.delete_connection_btn}
                 >删除任务</Button></div>
             <ShowProperty property={handlePropsData()}/>
             <ItemList/>
