@@ -8,8 +8,6 @@ export default function ShowProperty(props) {
         token: {colorBgContainer}
     } = theme.useToken();
 
-    const property = props.property;
-
     return (
         <div>
             <Collapse
@@ -20,7 +18,7 @@ export default function ShowProperty(props) {
                     <>
                         <span>已导入属性：</span>
                         {
-                            property.map((value, index) => {
+                            props.property.slice(0, 5).map((value, index) => {
                                 return (
                                     <Tag key={index}>
                                         {value}
@@ -31,9 +29,9 @@ export default function ShowProperty(props) {
                     </>
                 } key="1">
                     {
-                        property.map((value, index) => {
+                        props.property.map((value, index) => {
                             return (
-                                <Tag color="#6e84c9" style={{padding: "3px 15px", marginBottom:"5px"}} key={index}>
+                                <Tag color="#6e84c9" style={{padding: "3px 15px", marginBottom: "5px"}} key={index}>
                                     {value}
                                 </Tag>
                             );
@@ -41,7 +39,7 @@ export default function ShowProperty(props) {
                     }
                 </Panel>
             </Collapse>
-            <div className={styles.count_items}>共{property.length}条数据</div>
+            <div className={styles.count_items}>共{props.property.length}条数据</div>
         </div>
     );
 }

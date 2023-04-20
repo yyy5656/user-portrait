@@ -23,9 +23,7 @@ export default function AddConnectionForm(props) {
   const [selectList, setSelectList] = useState([]);
   const [sheetIndex, setSheetIndex] = useState(-1);
   const [minNum, setMinNum] = useState(2);
-
   const [maxNum, setMaxNum] = useState(2);
-
   const [isFinisedCreate, setIsFinisedCreate] = useState(false);
   const [isUpload, setIsUpload] = useState(false);
   const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
@@ -33,12 +31,11 @@ export default function AddConnectionForm(props) {
   const uploadProps = {
     name: "file",
     accept: ".xlsx,.xls", // 支持的文件类型
-    action: BASE_URL + router.uploadData, // 上传的地址
     showUploadList: false, // 展示浏览器的默认选择文件框？
     customRequest(event) {
       const formData = new FormData();
       formData.append("excel", event.file);
-      api.uploadData(formData).then((res) => {
+      api.getProperty(formData).then((res) => {
         console.log(res.data);
         message.success("上传成功！");
         setIsUpload(true);
@@ -70,6 +67,7 @@ export default function AddConnectionForm(props) {
         // 更新token
         localStorage.setItem("token", res.data.data);
         message.success("任务创建成功！");
+        // setStepIndex(1);
         setIsFinisedCreate(true);
       },
       (err) => {
@@ -80,10 +78,10 @@ export default function AddConnectionForm(props) {
 
   const handleConnectionOk = () => {
     api
-      .importProperty({
-        start: minNum,
-        end: maxNum,
-        sheetIndex,
+      .importPropertyByLine({
+        start: "2",
+        end: "3",
+        sheetIndex: 0,
         category: transfromSelectToAipList(selectList),
       })
       .then((res) => {

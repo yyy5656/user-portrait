@@ -22,7 +22,7 @@ export default function PropertyGroup(props) {
     setIsModalOpen(false);
     const fetchGroup = async (selectGroupData) => {
       await api
-        .chooseToken({ connectionId: selectGroupData[0].connectionId })
+        .chooseConnection({ connectionId: selectGroupData[0].connectionId })
         .then((res) => {
         //   localStorage.setItem("token", res.data.data);
         });
