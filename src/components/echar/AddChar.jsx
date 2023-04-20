@@ -1,4 +1,4 @@
-import { Modal, Button, Select, Input } from "antd";
+import { Modal, Button, Select, Input, message } from "antd";
 import styles from "@/styles/BasicBar.module.scss";
 import { useEffect, useRef, useState } from "react";
 import api from "@/utils/api";
@@ -11,7 +11,7 @@ export default function AddChar(props) {
   const [selectCharType, setSelectCharType] = useState();
   // 属性分组
   const [propertyList, setPropertyList] = useState({});
-  // 选中的属性类型 是名词还是区间
+  // 选中的属性类型 是名词还是区间 0/1
   const [selectLinkType, setSelectLinkType] = useState();
   // 名词性的属性的键值数组
   const [singleLinkList, setSingleLinkList] = useState([]);
@@ -27,6 +27,7 @@ export default function AddChar(props) {
     intervalLink: 0,
   };
 
+  // 生成图表
   const handleClick = () => {
     // 点击后请求属性
     setIsModalOpen(true);
@@ -37,9 +38,40 @@ export default function AddChar(props) {
     });
   };
 
+  const handleModalOkClick = () => {
+    if (name && selectProperty.length && selectCharType && charData) {
+      if (
+        selectCharType === charTypeConfig.line ||
+        selectCharType === charTypeConfig.bar
+      ) {
+        const newData = {
+          xAxisData: Object.keys(charData),
+          yAxisData: Object.values(charData).map((item) => item.value),
+        };
+        addCharOption({
+          name,
+          type: selectCharType,
+          property: selectProperty,
+          data: newData,
+        });
+      } else {
+        addCharOption({
+          name,
+          type: selectCharType,
+          property: selectProperty,
+          data: charData,
+        });
+      }
+      setIsModalOpen(false);
+    } else if (selectLinkType === linkType.intervalLink && !charData) {
+      message.info("请选择分组");
+    } else {
+      message.info("请完善信息");
+    }
+  };
+
+  // 根据属性获取数据
   const handleChange = (value, option) => {
-    console.log(value);
-    console.log(option);
     // 1调用getNouns
     const { type } = option;
     setSelectLinkType(type);
@@ -81,13 +113,13 @@ export default function AddChar(props) {
         });
     }
   };
+
   const changeCharListGroup = (value) => {
     console.log(value);
     value.length && setCharData(value);
   };
 
   const addCharOption = (option) => {
-    debugger;
     api.insertViewInfo({ viewData: JSON.stringify(option) }).then((res) => {
       console.log(res);
     });
@@ -97,6 +129,7 @@ export default function AddChar(props) {
   useEffect(() => {
     return () => {
       setSelectCharType(null);
+      setSelectLinkType(null);
     };
   }, []);
 
@@ -110,15 +143,7 @@ export default function AddChar(props) {
         title="生成图表"
         open={isModalOpen}
         destroyOnClose={true}
-        onOk={() => {
-          setIsModalOpen(false);
-          addCharOption({
-            name,
-            type: selectCharType,
-            property: selectProperty,
-            data: charData,
-          });
-        }}
+        onOk={handleModalOkClick}
         onCancel={() => {
           setSelectCharType(null);
           setIsModalOpen(false);
@@ -147,7 +172,7 @@ export default function AddChar(props) {
             options={charType}
           />
         </div>
-        {selectCharType === charTypeConfig.pie && (
+        {selectCharType && (
           <>
             <div>
               选择属性：
@@ -180,56 +205,20 @@ export default function AddChar(props) {
                 ]}
               />
             </div>
-            {selectLinkType ? (
-              selectProperty ? (
+
+            {selectLinkType === linkType.singleLink &&
+              (selectProperty ? (
                 <DataGroup
                   charData={originCharData}
                   changeCharListGroup={changeCharListGroup}
                 />
-              ) : null
-            ) : (
+              ) : null)}
+            {selectLinkType === linkType.intervalLink && (
               <IntervalDataGroup
                 selectProperty={selectProperty}
                 changeCharListGroup={changeCharListGroup}
               />
             )}
-          </>
-        )}
-        {(selectCharType === charTypeConfig.bar ||
-          selectCharType === charTypeConfig.line) && (
-          <>
-            <div>
-              选择属性：
-              <Select
-                // mode="multiple"
-                style={{ width: 200 }}
-                onChange={handleChange}
-                options={[
-                  {
-                    label: "区间性属性",
-                    key: 0,
-                    options:
-                      propertyList[0] &&
-                      propertyList[0].map((item) => ({
-                        label: item.linkComment,
-                        value: item.linkId,
-                        type: linkType.intervalLink,
-                      })),
-                  },
-                  {
-                    label: "名词性属性",
-                    key: 1,
-                    options:
-                      propertyList[1] &&
-                      propertyList[1].map((item) => ({
-                        label: item.linkComment,
-                        value: item.linkId,
-                        type: linkType.singleLink,
-                      })),
-                  },
-                ]}
-              />
-            </div>
           </>
         )}
       </Modal>

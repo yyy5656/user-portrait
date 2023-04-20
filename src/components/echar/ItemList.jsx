@@ -48,9 +48,9 @@ export default function ItemList(props) {
   };
 
   const changeStatus = (index, status) => {
-    const item = list[index];
-    item.status = status;
-    setList(list);
+    const item = [...list];
+    item[index].status = status;
+    setList(item);
     console.log(list);
   };
 
@@ -105,9 +105,7 @@ export default function ItemList(props) {
                         type={"primary"}
                         size={"small"}
                         onClick={() => {
-                          debugger;
                           if (status === "close") {
-                            setStatus("open");
                             changeStatus(index, "open");
                             props.addCharList(item);
                           } else {

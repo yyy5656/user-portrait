@@ -37,52 +37,51 @@ export default function IntervalDataGroup(props) {
             添加分组
           </Button>
         </div>
-        {groupList &&
-          groupList.map((item, index) => (
-            <div className={styles.interval_group} key={index}>
-              <Input
-                placeholder="输入分组名"
-                style={{ width: "130px", marginRight: "20px" }}
-                onChange={(e) => {
-                  const newGourpList = [...groupList];
-                  newGourpList[index].name = e.target.value;
-                  setGroupList(newGourpList);
-                }}
-              />
-              <InputNumber
-                onChange={(value) => {
-                  const newGourpList = [...groupList];
-                  newGourpList[index].start = value;
-                  setGroupList(newGourpList);
-                }}
-              />
-              <InputNumber
-                onChange={(value) => {
-                  const newGourpList = [...groupList];
-                  newGourpList[index].end = value;
-                  setGroupList(newGourpList);
-                }}
-              />
-              <Button
-                onClick={() => {
-                  debugger;
-                  api
-                    .getNumerical({
-                      start: groupList[index].start,
-                      end: groupList[index].end,
-                      link: props.selectProperty[0],
-                    })
-                    .then((res) => {
-                      groupList[index].value = res.data.data;
-                      props.changeCharListGroup(groupList);
-                    });
-                  message.success("添加成功");
-                }}
-              >
-                确认添加
-              </Button>
-            </div>
-          ))}
+        {groupList.map((item, index) => (
+          <div className={styles.interval_group} key={index}>
+            <Input
+              placeholder="输入分组名"
+              style={{ width: "130px", marginRight: "20px" }}
+              onChange={(e) => {
+                const newGourpList = [...groupList];
+                newGourpList[index].name = e.target.value;
+                setGroupList(newGourpList);
+              }}
+            />
+            <InputNumber
+              onChange={(value) => {
+                const newGourpList = [...groupList];
+                newGourpList[index].start = value;
+                setGroupList(newGourpList);
+              }}
+            />
+            <InputNumber
+              onChange={(value) => {
+                const newGourpList = [...groupList];
+                newGourpList[index].end = value;
+                setGroupList(newGourpList);
+              }}
+            />
+            <Button
+              onClick={() => {
+                debugger;
+                api
+                  .getNumerical({
+                    start: groupList[index].start,
+                    end: groupList[index].end,
+                    link: props.selectProperty[0],
+                  })
+                  .then((res) => {
+                    groupList[index].value = res.data.data;
+                    props.changeCharListGroup(groupList);
+                  });
+                message.success("添加成功");
+              }}
+            >
+              确认添加
+            </Button>
+          </div>
+        ))}
       </div>
     </>
   );

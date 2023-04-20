@@ -209,7 +209,16 @@ const api = {
       },
     });
   },
-
+  deleteViewInfo(data) {
+    return HTTP({
+      url: "/data/deleteViewInfo",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+      data,
+    });
+  },
   getSharedConnection() {
     return HTTP({
       url: "/share/getSharedConnection",
@@ -217,16 +226,6 @@ const api = {
       headers: {
         "Content-Type": "application/json;charset=UTF-8",
       },
-    });
-  },
-  deleteViewInfo(data) {
-    return HTTP({
-      url: "/share/deleteViewInfo",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json;charset=UTF-8",
-      },
-      data
     });
   },
 };

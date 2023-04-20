@@ -1,22 +1,44 @@
-import { Modal, Button, Select, Input, InputNumber, Checkbox, message } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import {
+  Modal,
+  Button,
+  Select,
+  Input,
+  InputNumber,
+  Checkbox,
+  message,
+} from "antd";
 import styles from "@/styles/AddChar.module.scss";
 import { useEffect, useRef, useState } from "react";
-import {
-  transfromLinkToSelect,
-  transfromSeleToList,
-  getBasicBarData,
-} from "@/utils/utils";
-import { getCharOption } from "./constant";
-import api from "@/utils/api";
 
 const CheckboxGroup = Checkbox.Group;
 
 export default function DataGroup(props) {
   console.log(props);
+  const { charData } = props;
   const [groupList, setGroupList] = useState([]);
+  const [isChangeGroup, setIsChangeGroup] = useState(false);
+
   return (
     <>
+      {!isChangeGroup ? (
+        <div>
+          当前分组：
+          {charData.map((item, index) => (
+            <span key={index} style={{ marginRight: "10px" }}>
+              {item.name} : {item.value}
+            </span>
+          ))}
+        </div>
+      ) : (
+        <div>
+          当前分组：
+          {groupList.map((item, index) => (
+            <span key={index} style={{ marginRight: "10px" }}>
+              {item.name} : {item.value}
+            </span>
+          ))}
+        </div>
+      )}
       <div>
         <div>
           分组：
@@ -58,11 +80,24 @@ export default function DataGroup(props) {
               />
               <Button
                 onClick={() => {
+                  setIsChangeGroup(true);
                   props.changeCharListGroup(groupList);
                   message.success("添加成功");
                 }}
               >
                 确认添加
+              </Button>
+              <Button
+                onClick={() => {
+                  setIsChangeGroup(true);
+                  groupList.splice(index, 1);
+                  console.log(groupList);
+                  setGroupList(groupList)
+                  props.changeCharListGroup(groupList);
+                  message.success("删除成功");
+                }}
+              >
+                删除分组
               </Button>
             </div>
           ))}
