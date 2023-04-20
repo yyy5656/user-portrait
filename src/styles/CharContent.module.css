@@ -23,3 +23,8 @@
   font-weight: bold;
   padding: 10px 0px;
 }
+
+.delete_connection_btn {
+  padding: 0 10px;
+  margin-left: 10px;
+}
