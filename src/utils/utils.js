@@ -14,7 +14,8 @@ export function transfromSelectToAipList(list) {
     list.forEach(item => {
         newArr.push({
             'categoryIndex': item.value,
-            'categoryName': item.label
+            'categoryName': item.label,
+            'categoryType': item.type
         })
     });
     return newArr;

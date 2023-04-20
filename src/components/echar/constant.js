@@ -3,6 +3,11 @@ export const charTypeConfig = {
   bar: "BAR",
   line: "LINE",
 };
+export const charTypeName = {
+  [charTypeConfig.pie]: "饼状图",
+  [charTypeConfig.bar]: "柱形图",
+  [charTypeConfig.line]: "折线图",
+};
 
 // mock一些
 export const charListData = [

@@ -65,12 +65,17 @@ export default function IntervalDataGroup(props) {
               />
               <Button
                 onClick={() => {
-                  api.getNumerical({
-                    start: groupList[index].start,
-                    end: groupList[index].end,
-                    link: props.selectProperty[0]
-                  })
-                  // props.changeCharListGroup(groupList);
+                  debugger;
+                  api
+                    .getNumerical({
+                      start: groupList[index].start,
+                      end: groupList[index].end,
+                      link: props.selectProperty[0],
+                    })
+                    .then((res) => {
+                      groupList[index].value = res.data.data;
+                      props.changeCharListGroup(groupList);
+                    });
                   message.success("添加成功");
                 }}
               >

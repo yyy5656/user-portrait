@@ -34,6 +34,7 @@ const Home = () => {
   // tableName: string
   // userId: number
   const [connectionItemList, setConnectionItemList] = useState([]); // 左侧边栏列表
+  const [publicConnectionItemList, setPublicConnectionItemList] = useState([]); // 左侧边可查看任务栏列表
   // linkList的类型是这个,没有ts难受 就这样写吧 懒的加ts
   //{
   //  linkId: number,
@@ -53,8 +54,10 @@ const Home = () => {
    */
   const fetchData = async () => {
     const res = (await api.getConnection()).data;
-    console.log(res);
+    const publicConRes = (await api.getSharedConnection()).data;
+    console.log(publicConRes);
     res.data && setConnectionItemList(res.data);
+    publicConRes.data && setPublicConnectionItemList(publicConRes.data);
   };
 
   useEffect(() => {
@@ -147,7 +150,17 @@ const Home = () => {
                 };
               })
             ),
-            getItem("可查看任务", MENU_CONFIG.INQUIRE_TASK, <FileOutlined />),
+            getItem(
+              "可查看任务",
+              MENU_CONFIG.INQUIRE_TASK,
+              <FileOutlined />,
+              publicConnectionItemList.map((data) => {
+                return {
+                  key: `${data.connectionId}`,
+                  label: `${data.tableName}`,
+                };
+              })
+            ),
           ]}
           defaultOpenKeys={[MENU_CONFIG.MY_TASK]}
           onClick={handleClick}
@@ -178,6 +191,7 @@ const Home = () => {
                 children: linkList.length ? (
                   <CharContent
                     linkList={linkList}
+                    missionName={missionName}
                     connectionId={connectionId}
                   />
                 ) : (
@@ -208,16 +222,6 @@ const Home = () => {
           Ant Design ©2023 Created by Ant UED
         </Footer>
       </Layout>
-      <Button
-        shape={"circle"}
-        type={"primary"}
-        className={styles.add_connection_button}
-        onClick={() => {
-          setIsConnectionModalOpen(true);
-        }}
-      >
-        +
-      </Button>
       {isConnectionModalOpen && (
         <AddConnectionForm
           setIsConnectionModalOpen={setIsConnectionModalOpen}

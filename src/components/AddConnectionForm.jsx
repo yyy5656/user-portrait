@@ -23,11 +23,12 @@ export default function AddConnectionForm(props) {
   const [selectList, setSelectList] = useState([]);
   const [sheetIndex, setSheetIndex] = useState(-1);
   const [minNum, setMinNum] = useState(2);
+
   const [maxNum, setMaxNum] = useState(2);
 
   const [isFinisedCreate, setIsFinisedCreate] = useState(false);
   const [isUpload, setIsUpload] = useState(false);
-  const [isImport, setIsImport] = useState(false);
+  const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
 
   const uploadProps = {
     name: "file",
@@ -42,6 +43,7 @@ export default function AddConnectionForm(props) {
         message.success("上传成功！");
         setIsUpload(true);
         setList(res.data.data);
+        setMaxNum(Number(res.data.data));
       });
     },
     beforeUpload(file) {
@@ -93,6 +95,7 @@ export default function AddConnectionForm(props) {
 
   const handleChange = (value, option) => {
     setSheetIndex(value);
+    setMaxNum(Number(list.sheetList?.[value].dataLine));
     console.log(list.sheetList[value]);
   };
 
@@ -191,6 +194,7 @@ export default function AddConnectionForm(props) {
                       return {
                         value: item.categoryIndex,
                         label: item.categoryName,
+                        type: item.categoryType,
                       };
                     })
                   }
@@ -198,19 +202,20 @@ export default function AddConnectionForm(props) {
               </div>
               <div>
                 <span>
-                  选择导入数据行数,总计{list.sheetList?.[sheetIndex].dataLine}条数据
+                  选择导入数据行数,总计{list.sheetList?.[sheetIndex].dataLine}
+                  条数据
                 </span>
                 <InputNumber
                   min={2}
                   max={Number(list.sheetList?.[sheetIndex].dataLine)}
-                  onChange={(value)=>setMinNum(value)}
+                  onChange={(value) => setMinNum(value)}
                   keyboard={true}
                   defaultValue={2}
                 />
                 <InputNumber
                   min={2}
                   max={Number(list.sheetList?.[sheetIndex].dataLine)}
-                  onChange={(value)=>setMaxNum(value)}
+                  onChange={(value) => setMaxNum(value)}
                   keyboard={true}
                   defaultValue={Number(list.sheetList?.[sheetIndex].dataLine)}
                 />
@@ -219,7 +224,7 @@ export default function AddConnectionForm(props) {
           )}
         </div>
       ),
-      disabled: !selectList ,
+      disabled: !selectList,
       buttonName: "完成",
     },
   ];
@@ -242,6 +247,17 @@ export default function AddConnectionForm(props) {
             justifyContent: "flex-end",
           }}
         >
+          {stepIndex === 0 && (
+            <Button
+              style={{ marginRight: "20px" }}
+              onClick={() => {
+                props.setIsConnectionModalOpen(false);
+              }}
+            >
+              取消
+            </Button>
+          )}
+
           <Button
             type="primary"
             onClick={() => {

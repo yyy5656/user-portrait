@@ -1,14 +1,8 @@
-import { Modal, Button, Select } from "antd";
+import { CloseOutlined } from "@ant-design/icons";
 import styles from "@/styles/BasicBar.module.scss";
 import * as echarts from "echarts";
-import { useEffect, useRef, useState } from "react";
-import {
-  transfromLinkToSelect,
-  transfromSeleToList,
-  getBasicBarData,
-} from "@/utils/utils";
+import { useEffect, useRef } from "react";
 import { getCharOption } from "./constant";
-import api from "@/utils/api";
 
 export default function BasicBar(props) {
   console.log(props);
@@ -30,6 +24,11 @@ export default function BasicBar(props) {
   return (
     <>
       <div className={styles.basicBar_container}>
+        <div className={styles.cancel} onClick={()=>{
+          console.log('1111');
+          debugger
+          props.deleteViewInfo(props.index)
+        }}><CloseOutlined /></div>
         <div>{name}</div>
         <div className={styles.basicBar} ref={dom}></div>
       </div>

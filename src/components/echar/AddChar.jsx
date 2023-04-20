@@ -51,9 +51,7 @@ export default function AddChar(props) {
         linkType: type,
       },
     ]);
-    if (type === linkType.intervalLink) {
-      // api.getNumerical({});
-    } else if (type === linkType.singleLink) {
+    if (type === linkType.singleLink) {
       api
         .getNouns({
           linkId: option.value,
@@ -88,6 +86,14 @@ export default function AddChar(props) {
     value.length && setCharData(value);
   };
 
+  const addCharOption = (option) => {
+    debugger;
+    api.insertViewInfo({ viewData: JSON.stringify(option) }).then((res) => {
+      console.log(res);
+    });
+    props.addCharList({ viewData: option });
+  };
+
   useEffect(() => {
     return () => {
       setSelectCharType(null);
@@ -106,24 +112,12 @@ export default function AddChar(props) {
         destroyOnClose={true}
         onOk={() => {
           setIsModalOpen(false);
-          if (selectCharType === charTypeConfig.pie) {
-            props.addCharList({
-              name,
-              type: selectCharType,
-              property: selectProperty,
-              data: charData,
-            });
-          } else if (
-            selectCharType === charTypeConfig.bar ||
-            selectCharType === charTypeConfig.line
-          ) {
-            props.addCharList({
-              name,
-              type: selectCharType,
-              property: selectProperty,
-              data: charData,
-            });
-          }
+          addCharOption({
+            name,
+            type: selectCharType,
+            property: selectProperty,
+            data: charData,
+          });
         }}
         onCancel={() => {
           setSelectCharType(null);
@@ -194,7 +188,10 @@ export default function AddChar(props) {
                 />
               ) : null
             ) : (
-              <IntervalDataGroup selectProperty={selectProperty} />
+              <IntervalDataGroup
+                selectProperty={selectProperty}
+                changeCharListGroup={changeCharListGroup}
+              />
             )}
           </>
         )}

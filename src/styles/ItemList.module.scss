@@ -3,13 +3,18 @@
   margin-right: 0.5vw;
   text-align: right;
 }
+.container{
+  display: flex;
+  word-wrap: normal;
+}
 
 .item_big_box {
   display: flex;
 
   .item_box {
-    width: 13vw;
-    border-radius: 0.25vw;
+    padding: 5px;
+    width: 245px;
+    border-radius: 0.5vw;
     margin-right: 1vw;
 
     .table_name {

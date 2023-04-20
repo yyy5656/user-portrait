@@ -190,6 +190,45 @@ const api = {
       data,
     });
   },
+  insertViewInfo(data) {
+    return HTTP({
+      url: "/data/insertViewInfo",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+      data,
+    });
+  },
+  getViewInfo() {
+    return HTTP({
+      url: "/data/getViewInfo",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+    });
+  },
+
+  getSharedConnection() {
+    return HTTP({
+      url: "/share/getSharedConnection",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+    });
+  },
+  deleteViewInfo(data) {
+    return HTTP({
+      url: "/share/deleteViewInfo",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+      data
+    });
+  },
 };
 
 export default api;
