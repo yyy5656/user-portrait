@@ -46,8 +46,9 @@ const Home = () => {
   const [linkList, setLinklist] = useState([]);
   const [username, setUsername] = useState("用户名");
   const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
-  const [tabKey, setTabkey] = useState(1);
+  const [tabKey, setTabkey] = useState("1");
   const [menuKey, setMenuKey] = useState();
+  const [menuItem, setMenuItem] = useState();
 
   const connectionId = useRef(null);
   const missionName = useRef(null);
@@ -79,7 +80,10 @@ const Home = () => {
   };
 
   const handleClick = (e) => {
-    if (e.key !== MENU_CONFIG.CREATE_TASK && e.key !== MENU_CONFIG.PUBLIC_MANAGER) {
+    if (
+      e.key !== MENU_CONFIG.CREATE_TASK &&
+      e.key !== MENU_CONFIG.PUBLIC_MANAGER
+    ) {
       let findResult = connectionItemList.find((element) => {
         return element.connectionId === parseInt(e.key);
       });
@@ -126,6 +130,29 @@ const Home = () => {
     };
   }, []);
 
+
+  useEffect(() => {
+    if (tabKey === "1") {
+      setMenuItem(
+        getItem(
+          "可查看任务",
+          MENU_CONFIG.INQUIRE_TASK,
+          <FileOutlined />,
+          publicConnectionItemList.map((data) => {
+            return {
+              key: `${data.connectionId}`,
+              label: `${data.tableName}`,
+            };
+          })
+        )
+      );
+    } else if (tabKey === "2") {
+      setMenuItem(
+        getItem("共享管理", MENU_CONFIG.PUBLIC_MANAGER, <FileOutlined />)
+      );
+    }
+  }, [tabKey]);
+
   return (
     <>
       <Head>
@@ -163,22 +190,7 @@ const Home = () => {
                     };
                   })
                 ),
-                getItem(
-                  "可查看任务",
-                  MENU_CONFIG.INQUIRE_TASK,
-                  <FileOutlined />,
-                  publicConnectionItemList.map((data) => {
-                    return {
-                      key: `${data.connectionId}`,
-                      label: `${data.tableName}`,
-                    };
-                  })
-                ),
-                getItem(
-                  "共享管理",
-                  MENU_CONFIG.PUBLIC_MANAGER,
-                  <FileOutlined />
-                ),
+                menuItem,
               ]}
               defaultOpenKeys={[MENU_CONFIG.MY_TASK]}
               onClick={handleClick}
