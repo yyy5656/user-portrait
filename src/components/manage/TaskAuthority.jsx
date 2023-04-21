@@ -6,8 +6,7 @@ import api from "@/utils/api";
 
 export default function TaskAuthority(props) {
   console.log(props);
-  const [dataSource, setDataSource] = useState([]);
-
+  const { dataSource } = props;
   const columns = [
     {
       title: "任务名",
@@ -21,18 +20,18 @@ export default function TaskAuthority(props) {
     },
     {
       title: "被分享者",
-      dataIndex: "shared",
-      key: "shared",
+      dataIndex: "sharedUsername",
+      key: "sharedUsername",
     },
     {
       title: "权限",
       dataIndex: "authority",
       key: "authority",
-      //   render: (_, tag) => (
-      //     <Tag color={"geekblue"} key={tag}>
-      //       {tag}
-      //     </Tag>
-      //   ),
+      render: (_, tag, index) => (
+        <Tag color={"geekblue"} key={index}>
+          {tag.authority}
+        </Tag>
+      ),
     },
     {
       title: "操作",
@@ -43,8 +42,8 @@ export default function TaskAuthority(props) {
             onClick={() => {
               console.log(record);
               const { shareId } = record;
-              api.deleteShareById({ shareId }).then(res=>{
-                message.success(res.data.msg)
+              api.deleteShareById({ shareId }).then((res) => {
+                message.success(res.data.msg);
               });
             }}
           >
@@ -54,27 +53,6 @@ export default function TaskAuthority(props) {
       ),
     },
   ];
-
-  const shareTypeConfig = {
-    0: "已读",
-    1: "修改视图",
-  };
-
-  useEffect(() => {
-    api.getShareList().then((res) => {
-      const data = res.data.data;
-      setDataSource(
-        data.map((item) => ({
-          key: item.connectionId,
-          taskName: item.data.tableName,
-          userName: item.username,
-          shared: "何科伟差了一个字段啊啊啊啊啊烦死了",
-          authority: shareTypeConfig[item.shareType],
-          shareId: item.shareId,
-        }))
-      );
-    });
-  }, []);
 
   return (
     <>

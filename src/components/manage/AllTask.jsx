@@ -99,11 +99,13 @@ export default function AllTask(props) {
         shareType,
       },
     };
-    handleFetch(api.changeConnectionType(params), () => {
+    api.changeConnectionType(params).then((res) => {
       message.success("设置成功");
       fetchData();
+      if (taskType === taskTypeConfig.order) {
+        props.fetchTableData();
+      }
     });
-    // api.changeConnectionType(params).then((res) => {});
   };
 
   const handleCancel = () => {
@@ -170,7 +172,7 @@ export default function AllTask(props) {
               </Tag>
             ))
           ) : (
-            <Empty description="没有数据"/>
+            <Empty description="没有数据" />
           )}
         </Space>
       </div>
