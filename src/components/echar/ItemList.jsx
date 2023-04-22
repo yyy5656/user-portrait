@@ -4,14 +4,14 @@ import { TagOutlined, SendOutlined } from "@ant-design/icons";
 import styles from "@/styles/ItemList.module.scss";
 import { useEffect, useState } from "react";
 import api from "@/utils/api";
-import { charTypeName } from "./constant";
+import { charTypeName, addViewType } from "./constant";
 
 // props里面要包含是否有修改权限
 export default function ItemList(props) {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
-  const { newlist } = props;
+  const { newView } = props;
   const [list, setList] = useState([]);
 
   const openStatus = {
@@ -43,16 +43,17 @@ export default function ItemList(props) {
   }, []);
 
   useEffect(() => {
-    if (newlist) {
-      setList([newlist, ...list]);
+    if (newView) {
+      setList([...list, newView]);
     }
-  }, [newlist]);
+  }, [newView]);
 
   const deleteChar = (id, index) => {
     list.splice(index, 1);
     setList([...list]);
     api.deleteViewInfo({ viewId: id }).then((res) => {
       message.success("删除成功");
+      props.deleteViewInfo(id);
     });
   };
 
@@ -112,6 +113,7 @@ export default function ItemList(props) {
                         size={"small"}
                         onClick={() => {
                           console.log(list[index]);
+                          props.changeViewInfo(true, list[index]);
                         }}
                       >
                         修改
@@ -123,7 +125,7 @@ export default function ItemList(props) {
                         onClick={() => {
                           if (item.status === "close") {
                             changeStatus(index, "open");
-                            props.addViewChar(item);
+                            props.addViewChar(addViewType.open_view, item);
                           } else {
                             changeStatus(index, "close");
                             props.deleteViewInfo(item.viewId);

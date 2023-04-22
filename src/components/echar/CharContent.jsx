@@ -7,28 +7,36 @@ import AddChar from "./AddChar";
 import ItemList from "@/components/echar/ItemList";
 import BasicBar from "./BasicBar";
 import { useState } from "react";
-import { charListData } from "./constant";
+import { charListData, addViewType } from "./constant";
 import deleteConnection from "@/utils/deleteConnection";
 import api from "@/utils/api";
 
 export default function CharContent(props) {
   console.log(props);
   const [charList, setCharList] = useState([]);
-  const [newlist, setNewList] = useState();
+  const [newView, setNewView] = useState();
   // 属性分组
   const [propertyList, setPropertyList] = useState({});
+  // 添加图表弹窗
   const [isModalOpen, setIsModalOpen] = useState();
+  const [defaultOption, setDefaultOption] = useState();
 
   // 增加图表
-  const addViewChar = (value, viewId) => {
-    console.log(value);
-    setNewList({
-      connectionId: props.connectionId.current,
-      status: "open",
-      viewData: value.viewData,
-      viewId,
-    });
-    setCharList([value, ...charList]);
+  const addViewChar = (type, value, viewId = 0) => {
+    console.log("111111", value);
+    if (type === addViewType.add_view) {
+      setNewView({
+        connectionId: props.connectionId.current,
+        status: "open",
+        viewData: value.viewData,
+        viewId,
+      });
+      setCharList([value, ...charList]);
+      console.log("11111", value);
+      console.log("11111", charList);
+    } else if (type === addViewType.open_view) {
+      setCharList([value, ...charList]);
+    }
   };
 
   // 删除图表
@@ -60,6 +68,11 @@ export default function CharContent(props) {
     });
   };
 
+  const changeViewInfo = (bool, defaultOption = undefined) => {
+    setIsModalOpen(bool);
+    defaultOption && setDefaultOption(defaultOption);
+  };
+
   console.log(props);
   return (
     <div className={styles.site_layout_content_show}>
@@ -80,7 +93,8 @@ export default function CharContent(props) {
         charList={charList}
         addViewChar={addViewChar}
         deleteViewInfo={deleteViewChar}
-        newlist={newlist}
+        newView={newView}
+        changeViewInfo={changeViewInfo}
       />
       <Button style={{ marginTop: "20px" }} onClick={handleClick}>
         生成图表
@@ -88,12 +102,15 @@ export default function CharContent(props) {
       <AddChar
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
+        setDefaultOption={setDefaultOption}
         connectionId={props.connectionId}
         addViewChar={addViewChar}
         propertyList={propertyList}
+        defaultOption={defaultOption}
       />
       {charList.length
         ? charList.map((item, index) => {
+            console.log("123", item);
             return (
               <BasicBar
                 key={index}

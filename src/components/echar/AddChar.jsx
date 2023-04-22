@@ -4,11 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import api from "@/utils/api";
 import DataGroup from "./DataGroup";
 import IntervalDataGroup from "./IntervalDataGroup";
-import { charTypeConfig, charType } from "./constant";
+import { charTypeConfig, charType, addViewType } from "./constant";
 
 export default function AddChar(props) {
-  const { propertyList } = props;
-  // const [isModalOpen, setIsModalOpen] = useState();
+  const { propertyList, defaultOption } = props;
+  console.log(defaultOption);
+  // const { name:defaultName, defaultType, defualtProperty, defualtData } =
+  //   defaultOption?.viewData;
+  // 选择的图表类型
   const [selectCharType, setSelectCharType] = useState();
 
   // 选中的属性类型 是名词还是区间 0/1
@@ -29,28 +32,12 @@ export default function AddChar(props) {
 
   const handleModalOkClick = () => {
     if (name && selectProperty.length && selectCharType && charData) {
-      if (
-        selectCharType === charTypeConfig.line ||
-        selectCharType === charTypeConfig.bar
-      ) {
-        const newData = {
-          xAxisData: Object.keys(charData),
-          yAxisData: Object.values(charData).map((item) => item.value),
-        };
-        addCharOption({
-          name,
-          type: selectCharType,
-          property: selectProperty,
-          data: newData,
-        });
-      } else {
-        addCharOption({
-          name,
-          type: selectCharType,
-          property: selectProperty,
-          data: charData,
-        });
-      }
+      addCharOption({
+        name,
+        type: selectCharType,
+        property: selectProperty,
+        data: charData,
+      });
       props.setIsModalOpen(false);
     } else if (selectLinkType === linkType.intervalLink && !charData) {
       message.info("请选择分组");
@@ -104,15 +91,17 @@ export default function AddChar(props) {
   };
 
   const changeCharListGroup = (value) => {
-    console.log(value);
     value.length && setCharData(value);
   };
 
   const addCharOption = (option) => {
     api.insertViewInfo({ viewData: JSON.stringify(option) }).then((res) => {
-      console.log(res);
       const viewId = res.data.msg;
-      props.addViewChar({ viewData: option }, Number(viewId));
+      props.addViewChar(
+        addViewType.add_view,
+        { viewData: option },
+        Number(viewId)
+      );
     });
   };
 
@@ -146,6 +135,7 @@ export default function AddChar(props) {
             onChange={(e) => {
               setName(e.target.value);
             }}
+            // defaultValue={defaultName}
           />
         </div>
         <div>
