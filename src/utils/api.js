@@ -184,7 +184,17 @@ const api = {
    */
   addData(data) {
     return HTTP({
-      url: "/import/addDataByLine",
+      url: "/import/addData",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+      data,
+    });
+  },
+  updateData(data) {
+    return HTTP({
+      url: "/import/updateData",
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=UTF-8",
@@ -373,6 +383,16 @@ const api = {
   deleteShareById(data) {
     return HTTP({
       url: "/share/deleteShareById",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+      data,
+    });
+  },
+  addDataByLine(data) {
+    return HTTP({
+      url: "/data/addDataByLine",
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=UTF-8",
