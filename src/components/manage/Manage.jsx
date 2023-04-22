@@ -1,7 +1,8 @@
 import styles from "@/styles/Manage.module.scss";
-import {Button, Collapse, Dropdown, Input, message, Space, Table, Tag, theme} from "antd";
+import {Button, Collapse, Dropdown, Input, message, Space, Tag, theme} from "antd";
 import {DownOutlined, SearchOutlined} from "@ant-design/icons";
 import deleteConnection from "@/utils/deleteConnection";
+import ShowTable from "@/components/manage/ShowTable";
 
 export default function Manage(props) {
     const {
@@ -134,10 +135,7 @@ export default function Manage(props) {
                     <Button className={styles.search_btn} type={"primary"}><SearchOutlined/></Button>
                 </div>
             </div>
-            <Table
-                className={styles.table}
-                size={"large"}
-            />
+            <ShowTable/>
         </div>
     );
 }
