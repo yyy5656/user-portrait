@@ -7,10 +7,10 @@ import IntervalDataGroup from "./IntervalDataGroup";
 import { charTypeConfig, charType } from "./constant";
 
 export default function AddChar(props) {
-  const [isModalOpen, setIsModalOpen] = useState();
+  const { propertyList } = props;
+  // const [isModalOpen, setIsModalOpen] = useState();
   const [selectCharType, setSelectCharType] = useState();
-  // 属性分组
-  const [propertyList, setPropertyList] = useState({});
+
   // 选中的属性类型 是名词还是区间 0/1
   const [selectLinkType, setSelectLinkType] = useState();
   // 名词性的属性的键值数组
@@ -25,17 +25,6 @@ export default function AddChar(props) {
   const linkType = {
     singleLink: 1,
     intervalLink: 0,
-  };
-
-  // 生成图表
-  const handleClick = () => {
-    // 点击后请求属性
-    setIsModalOpen(true);
-    api.getLinksByType().then((res) => {
-      if (res.status === 200 && res.data.data) {
-        setPropertyList(res.data.data);
-      }
-    });
   };
 
   const handleModalOkClick = () => {
@@ -62,7 +51,7 @@ export default function AddChar(props) {
           data: charData,
         });
       }
-      setIsModalOpen(false);
+      props.setIsModalOpen(false);
     } else if (selectLinkType === linkType.intervalLink && !charData) {
       message.info("请选择分组");
     } else {
@@ -79,7 +68,7 @@ export default function AddChar(props) {
       {
         linkId: option.value,
         linkComment: option.label,
-        connectionId: props.connectionId,
+        connectionId: props.connectionId.current,
         linkType: type,
       },
     ]);
@@ -88,7 +77,7 @@ export default function AddChar(props) {
         .getNouns({
           linkId: option.value,
           linkComment: option.label,
-          connectionId: props.connectionId,
+          connectionId: props.connectionId.current,
           linkType: option.type,
         })
         .then((res) => {
@@ -122,8 +111,9 @@ export default function AddChar(props) {
   const addCharOption = (option) => {
     api.insertViewInfo({ viewData: JSON.stringify(option) }).then((res) => {
       console.log(res);
+      const viewId = res.data.msg;
+      props.addViewChar({ viewData: option }, Number(viewId));
     });
-    props.addCharList({ viewData: option });
   };
 
   useEffect(() => {
@@ -135,18 +125,14 @@ export default function AddChar(props) {
 
   return (
     <>
-      <Button style={{ marginTop: "20px" }} onClick={handleClick}>
-        生成图表
-      </Button>
-
       <Modal
         title="生成图表"
-        open={isModalOpen}
+        open={props.isModalOpen}
         destroyOnClose={true}
         onOk={handleModalOkClick}
         onCancel={() => {
           setSelectCharType(null);
-          setIsModalOpen(false);
+          props.setIsModalOpen(false);
         }}
         okText="生成"
         cancelText="取消"

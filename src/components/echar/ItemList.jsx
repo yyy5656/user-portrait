@@ -1,4 +1,4 @@
-import { Button, theme, Row, Col } from "antd";
+import { Button, theme, Row, Col, List, message } from "antd";
 import { TagOutlined, SendOutlined } from "@ant-design/icons";
 
 import styles from "@/styles/ItemList.module.scss";
@@ -11,8 +11,8 @@ export default function ItemList(props) {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+  const { newlist } = props;
   const [list, setList] = useState([]);
-  const [status, setStatus] = useState("close");
 
   const openStatus = {
     open: {
@@ -35,23 +35,35 @@ export default function ItemList(props) {
         status: "close",
       }));
       console.log(newList);
-      // console.log(JSON.parse(res.data.data));
       setList(newList);
     });
     return () => {
       setList([]);
     };
-  }, [props.charList]);
+  }, []);
 
-  const deleteChar = (id) => {
-    api.deleteViewInfo({ viewId: id });
+  useEffect(() => {
+    if (newlist) {
+      setList([newlist, ...list]);
+    }
+  }, [newlist]);
+
+  const deleteChar = (id, index) => {
+    list.splice(index, 1);
+    setList([...list]);
+    api.deleteViewInfo({ viewId: id }).then((res) => {
+      message.success("删除成功");
+    });
   };
 
-  const changeStatus = (index, status) => {
+  // const addCharList = (value) => {};
+
+  const changeStatus = (index, status, newlist) => {
     const item = [...list];
     item[index].status = status;
-    setList(item);
+    setList([...item]);
     console.log(list);
+    console.log(item);
   };
 
   return (
@@ -91,12 +103,16 @@ export default function ItemList(props) {
                         style={{ backgroundColor: "#80ad97" }}
                       />
                       <div className={styles.open_status}>
-                        {openStatus[item.status].statusText}
+                        {/* {openStatus[item.status].statusText} */}
+                        {item.status}
                       </div>
                       <Button
                         className={styles.open_button}
                         type={"primary"}
                         size={"small"}
+                        onClick={() => {
+                          console.log(list[index]);
+                        }}
                       >
                         修改
                       </Button>
@@ -105,12 +121,12 @@ export default function ItemList(props) {
                         type={"primary"}
                         size={"small"}
                         onClick={() => {
-                          if (status === "close") {
+                          if (item.status === "close") {
                             changeStatus(index, "open");
-                            props.addCharList(item);
+                            props.addViewChar(item);
                           } else {
-                            setStatus("close");
-                            deleteChar(item.viewId);
+                            changeStatus(index, "close");
+                            props.deleteViewInfo(item.viewId);
                           }
                         }}
                       >
@@ -121,7 +137,7 @@ export default function ItemList(props) {
                         type={"primary"}
                         size={"small"}
                         onClick={() => {
-                          deleteChar(item.viewId);
+                          deleteChar(item.viewId, index);
                         }}
                       >
                         删除

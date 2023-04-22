@@ -25,9 +25,7 @@ export default function BasicBar(props) {
     <>
       <div className={styles.basicBar_container}>
         <div className={styles.cancel} onClick={()=>{
-          console.log('1111');
-          debugger
-          props.deleteViewInfo(props.index)
+          props.deleteViewChar(props.viewId)
         }}><CloseOutlined /></div>
         <div>{name}</div>
         <div className={styles.basicBar} ref={dom}></div>

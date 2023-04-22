@@ -64,7 +64,6 @@ export default function IntervalDataGroup(props) {
             />
             <Button
               onClick={() => {
-                debugger;
                 api
                   .getNumerical({
                     start: groupList[index].start,
