@@ -90,6 +90,7 @@ export default function CharContent(props) {
       </div>
       <ShowProperty property={handlePropsData()} />
       <ItemList
+        connectionId={props.connectionId.current}
         charList={charList}
         addViewChar={addViewChar}
         deleteViewInfo={deleteViewChar}

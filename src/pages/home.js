@@ -164,11 +164,39 @@ const Home = () => {
     if (sharedConnectionRes.status === 200 && sharedConnectionRes.data.data) {
       setSharedConnectionItemList(sharedConnectionRes.data.data);
     }
+
+    if (tabKey === "1") {
+      setMenuItem(
+        getItem("可查看任务", MENU_CONFIG.INQUIRE_TASK, <FileOutlined />, [
+          getItem(
+            "公开",
+            MENU_CONFIG.PUBLIC_CONNECTION,
+            <FileOutlined />,
+            publicConnectionRes?.data.data?.map((data) => {
+              return {
+                key: `${data.connectionId}`,
+                label: `${data.tableName}`,
+              };
+            })
+          ),
+          getItem(
+            "他人分享",
+            MENU_CONFIG.SHARED_CONNECTION,
+            <FileOutlined />,
+            sharedConnectionRes?.data.data?.map((data) => {
+              return {
+                key: `${data.data.connectionId}`,
+                label: `${data.data.tableName}`,
+              };
+            })
+          ),
+        ])
+      );
+    }
   };
 
   useEffect(() => {
     fetchData();
-    setTabkey(1)
     fetchGetConnection();
     setUsername(localStorage.getItem("userName"));
     return () => {
