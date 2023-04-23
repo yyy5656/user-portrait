@@ -342,6 +342,15 @@ const api = {
       },
     });
   },
+  getPublicConnection() {
+    return HTTP({
+      url: "/share/getPublicConnection",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+    });
+  },
   getConnectionsByType(data) {
     return HTTP({
       url: "/share/getConnectionsByType",
@@ -396,6 +405,27 @@ const api = {
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=UTF-8",
+      },
+      data,
+    });
+  },
+  shareChooseConnection(data) {
+    return HTTP({
+      url: "/share/chooseConnection",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+      data,
+    });
+  },
+  shareGetLink(data) {
+    return HTTP({
+      url: "/share/getLink",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+        token: localStorage.getItem("token_shared"),
       },
       data,
     });

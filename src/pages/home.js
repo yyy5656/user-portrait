@@ -37,6 +37,7 @@ const Home = () => {
   // userId: number
   const [connectionItemList, setConnectionItemList] = useState([]); // 左侧边栏列表
   const [publicConnectionItemList, setPublicConnectionItemList] = useState([]); // 左侧边可查看任务栏列表
+  const [sharedConnectionItemList, setSharedConnectionItemList] = useState([]); // 左侧边可查看任务栏列表
   // linkList的类型是这个,没有ts难受 就这样写吧 懒的加ts
   //{
   //  linkId: number,
@@ -59,7 +60,6 @@ const Home = () => {
    */
   const fetchData = async () => {
     const res = (await api.getConnection()).data;
-    console.log(res);
     res.data && setConnectionItemList(res.data);
   };
 
@@ -68,8 +68,8 @@ const Home = () => {
    * @param id
    * @returns {Promise<void>}
    */
-  const fetchLinkData = async (id) => {
-    const res = await api.chooseConnection({ connectionId: id });
+  const fetchLinkData = async (data) => {
+    const res = await api.chooseConnection(data);
     if (res.status === 200 && res.data.data) {
       localStorage.setItem("token", res.data.data);
     }
@@ -79,24 +79,57 @@ const Home = () => {
     }
   };
 
+  const fetchShareLinkData = async (data) => {
+    const res = await api.shareChooseConnection(data);
+    if (res.status === 200 && res.data.data) {
+      localStorage.setItem("token_shared", res.data.data);
+    }
+    const linkRes = await api.shareGetLink();
+    if (linkRes.status === 200 && linkRes.data) {
+      setLinklist(linkRes.data.data.links);
+    }
+  };
+
   const handleClick = (e) => {
     if (
       e.key !== MENU_CONFIG.CREATE_TASK &&
-      e.key !== MENU_CONFIG.PUBLIC_MANAGER
+      e.key !== MENU_CONFIG.PUBLIC_MANAGER &&
+      e.key !== MENU_CONFIG.SHARED_CONNECTION
     ) {
-      let findResult = connectionItemList.find((element) => {
+      let findResult = connectionItemList?.find((element) => {
         return element.connectionId === parseInt(e.key);
       });
-      connectionId.current = findResult.connectionId;
-      missionName.current = findResult.tableName;
+      connectionId.current = findResult?.connectionId;
+      missionName.current = findResult?.tableName;
     }
     if (e.keyPath && e.keyPath.includes(MENU_CONFIG.MY_TASK)) {
-      fetchLinkData(e.key);
+      fetchLinkData({ connectionId: e.key });
       setMenuKey(MENU_CONFIG.MY_TASK);
     } else if (e.keyPath && e.keyPath.includes(MENU_CONFIG.CREATE_TASK)) {
       setIsConnectionModalOpen(true);
     } else if (e.keyPath && e.keyPath.includes(MENU_CONFIG.PUBLIC_MANAGER)) {
       setMenuKey(MENU_CONFIG.PUBLIC_MANAGER);
+    } else if (e.keyPath && e.keyPath.includes(MENU_CONFIG.PUBLIC_CONNECTION)) {
+      setMenuKey(MENU_CONFIG.PUBLIC_CONNECTION);
+      console.log("only", e);
+      fetchLinkData({ connectionId: e.key });
+    } else if (e.keyPath && e.keyPath.includes(MENU_CONFIG.SHARED_CONNECTION)) {
+      setMenuKey(MENU_CONFIG.SHARED_CONNECTION);
+      const id = Number(e.key);
+      let connection = null;
+      sharedConnectionItemList.forEach((item) => {
+        if (item.connectionId === id) {
+          connection = item;
+        }
+      });
+      fetchShareLinkData({
+        shareId: connection.shareId,
+        userId: connection.userId,
+        sharedUserId: connection.sharedUserId,
+        connectionId: connection.connectionId,
+        shareType: connection.shareType,
+        username: connection.username,
+      });
     }
   };
 
@@ -122,29 +155,54 @@ const Home = () => {
     fetchData();
   };
 
+  const fetchGetConnection = async () => {
+    const publicConnectionRes = await api.getPublicConnection();
+    if (publicConnectionRes.status === 200 && publicConnectionRes.data.data) {
+      setPublicConnectionItemList(publicConnectionRes.data.data);
+    }
+    const sharedConnectionRes = await api.getSharedConnection();
+    if (sharedConnectionRes.status === 200 && sharedConnectionRes.data.data) {
+      setSharedConnectionItemList(sharedConnectionRes.data.data);
+    }
+  };
+
   useEffect(() => {
     fetchData();
+    setTabkey(1)
+    fetchGetConnection();
     setUsername(localStorage.getItem("userName"));
     return () => {
       setConnectionItemList([]);
     };
   }, []);
 
-
   useEffect(() => {
     if (tabKey === "1") {
       setMenuItem(
-        getItem(
-          "可查看任务",
-          MENU_CONFIG.INQUIRE_TASK,
-          <FileOutlined />,
-          publicConnectionItemList.map((data) => {
-            return {
-              key: `${data.connectionId}`,
-              label: `${data.tableName}`,
-            };
-          })
-        )
+        getItem("可查看任务", MENU_CONFIG.INQUIRE_TASK, <FileOutlined />, [
+          getItem(
+            "公开",
+            MENU_CONFIG.PUBLIC_CONNECTION,
+            <FileOutlined />,
+            publicConnectionItemList.map((data) => {
+              return {
+                key: `${data.connectionId}`,
+                label: `${data.tableName}`,
+              };
+            })
+          ),
+          getItem(
+            "他人分享",
+            MENU_CONFIG.SHARED_CONNECTION,
+            <FileOutlined />,
+            sharedConnectionItemList.map((data) => {
+              return {
+                key: `${data.data.connectionId}`,
+                label: `${data.data.tableName}`,
+              };
+            })
+          ),
+        ])
       );
     } else if (tabKey === "2") {
       setMenuItem(
