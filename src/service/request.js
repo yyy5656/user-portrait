@@ -1,7 +1,5 @@
 import axios from "axios";
 import {BASE_URL} from "@/utils/constant";
-import {withRouter} from "next/router";
-import Login from "@/pages";
 import {message} from "antd";
 
 const HTTP = axios.create({
@@ -13,14 +11,8 @@ const HTTP = axios.create({
 HTTP.interceptors.request.use(
     (config) => {
         let token = localStorage.getItem("token");
-        console.log('ranyu',token);
         if (token) {
             config.headers["token"] = token;
-        } else {
-            // 停止发送请求，并立即退出登录
-            // withRouter(Login); 
-            // 强制跳转到login页面
-            // return Promise.reject("退出登录");
         }
         return config;
     },
