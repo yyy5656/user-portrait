@@ -79,14 +79,14 @@ export default function CharContent(props) {
       <div className={styles.title}>
         <span>{props.missionName.current}</span>
         {/* TODO: 这里需要删除任务吗 */}
-        <Button
+        {/* <Button
           onClick={() => {
             deleteConnection(props.connectionId.current, props.fetchData);
           }}
           className={styles.delete_connection_btn}
         >
           删除任务
-        </Button>
+        </Button> */}
       </div>
       <ShowProperty property={handlePropsData()} />
       <ItemList
