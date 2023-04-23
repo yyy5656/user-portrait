@@ -11,10 +11,8 @@ import {
   InputNumber,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import { BASE_URL } from "@/utils/constant";
-import router from "@/service/router";
 import api from "@/utils/api";
-import { transfromListToSelect, transfromSelectToAipList } from "@/utils/utils";
+import {  transfromSelectToAipList } from "@/utils/utils";
 
 export default function AddConnectionForm(props) {
   const [stepIndex, setStepIndex] = useState(0);
@@ -26,7 +24,6 @@ export default function AddConnectionForm(props) {
   const [maxNum, setMaxNum] = useState(2);
   const [isFinisedCreate, setIsFinisedCreate] = useState(false);
   const [isUpload, setIsUpload] = useState(false);
-  const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
 
   const uploadProps = {
     name: "file",
@@ -76,11 +73,12 @@ export default function AddConnectionForm(props) {
     );
   };
 
+ // 创建新任务最后一步 
   const handleConnectionOk = () => {
     api
       .importPropertyByLine({
-        start: "2",
-        end: "3",
+        start: minNum,
+        end: maxNum,
         sheetIndex: 0,
         category: transfromSelectToAipList(selectList),
       })
@@ -91,12 +89,13 @@ export default function AddConnectionForm(props) {
       });
   };
 
+  // 选择表格sheetIndex
   const handleChange = (value, option) => {
     setSheetIndex(value);
     setMaxNum(Number(list.sheetList?.[value].dataLine));
-    console.log(list.sheetList[value]);
   };
 
+  // 选中属性
   const handlePropertyChange = (value, option) => {
     setSelectList(option);
   };
@@ -162,7 +161,6 @@ export default function AddConnectionForm(props) {
             <span>选择表格：</span>
             <Select
               allowClear
-              // style={{ width: "100%" }}
               placeholder="Please select"
               onChange={handleChange}
               options={
@@ -232,7 +230,6 @@ export default function AddConnectionForm(props) {
       <Modal
         destroyOnClose={true}
         closable={false}
-        // onCancel={props.setIsConnectionModalOpen(false)}
         title={"新建任务！"}
         open={true}
         footer={null}

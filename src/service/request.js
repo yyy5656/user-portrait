@@ -13,8 +13,8 @@ const HTTP = axios.create({
 HTTP.interceptors.request.use(
     (config) => {
         let token = localStorage.getItem("token");
-        console.log('ranyu',token);
-        if (token) {
+        // 给分享板块一个单独的token 先这么写着 有问题再说
+        if (!config.headers["token"] && token) {
             config.headers["token"] = token;
         } else {
             // 停止发送请求，并立即退出登录
