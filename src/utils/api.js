@@ -456,7 +456,225 @@ const api = {
       },
       data
     })
-  }
+  },
+
+  /**
+   * ry的视图——新增视图数据
+   * @param data
+   * @returns {*}
+   */
+  insertViewInfo(data){
+    return HTTP({
+      url:"/data/insertViewInfo",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      },
+      data
+    })
+  },
+
+  /**
+   * ry的视图——获得任务所有视图数据
+   * @returns {*}
+   */
+  getViewInfo(){
+    return HTTP({
+      url:"/data/getViewInfo",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      }
+    })
+  },
+
+  /**
+   * ry的视图——更新指定视图数据
+   * @param data
+   * @returns {*}
+   */
+  updateViewInfo(data){
+    return HTTP({
+      url:"/data/updateViewInfo",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      },
+      data
+    })
+  },
+
+  /**
+   * ry的视图——删除指定视图数据
+   * @param data
+   * @returns {*}
+   */
+  deleteViewInfo(data){
+    return HTTP({
+      url:"/data/deleteViewInfo",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      },
+      data
+    })
+  },
+
+  /**
+   * 2.1查询其他所有用户名
+   * @param data
+   * @returns {*}
+   */
+  getOtherAllUser(data){
+    return HTTP({
+      url:"/share/getOtherALlUser",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      },
+      data
+    })
+  },
+
+  /**
+   * 2.2共享设置
+   * @param data
+   * @returns {*}
+   */
+  changeConnectionType(data){
+    return HTTP({
+      url:"/share/changeConnectionType",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      },
+      data
+    })
+  },
+
+  /**
+   * 2.3根据共享类型获得任务
+   * @param data
+   * @returns {*}
+   */
+  getConnectionsByType(data){
+    return HTTP({
+      url:"/share/getConnectionsByType",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      },
+      data
+    })
+  },
+
+  /**
+   * 2.4查询所有指定用户设置
+   * @param data
+   * @returns {*}
+   */
+  getShareList(data){
+    return HTTP({
+      url:"/share/getShareList",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      },
+      data
+    })
+  },
+
+  /**
+   * 2.5删除指定用户共享
+   * @param data
+   * @returns {*}
+   */
+  deleteShareById(data){
+    return HTTP({
+      url:"/share/deleteShareById",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      },
+      data
+    })
+  },
+
+  /**
+   * 2.6查询公开的connection
+   * @returns {*}
+   */
+  getPublicConnection(){
+    return HTTP({
+      url:"/share/getPublicConnection",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      }
+    })
+  },
+
+    /**
+     * 2.6.1获取共享任务的token
+     * @param data
+     * @returns {*}
+     */
+  choosePublicConnection(data){
+    return HTTP({
+      url:"/share/choosePublicConnection",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      },
+      data
+    })
+  },
+
+    /**
+     * 2.7查询他人分享给自己的任务
+     * @param data
+     * @returns {*}
+     */
+    getSharedConnection(data){
+        return HTTP({
+            url:"/share/getSharedConnection",
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json;charset=UTF-8"
+            },
+            data
+        })
+    },
+
+    /**
+     * 2.8(共享)选择任务获得token
+     * @param data
+     * @returns {*}
+     */
+    share_chooseConnection(data){
+        return HTTP({
+            url:"/share/chooseConnection",
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json;charset=UTF-8"
+            },
+            data
+        })
+    },
+
+    /**
+     * 2.9(共享)查询任务的属性
+     * @returns {*}
+     */
+    share_getLink(){
+        return HTTP({
+            url:"/share/chooseConnection",
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json;charset=UTF-8"
+            }
+        })
+    }
 
 };
 
