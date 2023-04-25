@@ -668,7 +668,7 @@ const api = {
      */
     share_getLink(){
         return HTTP({
-            url:"/share/chooseConnection",
+            url:"/share/getLink",
             method:"POST",
             headers:{
                 "Content-Type":"application/json;charset=UTF-8"
