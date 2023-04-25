@@ -26,20 +26,21 @@ export default function ItemList(props) {
   };
 
   useEffect(() => {
-    api.getViewInfo().then((res) => {
-      console.log(res.data.data);
-      const newList = res.data.data.map((item) => ({
-        viewData: JSON.parse(item.viewData),
-        viewId: item.viewId,
-        connectionId: item.connectionId,
-        status: "close",
-      }));
-      setList(newList);
-    });
+    // api.getViewInfo().then((res) => {
+    //   console.log(res.data.data);
+    //   const newList = res.data.data.map((item) => ({
+    //     viewData: JSON.parse(item.viewData),
+    //     viewId: item.viewId,
+    //     connectionId: item.connectionId,
+    //     status: "close",
+    //   }));
+    //   console.log(newList);
+    //   setList(newList);
+    // });
     return () => {
       setList([]);
     };
-  }, [props.connectionId]);
+  }, []);
 
   useEffect(() => {
     if (newView) {
@@ -68,93 +69,89 @@ export default function ItemList(props) {
 
   return (
     <>
-      {list.length ? (
-        <div className={styles.container}>
-          <Row gutter={[4, 8]}>
-            {list.map((item, index) => (
-              <Col key={item.viewId}>
-                <div key={index} className={styles.item_big_box}>
-                  <div
-                    style={{ backgroundColor: colorBgContainer }}
-                    className={styles.item_box}
-                  >
+      <div className={styles.container}>
+        <Row gutter={[4, 8]}>
+          {list.map((item, index) => (
+            <Col key={item.viewId}>
+              <div key={index} className={styles.item_big_box}>
+                <div
+                  style={{ backgroundColor: colorBgContainer }}
+                  className={styles.item_box}
+                >
+                  <div>
+                    <div className={styles.table_name}>
+                      {item.viewData.name}
+                    </div>
+                    <div className={styles.table_information}>
+                      <span style={{ margin: "0 1vw" }}>
+                        <TagOutlined />
+                      </span>
+                      {charTypeName[item.viewData.type]}
+                    </div>
                     <div>
-                      <div className={styles.table_name}>
-                        {item.viewData?.name}
-                      </div>
-                      <div className={styles.table_information}>
-                        <span style={{ margin: "0 1vw" }}>
-                          <TagOutlined />
+                      <span style={{ margin: "0 1vw" }}>
+                        <SendOutlined />
+                      </span>
+                      {item.viewData.property.map((item) => (
+                        <span style={{ marginRight: "10px" }} key={item.value}>
+                          {item.linkComment}
                         </span>
-                        {charTypeName[item.viewData?.type]}
+                      ))}
+                    </div>
+                    <div className={styles.last_line}>
+                      <div
+                        className={styles.status_light}
+                        style={{ backgroundColor: "#80ad97" }}
+                      />
+                      <div className={styles.open_status}>
+                        {/* {openStatus[item.status].statusText} */}
+                        {item.status}
                       </div>
-                      <div>
-                        <span style={{ margin: "0 1vw" }}>
-                          <SendOutlined />
-                        </span>
-                        {item.viewData?.property.map((item) => (
-                          <span
-                            style={{ marginRight: "10px" }}
-                            key={item.value}
-                          >
-                            {item.linkComment}
-                          </span>
-                        ))}
-                      </div>
-                      <div className={styles.last_line}>
-                        <div
-                          className={styles.status_light}
-                          style={{ backgroundColor: "#80ad97" }}
-                        />
-                        <div className={styles.open_status}>
-                          {item.status}
-                        </div>
-                        <Button
-                          className={styles.open_button}
-                          type={"primary"}
-                          size={"small"}
-                          onClick={() => {
-                            console.log(list[index]);
-                            props.changeViewInfo(true, list[index]);
-                          }}
-                        >
-                          修改
-                        </Button>
-                        <Button
-                          className={styles.open_button}
-                          type={"primary"}
-                          size={"small"}
-                          onClick={() => {
-                            if (item.status === "close") {
-                              changeStatus(index, "open");
-                              props.addViewChar(addViewType.open_view, item);
-                            } else {
-                              changeStatus(index, "close");
-                              props.deleteViewInfo(item.viewId);
-                            }
-                          }}
-                        >
-                          {openStatus[item.status].btnText}
-                        </Button>
-                        <Button
-                          className={styles.open_button}
-                          type={"primary"}
-                          size={"small"}
-                          onClick={() => {
-                            deleteChar(item.viewId, index);
-                          }}
-                        >
-                          删除
-                        </Button>
-                      </div>
+                      <Button
+                        className={styles.open_button}
+                        type={"primary"}
+                        size={"small"}
+                        onClick={() => {
+                          console.log(list[index]);
+                          props.changeViewInfo(true, list[index]);
+                        }}
+                      >
+                        修改
+                      </Button>
+                      <Button
+                        className={styles.open_button}
+                        type={"primary"}
+                        size={"small"}
+                        onClick={() => {
+                          if (item.status === "close") {
+                            changeStatus(index, "open");
+                            props.addViewChar(addViewType.open_view, item);
+                          } else {
+                            changeStatus(index, "close");
+                            props.deleteViewInfo(item.viewId);
+                          }
+                        }}
+                      >
+                        {openStatus[item.status].btnText}
+                      </Button>
+                      <Button
+                        className={styles.open_button}
+                        type={"primary"}
+                        size={"small"}
+                        onClick={() => {
+                          deleteChar(item.viewId, index);
+                        }}
+                      >
+                        删除
+                      </Button>
                     </div>
                   </div>
                 </div>
-              </Col>
-            ))}
-          </Row>
-        </div>
-      ) : null}
+              </div>
+            </Col>
+          ))}
+        </Row>
+      </div>
 
       <div className={styles.count_items}>共{list.length}条数据</div>
     </>

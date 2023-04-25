@@ -25,7 +25,7 @@ const EditableCell = ({ dataIndex, title }) => {
 };
 
 export default function AddData(props) {
-  console.log(props);
+  // console.log(props);
   const { linkList } = props;
   const { isOpenAddDataModal, setIsOpenAddDataModal } = props;
   const [dataSource, setDataSource] = useState([
@@ -62,7 +62,7 @@ export default function AddData(props) {
       .validateFields()
       .then((res) => {
         console.log(res);
-        api.addDataByLine(res);
+        api.data_addDataByLine(res);
         message.success("插入成功");
         setIsOpenAddDataModal(false);
       })
