@@ -1,5 +1,5 @@
 import {Form, Input, InputNumber, Modal, Table, Tag} from "antd";
-import React, {useEffect, useReducer, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import styles from "@/styles/ShowTable.module.scss";
 import {CheckOutlined, CloseOutlined} from "@ant-design/icons";
 import api from "@/utils/api";
@@ -61,6 +61,9 @@ const ShowTable = (props) => {
     const columns = useRef([]); // 暂存的表格位置
 
     // methods
+    /**
+     * 获取表格源数据
+     */
     const getTableData = () => {
         api.getAllData().then((res) => {
             setData(res.data.data);
@@ -73,24 +76,23 @@ const ShowTable = (props) => {
      * @returns {{dataIndex: *, editable: boolean, title: *}[]}
      */
     const handleColumns = () => {
-        let temp = [];
+        let output = [];
         if (props.types) {
-            temp = props.types.flat(1).map((value, index) => {
+            output = props.types.flat(1).map((value, index) => {
                 return {
                     title: value.linkComment,
                     dataIndex: value.linkId,
                     key: index,
                     editable: true,
-                    // width: "2000",
+                    width: "120px",
                     textWrap: "word-break"
-                    // ellipsis: true,
                 };
             });
         }
-        let output = {
+        let operation = {
             title: "操作",
             dataIndex: "operation",
-            width: "17%",
+            width: "140px",
             fixed: "right",
             render: (_, record) => {
                 const editable = isEditing(record); // TODO 这里没有监测到数值变化，没有重新渲染，有没有方法让其强制重新渲染或者能够检测得到？
@@ -118,8 +120,8 @@ const ShowTable = (props) => {
                 );
             }
         };
-        temp.push(output);
-        return temp;
+        output.push(operation);
+        return output;
     };
 
 
@@ -234,7 +236,7 @@ const ShowTable = (props) => {
             onChange: cancel
         },
         scroll: {
-            x: "100%",
+            x: `${props.types ? 120 * props.types.flat(1).length : 0}px`,
             y: "33.7vh"
         },
         dataSource: data,
@@ -247,7 +249,7 @@ const ShowTable = (props) => {
         return () => {
             setData([]);
         };
-    }, [props.types,editingKey]); // TODO editingKey暂时解决不能变化的问题
+    }, [props.types, editingKey]); // TODO editingKey暂时解决不能变化的问题
 
     return (
         <Form form={form} component={false}>
