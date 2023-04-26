@@ -16,6 +16,7 @@ export default function Manage(props) {
     const [isOpenAddDataModal, setIsOpenAddDataModal] = useState();
     const [isOpenAddPropertyModal, setIsOpenAddPropertyModal] = useState();
     const [linkList, setLinklist] = useState([]);
+    const [clickedSearchType, setClickedSearchType] = useState(null);
 
 
     // state
@@ -25,13 +26,14 @@ export default function Manage(props) {
     // ref
     const typeRef = useRef(null); // 用以缓存未处理的type数据
 
-
     // methods
 
     const fetchData = async () => {
         const linkRes = await api.getLink();
+        console.log(linkRes.data.data);
         if (linkRes.status === 200 && linkRes.data) {
             setLinklist(linkRes.data.data.links);
+            setClickedSearchType(linkRes.data.data.links[0]);
         }
     };
 
@@ -67,25 +69,21 @@ export default function Manage(props) {
         });
     };
 
-
-    const items = [
-        {
-            label: "sadfsad",
-            key: "1"
-        },
-        {
-            label: "sdafsa",
-            key: "2"
-        }
-    ];
+    const getItems = linkList.map((value) => {
+        return {
+            label: value.linkComment,
+            key: value.linkId.toString()
+        };
+    });
 
     const handleMenuClick = (e) => {
-        message.info("click!");
-        console.log("click", e);
+        setClickedSearchType(linkList.find((value) => {
+            return value.linkId.toString() === e.key;
+        }))
     };
 
     const menu = {
-        items,
+        items:getItems,
         onClick: handleMenuClick
     };
 
@@ -222,7 +220,7 @@ export default function Manage(props) {
                     <Dropdown menu={menu} className={styles.dropdown}>
                         <Button>
                             <Space>
-                                姓名
+                                {clickedSearchType ? clickedSearchType.linkComment : null}
                                 <DownOutlined/>
                             </Space>
                         </Button>
