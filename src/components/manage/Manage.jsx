@@ -1,5 +1,5 @@
 import {useState, useEffect, useRef} from "react";
-import {Button, Collapse, Dropdown, Input, message, Modal, Space, Tag, theme} from "antd";
+import {Button, Collapse, Dropdown, Form, Input, Modal, Space, Tag, theme} from "antd";
 import {DownOutlined, SearchOutlined} from "@ant-design/icons";
 import styles from "@/styles/Manage.module.scss";
 import deleteConnection from "@/utils/deleteConnection";
@@ -9,29 +9,38 @@ import AddProperty from "./AddProperty";
 import api from "@/utils/api";
 
 export default function Manage(props) {
+    // hooks
     const {
         token: {colorBgContainer}
     } = theme.useToken();
 
+    /**
+     * TODO ???
+     */
     const [isOpenAddDataModal, setIsOpenAddDataModal] = useState();
     const [isOpenAddPropertyModal, setIsOpenAddPropertyModal] = useState();
-    const [linkList, setLinklist] = useState([]);
-
 
     // state
     const [types, setTypes] = useState([[], []]); // 渲染的属性列表
-    const [typeState, setTypeState] = useState(null);
+    const [typeState, setTypeState] = useState(null); // 要传给table的type数据
+    const [linkList, setLinklist] = useState([]); // 字段列表
+    const [clickedSearchType, setClickedSearchType] = useState(null); // 目前显示的搜索部分框字段
 
     // ref
     const typeRef = useRef(null); // 用以缓存未处理的type数据
 
-
     // methods
 
-    const fetchData = async () => {
+    /**
+     * 获取字段列表
+     * @returns {Promise<void>}
+     */
+    const getLinklist = async () => {
         const linkRes = await api.getLink();
+        console.log(linkRes.data.data);
         if (linkRes.status === 200 && linkRes.data) {
             setLinklist(linkRes.data.data.links);
+            setClickedSearchType(linkRes.data.data.links[0]);
         }
     };
 
@@ -67,31 +76,49 @@ export default function Manage(props) {
         });
     };
 
+    /**
+     * 生成搜索框列表
+     * @type {{label: string, key: string}[]}
+     */
+    const getItems = linkList.map((value) => {
+        return {
+            label: value.linkComment,
+            key: value.linkId.toString()
+        };
+    });
 
-    const items = [
-        {
-            label: "sadfsad",
-            key: "1"
-        },
-        {
-            label: "sdafsa",
-            key: "2"
-        }
-    ];
-
+    /**
+     * 点击后切换字段
+     * @param e
+     */
     const handleMenuClick = (e) => {
-        message.info("click!");
-        console.log("click", e);
+        setClickedSearchType(linkList.find((value) => {
+            return value.linkId.toString() === e.key;
+        }));
     };
 
+    // Dropdown列表菜单
     const menu = {
-        items,
+        items: getItems,
         onClick: handleMenuClick
     };
 
+    /**
+     * 搜索指定字段内容
+     * @param data
+     */
+    const searchData = (data) => {
+        let output = {
+            linkId: clickedSearchType.linkId,
+            value: data.searchName
+        };
+        // api.queryData(output).then((res) => { // TODO 404
+        //     console.log(res);
+        // })
+    };
 
     useEffect(() => {
-        fetchData();
+        getLinklist();
         getTypes();
         return () => {
             setTypes([[], []]);
@@ -116,7 +143,6 @@ export default function Manage(props) {
                 <div className={styles.btn_box}>
                     <Button
                         onClick={() => {
-                            console.log(linkList);
                             setIsOpenAddPropertyModal(true);
                         }}
                     >
@@ -218,23 +244,30 @@ export default function Manage(props) {
                 >
                     +
                 </Button>
-                <div className={styles.search_bigbox}>
-                    <Dropdown menu={menu} className={styles.dropdown}>
-                        <Button>
-                            <Space>
-                                姓名
-                                <DownOutlined/>
-                            </Space>
-                        </Button>
-                    </Dropdown>
-                    <Input
-                        className={styles.search_box}
-                        placeholder={"你想查询的内容..."}
-                    />
-                    <Button className={styles.search_btn} type={"primary"}>
+                <Form className={styles.search_bigbox} onFinish={searchData}>
+                    <Form.Item>
+                        <Dropdown menu={menu} className={styles.dropdown}>
+                            <Button>
+                                <Space>
+                                    {clickedSearchType ? clickedSearchType.linkComment : null}
+                                    <DownOutlined/>
+                                </Space>
+                            </Button>
+                        </Dropdown>
+                    </Form.Item>
+                    <Form.Item name={"searchName"}>
+                        <Input
+                            className={styles.search_box}
+                            placeholder={"你想查询的内容..."}
+                        />
+                    </Form.Item>
+                    <Button
+                        className={styles.search_btn}
+                        type={"primary"} htmlType={"submit"}
+                    >
                         <SearchOutlined/>
                     </Button>
-                </div>
+                </Form>
             </div>
             <ShowTable types={typeState ? typeState : null}/>
             <AddData

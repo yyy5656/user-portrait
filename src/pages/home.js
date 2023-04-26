@@ -65,8 +65,8 @@ const Home = () => {
 
   /**
    * 这个是请求属性
-   * @param id
    * @returns {Promise<void>}
+   * @param data
    */
   const fetchLinkData = async (data) => {
     const res = await api.chooseConnection(data);
@@ -80,11 +80,11 @@ const Home = () => {
   };
 
   const fetchShareLinkData = async (data) => {
-    const res = await api.shareChooseConnection(data);
+    const res = await api.share_chooseConnection(data);
     if (res.status === 200 && res.data.data) {
       localStorage.setItem("token_shared", res.data.data);
     }
-    const linkRes = await api.shareGetLink();
+    const linkRes = await api.share_getLink();
     if (linkRes.status === 200 && linkRes.data) {
       setLinklist(linkRes.data.data.links);
     }

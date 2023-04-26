@@ -4,7 +4,7 @@ import HTTP from "@/service/request";
 const api = {
 
   /**
-   * 1. 选择表项导入数据库
+   * 1.选择表项导入数据库
    * @param data
    * @returns {HTTP}
    */
@@ -20,7 +20,7 @@ const api = {
   },
 
   /**
-   * 2. 获得表项
+   * 2.获得表项
    * @param data
    * @returns {HTTP}
    */
@@ -36,7 +36,7 @@ const api = {
   },
 
   /**
-   * 3. 登录
+   * 3.登录
    * @param data
    * @returns {HTTP}
    */
@@ -52,7 +52,7 @@ const api = {
   },
 
   /**
-   * 4. 创建connection
+   * 4.创建connection
    * @param data
    * @returns {HTTP}
    */
@@ -68,7 +68,7 @@ const api = {
   },
 
   /**
-   * 5. 获取所有connection
+   * 5.获取所有connection
    * @returns {HTTP}
    */
   getConnection() {
@@ -82,7 +82,7 @@ const api = {
   },
 
   /**
-   * 6. 删除connection
+   * 6.删除connection
    * @param data
    * @returns {HTTP}
    */
@@ -98,7 +98,7 @@ const api = {
   },
 
   /**
-   * 7. 选择表项和数据行导入数据库
+   * 7.选择表项和数据行导入数据库
    * @param data
    * @returns {HTTP}
    */
@@ -114,7 +114,7 @@ const api = {
   },
 
   /**
-   * 8. 新增数据
+   * 8.新增数据
    * @param data
    * @returns {HTTP}
    */
@@ -130,7 +130,7 @@ const api = {
   },
 
   /**
-   * 9. 检查用户名是否重复
+   * 9.检查用户名是否重复
    * @param data
    * @returns {HTTP}
    */
@@ -146,7 +146,7 @@ const api = {
   },
 
   /**
-   * 10. 注册
+   * 10.注册
    * @param data
    * @returns {HTTP}
    */
@@ -162,7 +162,7 @@ const api = {
   },
 
   /**
-   * 11. 选择connection获得token
+   * 11.选择connection获得token
    * @param data
    * @returns {HTTP}
    */
@@ -178,7 +178,7 @@ const api = {
   },
 
   /**
-   * 12. 获得connection的属性
+   * 12.获得connection的属性
    * @returns {HTTP}
    */
   getLink() {
@@ -192,7 +192,7 @@ const api = {
   },
 
   /**
-   * 13. 删除属性
+   * 13.删除属性
    * @param data
    * @returns {HTTP}
    */
@@ -207,7 +207,7 @@ const api = {
   },
 
   /**
-   * 14. 创建小组
+   * 14.创建小组
    * @param data
    * @returns {HTTP}
    */
@@ -222,7 +222,7 @@ const api = {
   },
 
   /**
-   * 15. 获得connection的所有小组
+   * 15.获得connection的所有小组
    * @returns {HTTP}
    */
   getGroups(){
@@ -236,7 +236,7 @@ const api = {
   },
 
   /**
-   * 16. 删除小组
+   * 16.删除小组
    * @param data
    * @returns {HTTP}
    */
@@ -252,7 +252,7 @@ const api = {
   },
 
   /**
-   * 17. link属性获得对应全部数据
+   * 17.link属性获得对应全部数据
    * @param data
    * @returns {HTTP}
    */
@@ -269,7 +269,7 @@ const api = {
 
 
   /**
-   * 18. 获得全部数据
+   * 18.获得全部数据
    * @returns {HTTP}
    */
   getAllData() {
@@ -283,7 +283,7 @@ const api = {
   },
 
   // /**
-  //  * 查询后单条更新信息
+  //  * 19.查询后单条更新信息(该接口不用)
   //  * @param data
   //  * @returns {HTTP}
   //  */
@@ -299,7 +299,7 @@ const api = {
   // },
 
   /**
-   * 19. 新增数据（属性）
+   * 20.新增数据（属性）
    * @param data
    * @returns {HTTP}
    */
@@ -315,7 +315,7 @@ const api = {
   },
 
   /**
-   * 20. 处理名称数据分组
+   * 21.处理名称数据分组
    * @param data
    * @returns {HTTP}
    */
@@ -331,7 +331,7 @@ const api = {
   },
 
   /**
-   * 21. 转换：名词属性/数字属性
+   * 22.转换：名词属性/数字属性
    * @param data
    * @returns {HTTP}
    */
@@ -347,7 +347,7 @@ const api = {
   },
 
   /**
-   * 22. 处理数值属性分类
+   * 23.处理数值属性分类
    * @param data
    * @returns {HTTP}
    */
@@ -363,7 +363,7 @@ const api = {
   },
 
   /**
-   * 23. 根据属性分组拿到全部属性
+   * 24.根据属性分组拿到全部属性
    * @param data
    * @returns {HTTP}
    */
@@ -379,7 +379,7 @@ const api = {
   },
 
   /**
-   * 24. 更新数据
+   * 25.更新数据
    * @param data
    * @returns {HTTP}
    */
@@ -395,23 +395,23 @@ const api = {
   },
 
   /**
-   * 单行更新数据(数据格式来自接口获得全部数据)
+   * 26.单行更新数据(数据格式来自接口获得全部数据)
    * @param data
    * @returns {HTTP}
    */
   updateDataById(data){
-    //     return HTTP({
-    //         url:"/import/updateDataById",
-    //         method:"POST",
-    //         headers:{
-    //             "Content-Type":"application/json;charset=UTF-8"
-    //         },
-    //         data
-    //     })
+        return HTTP({
+            url:"/import/updateDataById",
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json;charset=UTF-8"
+            },
+            data
+        })
   },
 
   /**
-   * 25. 手动新增数据
+   * 27.手动新增数据
    * @param data
    * @returns {*}
    */
@@ -427,7 +427,7 @@ const api = {
   },
 
   /**
-   * 26. 删除单条数据
+   * 28.删除单条数据
    * @param data
    * @returns {HTTP}
    */
@@ -443,7 +443,7 @@ const api = {
   },
 
   /**
-   * 根据属性模糊查询数据
+   * 29.根据属性模糊查询数据
    * @param data
    * @returns {*}
    */
@@ -456,7 +456,225 @@ const api = {
       },
       data
     })
-  }
+  },
+
+  /**
+   * ry的视图——新增视图数据
+   * @param data
+   * @returns {*}
+   */
+  insertViewInfo(data){
+    return HTTP({
+      url:"/data/insertViewInfo",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      },
+      data
+    })
+  },
+
+  /**
+   * ry的视图——获得任务所有视图数据
+   * @returns {*}
+   */
+  getViewInfo(){
+    return HTTP({
+      url:"/data/getViewInfo",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      }
+    })
+  },
+
+  /**
+   * ry的视图——更新指定视图数据
+   * @param data
+   * @returns {*}
+   */
+  updateViewInfo(data){
+    return HTTP({
+      url:"/data/updateViewInfo",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      },
+      data
+    })
+  },
+
+  /**
+   * ry的视图——删除指定视图数据
+   * @param data
+   * @returns {*}
+   */
+  deleteViewInfo(data){
+    return HTTP({
+      url:"/data/deleteViewInfo",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      },
+      data
+    })
+  },
+
+  /**
+   * 2.1查询其他所有用户名
+   * @param data
+   * @returns {*}
+   */
+  getOtherAllUser(data){
+    return HTTP({
+      url:"/share/getOtherALlUser",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      },
+      data
+    })
+  },
+
+  /**
+   * 2.2共享设置
+   * @param data
+   * @returns {*}
+   */
+  changeConnectionType(data){
+    return HTTP({
+      url:"/share/changeConnectionType",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      },
+      data
+    })
+  },
+
+  /**
+   * 2.3根据共享类型获得任务
+   * @param data
+   * @returns {*}
+   */
+  getConnectionsByType(data){
+    return HTTP({
+      url:"/share/getConnectionsByType",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      },
+      data
+    })
+  },
+
+  /**
+   * 2.4查询所有指定用户设置
+   * @param data
+   * @returns {*}
+   */
+  getShareList(data){
+    return HTTP({
+      url:"/share/getShareList",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      },
+      data
+    })
+  },
+
+  /**
+   * 2.5删除指定用户共享
+   * @param data
+   * @returns {*}
+   */
+  deleteShareById(data){
+    return HTTP({
+      url:"/share/deleteShareById",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      },
+      data
+    })
+  },
+
+  /**
+   * 2.6查询公开的connection
+   * @returns {*}
+   */
+  getPublicConnection(){
+    return HTTP({
+      url:"/share/getPublicConnection",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      }
+    })
+  },
+
+    /**
+     * 2.6.1获取共享任务的token
+     * @param data
+     * @returns {*}
+     */
+  choosePublicConnection(data){
+    return HTTP({
+      url:"/share/choosePublicConnection",
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json;charset=UTF-8"
+      },
+      data
+    })
+  },
+
+    /**
+     * 2.7查询他人分享给自己的任务
+     * @param data
+     * @returns {*}
+     */
+    getSharedConnection(data){
+        return HTTP({
+            url:"/share/getSharedConnection",
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json;charset=UTF-8"
+            },
+            data
+        })
+    },
+
+    /**
+     * 2.8(共享)选择任务获得token
+     * @param data
+     * @returns {*}
+     */
+    share_chooseConnection(data){
+        return HTTP({
+            url:"/share/chooseConnection",
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json;charset=UTF-8"
+            },
+            data
+        })
+    },
+
+    /**
+     * 2.9(共享)查询任务的属性
+     * @returns {*}
+     */
+    share_getLink(){
+        return HTTP({
+            url:"/share/getLink",
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json;charset=UTF-8"
+            }
+        })
+    }
 
 };
 
