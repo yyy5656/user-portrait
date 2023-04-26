@@ -61,20 +61,6 @@ export default function Manage(props) {
     };
 
     /**
-     * 搜索指定字段内容
-     * @param data
-     */
-    const searchData = (data) => {
-        let output = {
-            linkId: clickedSearchType.linkId,
-            value: data.searchName
-        };
-        // api.queryData(output).then((res) => { // TODO 404
-        //     console.log(res);
-        // })
-    };
-
-    /**
      * 转换属性类别
      * @param target
      * @param fromWhere
@@ -111,11 +97,25 @@ export default function Manage(props) {
         }));
     };
 
+    // Dropdown列表菜单
     const menu = {
         items: getItems,
         onClick: handleMenuClick
     };
 
+    /**
+     * 搜索指定字段内容
+     * @param data
+     */
+    const searchData = (data) => {
+        let output = {
+            linkId: clickedSearchType.linkId,
+            value: data.searchName
+        };
+        // api.queryData(output).then((res) => { // TODO 404
+        //     console.log(res);
+        // })
+    };
 
     useEffect(() => {
         getLinklist();
