@@ -223,7 +223,6 @@ const ShowTable = (props) => {
     // tableProps
     const tableProps = {
         size: "middle",
-        className: styles.table,
         components: {
             body: {
                 cell: EditableCell
