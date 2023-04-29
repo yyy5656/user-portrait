@@ -13,7 +13,6 @@ import { useEffect, useRef, useState } from "react";
 const CheckboxGroup = Checkbox.Group;
 
 export default function DataGroup(props) {
-  console.log(props);
   const { charData } = props;
   const [groupList, setGroupList] = useState([]);
   const [isChangeGroup, setIsChangeGroup] = useState(false);
