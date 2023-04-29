@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { Modal, Steps, Table, Tabs, InputNumber } from "antd";
 
 import PropertyCom from "./addPropertyCom/propertyCom";
+// import DataCom from "./addPropertyCom/DataCom";
 import api from "@/utils/api";
 
 export default function AddProperty(props) {
-  console.log(props);
+  // console.log(props);
   const { connectionId, isOpenAddPropertyModal, setIsOpenAddPropertyModal } =
     props;
 
