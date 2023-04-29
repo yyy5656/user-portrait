@@ -26,21 +26,20 @@ export default function ItemList(props) {
   };
 
   useEffect(() => {
-    // api.getViewInfo().then((res) => {
-    //   console.log(res.data.data);
-    //   const newList = res.data.data.map((item) => ({
-    //     viewData: JSON.parse(item.viewData),
-    //     viewId: item.viewId,
-    //     connectionId: item.connectionId,
-    //     status: "close",
-    //   }));
-    //   console.log(newList);
-    //   setList(newList);
-    // });
+    api.getViewInfo().then((res) => {
+      console.log(res.data.data);
+      const newList = res.data.data.map((item) => ({
+        viewData: JSON.parse(item.viewData),
+        viewId: item.viewId,
+        connectionId: item.connectionId,
+        status: "close",
+      }));
+      setList(newList);
+    });
     return () => {
       setList([]);
     };
-  }, []);
+  }, [props.changeViewInfo]);
 
   useEffect(() => {
     if (newView) {
