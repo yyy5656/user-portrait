@@ -11,7 +11,7 @@ export default function ItemList(props) {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
-  const { newView } = props;
+  const { newView, deleteIdx } = props;
   const [list, setList] = useState([]);
 
   const openStatus = {
@@ -26,21 +26,19 @@ export default function ItemList(props) {
   };
 
   useEffect(() => {
-    // api.getViewInfo().then((res) => {
-    //   console.log(res.data.data);
-    //   const newList = res.data.data.map((item) => ({
-    //     viewData: JSON.parse(item.viewData),
-    //     viewId: item.viewId,
-    //     connectionId: item.connectionId,
-    //     status: "close",
-    //   }));
-    //   console.log(newList);
-    //   setList(newList);
-    // });
+    api.getViewInfo().then((res) => {
+      const newList = res.data.data.map((item) => ({
+        viewData: JSON.parse(item.viewData),
+        viewId: item.viewId,
+        connectionId: item.connectionId,
+        status: "close",
+      }));
+      setList(newList);
+    });
     return () => {
       setList([]);
     };
-  }, []);
+  }, [props.connectionId]);
 
   useEffect(() => {
     if (newView) {
@@ -48,23 +46,33 @@ export default function ItemList(props) {
     }
   }, [newView]);
 
+  // 同步图表的X号关闭
+  useEffect(() => {
+    if (!deleteIdx) {
+      return;
+    }
+    let idx = null;
+    list.forEach((item, index) => {
+      if (deleteIdx === item.viewId) {
+        idx = index;
+      }
+    });
+    changeStatus(idx, "close");
+  }, [deleteIdx]);
+
   const deleteChar = (id, index) => {
     list.splice(index, 1);
     setList([...list]);
     api.deleteViewInfo({ viewId: id }).then((res) => {
       message.success("删除成功");
-      props.deleteViewInfo(id);
+      props.deleteViewChar(id, "fetch");
     });
   };
 
-  // const addCharList = (value) => {};
-
-  const changeStatus = (index, status, newlist) => {
+  const changeStatus = (index, status) => {
     const item = [...list];
     item[index].status = status;
     setList([...item]);
-    console.log(list);
-    console.log(item);
   };
 
   return (
@@ -104,8 +112,7 @@ export default function ItemList(props) {
                         style={{ backgroundColor: "#80ad97" }}
                       />
                       <div className={styles.open_status}>
-                        {/* {openStatus[item.status].statusText} */}
-                        {item.status}
+                        {openStatus[item.status].statusText}
                       </div>
                       <Button
                         className={styles.open_button}
@@ -128,7 +135,7 @@ export default function ItemList(props) {
                             props.addViewChar(addViewType.open_view, item);
                           } else {
                             changeStatus(index, "close");
-                            props.deleteViewInfo(item.viewId);
+                            props.deleteViewChar(item.viewId, "fetch");
                           }
                         }}
                       >

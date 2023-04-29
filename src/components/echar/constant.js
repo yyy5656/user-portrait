@@ -55,10 +55,16 @@ export const getCharOption = (type, data, title, linkComment) => {
           // subtext: "Fake Data",
           left: "center",
         },
+        tooltip: {
+          trigger: "item",
+        },
         xAxis: {
           name: linkComment,
           type: "category",
           data: data.xAxisData,
+          axisTick: {
+            interval: '0'
+          },
         },
         yAxis: {
           type: "value",
@@ -125,8 +131,7 @@ export const getCharOption = (type, data, title, linkComment) => {
   }
 };
 
-
 export const addViewType = {
-  add_view: 'add_view',
-  open_view: 'open_view'
-}
+  add_view: "add_view",
+  open_view: "open_view",
+};

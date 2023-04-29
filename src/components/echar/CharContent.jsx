@@ -1,29 +1,33 @@
 import { Button, message, Modal } from "antd";
 
-const { confirm } = Modal;
 import styles from "@/styles/CharContent.module.scss";
 import ShowProperty from "./ShowProperty";
 import AddChar from "./AddChar";
 import ItemList from "@/components/echar/ItemList";
 import BasicBar from "./BasicBar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { charListData, addViewType } from "./constant";
-import deleteConnection from "@/utils/deleteConnection";
 import api from "@/utils/api";
+
+const { confirm } = Modal;
 
 export default function CharContent(props) {
   console.log(props);
   const [charList, setCharList] = useState([]);
   const [newView, setNewView] = useState();
+  const [deleteIdx, setDeleteIdx] = useState();
   // 属性分组
   const [propertyList, setPropertyList] = useState({});
   // 添加图表弹窗
   const [isModalOpen, setIsModalOpen] = useState();
   const [defaultOption, setDefaultOption] = useState();
 
+  useEffect(() => {
+    setCharList([]);
+  }, [props.connectionId.current]);
+
   // 增加图表
   const addViewChar = (type, value, viewId = 0) => {
-    console.log("111111", value);
     if (type === addViewType.add_view) {
       setNewView({
         connectionId: props.connectionId.current,
@@ -32,15 +36,13 @@ export default function CharContent(props) {
         viewId,
       });
       setCharList([value, ...charList]);
-      console.log("11111", value);
-      console.log("11111", charList);
     } else if (type === addViewType.open_view) {
       setCharList([value, ...charList]);
     }
   };
 
   // 删除图表
-  const deleteViewChar = (viewId) => {
+  const deleteViewChar = (viewId, type) => {
     let idx = null;
     charList.forEach((item, index) => {
       if (viewId === item.viewId) {
@@ -49,6 +51,9 @@ export default function CharContent(props) {
     });
     charList.splice(idx, 1);
     setCharList([...charList]);
+    if (type !== "fetch") {
+      setDeleteIdx(viewId);
+    }
   };
 
   const handlePropsData = () => {
@@ -78,23 +83,15 @@ export default function CharContent(props) {
     <div className={styles.site_layout_content_show}>
       <div className={styles.title}>
         <span>{props.missionName.current}</span>
-        {/* TODO: 这里需要删除任务吗 */}
-        <Button
-          onClick={() => {
-            deleteConnection(props.connectionId.current, props.fetchData);
-          }}
-          className={styles.delete_connection_btn}
-        >
-          删除任务
-        </Button>
       </div>
       <ShowProperty property={handlePropsData()} />
       <ItemList
         connectionId={props.connectionId.current}
         charList={charList}
-        addViewChar={addViewChar}
-        deleteViewInfo={deleteViewChar}
         newView={newView}
+        deleteIdx={deleteIdx}
+        addViewChar={addViewChar}
+        deleteViewChar={deleteViewChar}
         changeViewInfo={changeViewInfo}
       />
       <Button style={{ marginTop: "20px" }} onClick={handleClick}>
@@ -110,11 +107,11 @@ export default function CharContent(props) {
         defaultOption={defaultOption}
       />
       {charList.length
-        ? charList.map((item, index) => {
-            console.log("123", item);
+        ? charList.map((item) => {
+            console.log("charList", charList);
             return (
               <BasicBar
-                key={index}
+                key={item.viewId}
                 viewId={item.viewId}
                 charOption={item.viewData}
                 deleteViewChar={deleteViewChar}

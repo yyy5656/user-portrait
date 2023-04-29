@@ -50,7 +50,7 @@ export default function AddChar(props) {
   const handleChange = (value, option) => {
     // 1调用getNouns
     const { type } = option;
-    setSelectLinkType(type);
+    setSelectLinkType(type)
     setSelectProperty([
       {
         linkId: option.value,
@@ -183,7 +183,7 @@ export default function AddChar(props) {
             </div>
 
             {selectLinkType === linkType.singleLink &&
-              (selectProperty ? (
+              (selectProperty  ? (
                 <DataGroup
                   charData={originCharData}
                   changeCharListGroup={changeCharListGroup}
