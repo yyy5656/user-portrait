@@ -23,7 +23,6 @@ export default function CharContent(props) {
 
   // 增加图表
   const addViewChar = (type, value, viewId = 0) => {
-    //console.log("111111", value);
     if (type === addViewType.add_view) {
       setNewView({
         connectionId: props.connectionId.current,

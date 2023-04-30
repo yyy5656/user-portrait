@@ -166,7 +166,6 @@ const ShowTable = (props) => {
 
 	/**
 	 * 是否处于编辑状态
-	 * TODO 当前变量出现了无法检测到状态更新的问题，先这样
 	 * @param record
 	 * @returns {boolean}
 	 */
@@ -183,7 +182,6 @@ const ShowTable = (props) => {
 			address: "",
 			...record,
 		});
-		console.log(record.id);
 		setEditingKey(record.id);
 	};
 
