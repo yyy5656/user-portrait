@@ -8,11 +8,12 @@ export default function deleteConnection(id, callbackFn) {
         title: "即将删除任务！",
         content: "删除任务后该任务无法恢复，是否继续？",
         onOk() {
-            console.log("OK");
+            console.log('ok');
             api.deleteConnection({
                 "connectionId": id.current
             }).then(
                 (res) => {
+                    console.log(res);
                     callbackFn();
                 }
             ).catch((err) => {

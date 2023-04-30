@@ -8,7 +8,7 @@ import { charTypeConfig, charType, addViewType } from "./constant";
 
 export default function AddChar(props) {
   const { propertyList, defaultOption } = props;
-  console.log(defaultOption);
+  //console.log(defaultOption);
   // const { name:defaultName, defaultType, defualtProperty, defualtData } =
   //   defaultOption?.viewData;
   // 选择的图表类型

@@ -12,7 +12,7 @@ import api from "@/utils/api";
 const { confirm } = Modal;
 
 export default function CharContent(props) {
-  console.log(props);
+  //console.log(props);
   const [charList, setCharList] = useState([]);
   const [newView, setNewView] = useState();
   const [deleteIdx, setDeleteIdx] = useState();
@@ -78,7 +78,7 @@ export default function CharContent(props) {
     defaultOption && setDefaultOption(defaultOption);
   };
 
-  console.log(props);
+  //console.log(props);
   return (
     <div className={styles.site_layout_content_show}>
       <div className={styles.title}>
