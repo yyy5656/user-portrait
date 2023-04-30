@@ -24,9 +24,6 @@ export default function Manage(props) {
 		token: { colorBgContainer },
 	} = theme.useToken();
 
-	/**
-	 * TODO ???
-	 */
 	const [isOpenAddDataModal, setIsOpenAddDataModal] = useState();
 	const [isOpenAddPropertyModal, setIsOpenAddPropertyModal] = useState();
 
@@ -35,7 +32,7 @@ export default function Manage(props) {
 	const [typeState, setTypeState] = useState(null); // 要传给table的type数据
 	const [linkList, setLinklist] = useState([]); // 字段列表
 	const [clickedSearchType, setClickedSearchType] = useState(null); // 目前显示的搜索部分框字段
-	const [searchedData, setSearchedData] = useState(null); //搜索的得到的数据结果
+	const [keyWord, setKeyWord] = useState(null); //搜索关键词对象
 
 	// ref
 	const typeRef = useRef(null); // 用以缓存未处理的type数据
@@ -124,18 +121,22 @@ export default function Manage(props) {
 	 */
 	const searchData = async (queryData) => {
 		if (!queryData.searchName) {
-            //* 无搜索关键字 
-			return setSearchedData(null);
+			//* 无搜索关键字
+			return setKeyWord(null);
 		} else {
-            //* 搜索关键字 
-			let output = {
+			//* 搜索关键字
+			/* let output = {
 				linkId: clickedSearchType.linkId,
 				value: queryData.searchName,
 			};
 			const { data } = await api.queryData(output);
 			if (data.code === 200) {
 				setSearchedData(data.data);
-			}
+			} */
+			setKeyWord({
+				linkId: clickedSearchType.linkId,
+				value: queryData.searchName,
+			});
 		}
 	};
 
@@ -303,7 +304,7 @@ export default function Manage(props) {
 				</Form>
 			</div>
 			<ShowTable
-				searchedData={searchedData && searchedData}
+				keyWord={keyWord && keyWord}
 				types={typeState ? typeState : null}
 			/>
 			<AddData

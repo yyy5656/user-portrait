@@ -1,4 +1,4 @@
-import { Form, Input, InputNumber, Modal, Table, Tag } from "antd";
+import { Form, Input, InputNumber, Modal, Table, Tag, message } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/ShowTable.module.scss";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
@@ -74,16 +74,17 @@ const ShowTable = (props) => {
 	 * 获取表格源数据
 	 */
 	const getTableData = () => {
-		const { searchedData } = props;
-		if (searchedData) {
-            setData(searchedData)
-            
+		const { keyWord } = props;
+		if (keyWord) {
+			api.queryData(keyWord).then((res) => {
+				setData(res.data.data);
+			});
 		} else {
 			api.getAllData().then((res) => {
 				setData(res.data.data);
-				columns.current = handleColumns();
 			});
 		}
+		columns.current = handleColumns();
 	};
 
 	/**
@@ -110,7 +111,7 @@ const ShowTable = (props) => {
 			width: "140px",
 			fixed: "right",
 			render: (_, record) => {
-				const editable = isEditing(record); // TODO 这里没有监测到数值变化，没有重新渲染，有没有方法让其强制重新渲染或者能够检测得到？
+				const editable = isEditing(record);
 				return editable ? (
 					<span>
 						<Tag
@@ -182,6 +183,7 @@ const ShowTable = (props) => {
 			address: "",
 			...record,
 		});
+		console.log(record.id);
 		setEditingKey(record.id);
 	};
 
@@ -201,20 +203,14 @@ const ShowTable = (props) => {
 		try {
 			const row = await form.validateFields();
 			const newData = [...data];
-			const index = newData.findIndex((item) => key === item.key);
-			if (index > -1) {
-				const item = newData[index];
-				newData.splice(index, 1, {
-					...item,
-					...row,
-				});
-				setData(newData);
-				setEditingKey("");
-			} else {
-				newData.push(row);
-				setData(newData);
-				setEditingKey("");
-			}
+			const index = newData.findIndex((item) => key === item.id);
+			const item = newData[index];
+			const changedData = { ...item, ...row };
+			const {
+				data: { msg },
+			} = await api.updateDataById(changedData);
+			message.success(msg);
+			setEditingKey("");
 		} catch (errInfo) {
 			console.log("Validate Failed:", errInfo);
 		}
@@ -247,13 +243,15 @@ const ShowTable = (props) => {
 		}
 		return {
 			...col,
-			onCell: (record) => ({
-				record,
-				inputType: col.dataIndex === "age" ? "number" : "text",
-				dataIndex: col.dataIndex,
-				title: col.title,
-				editing: isEditing(record),
-			}),
+			onCell: (record) => {
+				return {
+					record,
+					inputType: col.dataIndex === "age" ? "number" : "text",
+					dataIndex: col.dataIndex,
+					title: col.title,
+					editing: isEditing(record),
+				};
+			},
 		};
 	});
 
@@ -282,10 +280,7 @@ const ShowTable = (props) => {
 
 	useEffect(() => {
 		getTableData();
-		return () => {
-			setData([]);
-		};
-	}, [props.types, editingKey, props.searchedData]);
+	}, [props.types, editingKey, props.keyWord]);
 
 	return (
 		<Form form={form} component={false}>
