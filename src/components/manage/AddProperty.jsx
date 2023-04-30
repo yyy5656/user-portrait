@@ -11,7 +11,7 @@ export default function AddProperty(props) {
     props;
 
   const onChange = (key) => {
-    console.log(key);
+    //console.log(key);
   };
 
   return (

@@ -5,7 +5,7 @@ import {UploadOutlined} from "@ant-design/icons";
 import api from "@/utils/api";
 
 export default function PropertyCom(props) {
-    console.log(0, props);
+    //console.log(0, props);
     const {type, connectionId} = props;
 
     const [stepIndex, setStepIndex] = useState(0);

@@ -92,6 +92,7 @@ const api = {
       method:"POST",
       headers:{
         "Content-Type": "application/json;charset=UTF-8",
+        'token': localStorage.getItem('token')
       },
       data
     })
@@ -452,7 +453,8 @@ const api = {
       url:"/data/queryData",
       method:"POST",
       headers:{
-        "Content-Type":"application/json;charset=UTF-8"
+        "Content-Type":"application/json;charset=UTF-8",
+        'token': localStorage.getItem('token')
       },
       data
     })

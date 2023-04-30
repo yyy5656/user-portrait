@@ -12,7 +12,7 @@ import deleteConnection from "@/utils/deleteConnection";
 import api from "@/utils/api";
 
 export default function CharContent(props) {
-  console.log(props);
+  //console.log(props);
   const [charList, setCharList] = useState([]);
   const [newView, setNewView] = useState();
   // 属性分组
@@ -23,7 +23,7 @@ export default function CharContent(props) {
 
   // 增加图表
   const addViewChar = (type, value, viewId = 0) => {
-    console.log("111111", value);
+    //console.log("111111", value);
     if (type === addViewType.add_view) {
       setNewView({
         connectionId: props.connectionId.current,
@@ -73,7 +73,7 @@ export default function CharContent(props) {
     defaultOption && setDefaultOption(defaultOption);
   };
 
-  console.log(props);
+  //console.log(props);
   return (
     <div className={styles.site_layout_content_show}>
       <div className={styles.title}>

@@ -60,6 +60,7 @@ const Home = () => {
    */
   const fetchData = async () => {
     const res = (await api.getConnection()).data;
+    console.log(res);
     res.data && setConnectionItemList(res.data);
   };
 
