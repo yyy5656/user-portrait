@@ -60,7 +60,7 @@ const Home = () => {
    */
   const fetchData = async () => {
     const res = (await api.getConnection()).data;
-    console.log(res);
+    //console.log(res);
     res.data && setConnectionItemList(res.data);
   };
 
@@ -155,6 +155,9 @@ const Home = () => {
   const addConnection = () => {
     fetchData();
   };
+  const resetLinks = () => {
+    setLinklist([])
+  }
 
   const fetchGetConnection = async () => {
     const publicConnectionRes = await api.getPublicConnection();
@@ -241,129 +244,131 @@ const Home = () => {
   }, [tabKey]);
 
   return (
-    <>
-      <Head>
-        <title>学生画像管理系统</title>
-        <meta name="description" content="Student Portrait System" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main>
-        <Layout
-          style={{
-            minHeight: "100vh",
-          }}
-        >
-          <Sider theme="light">
-            <div className={styles.sider}>学生画像系统</div>
-            <Menu
-              theme="light"
-              defaultSelectedKeys={["1"]}
-              mode="inline"
-              items={[
-                getItem(
-                  "创建新任务",
-                  MENU_CONFIG.CREATE_TASK,
-                  <PlusOutlined />
-                ),
-                getItem(
-                  "我的任务",
-                  MENU_CONFIG.MY_TASK,
-                  <UserOutlined />,
-                  connectionItemList.map((data) => {
-                    return {
-                      key: `${data.connectionId}`,
-                      label: `${data.tableName}`,
-                    };
-                  })
-                ),
-                menuItem,
-              ]}
-              defaultOpenKeys={[MENU_CONFIG.MY_TASK]}
-              onClick={handleClick}
-            />
-          </Sider>
-          <Layout className="site-layout">
-            <Header
-              className={styles.header}
-              style={{
-                background: colorBgContainer,
-              }}
-            >
-              <div>{username}</div>
-              <Button onClick={showConfirm}>退出</Button>
-            </Header>
-            <Content
-              className={styles.content}
-              style={{
-                margin: "0 16px",
-              }}
-            >
-              <Tabs
-                defaultActiveKey="1"
-                onTabClick={(key) => {
-                  console.log(key);
-                  setTabkey(key);
-                }}
-                items={[
-                  {
-                    label: "可视化数据",
-                    key: "1",
-                    children: linkList.length ? (
-                      <CharContent
-                        linklist={linkList}
-                        connectionId={connectionId}
-                        missionName={missionName}
-                        fetchData={fetchData}
-                      />
-                    ) : (
-                      <Empty className={styles.empty} />
-                    ),
-                  },
-                  {
-                    label: "管理",
-                    key: "2",
-                    children:
-                      menuKey === MENU_CONFIG.PUBLIC_MANAGER ? (
-                        <PublicManage />
-                      ) : linkList.length ? (
-                        <Manage
-                          missionName={missionName}
-                          connectionId={connectionId}
-                          fetchData={fetchData}
-                        />
-                      ) : (
-                        <Empty className={styles.empty} />
-                      ),
-                  },
-                  {
-                    label: "个人中心",
-                    key: "3",
-                    children: "Tab 3",
-                  },
-                ]}
-                style={{
-                  lineType: "none",
-                }}
-              />
-            </Content>
-            <Footer
-              style={{
-                textAlign: "center",
-              }}
-            >
-              User Portrait ©2023 Created by Hunter Li & Zhenyue Wang
-            </Footer>
-          </Layout>
-          {isConnectionModalOpen && (
-            <AddConnectionForm
-              setIsConnectionModalOpen={setIsConnectionModalOpen}
-              addConnection={addConnection}
-            />
-          )}
-        </Layout>
-      </main>
-    </>
-  );
+		<>
+			<Head>
+				<title>学生画像管理系统</title>
+				<meta name="description" content="Student Portrait System" />
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<link rel="icon" href="/favicon.ico" />
+			</Head>
+			<main>
+				<Layout
+					style={{
+						minHeight: "100vh",
+					}}
+				>
+					<Sider theme="light">
+						<div className={styles.sider}>学生画像系统</div>
+						<Menu
+							theme="light"
+							defaultSelectedKeys={["1"]}
+							mode="inline"
+							items={[
+								getItem(
+									"创建新任务",
+									MENU_CONFIG.CREATE_TASK,
+									<PlusOutlined />
+								),
+								getItem(
+									"我的任务",
+									MENU_CONFIG.MY_TASK,
+									<UserOutlined />,
+									connectionItemList.map((data) => {
+										return {
+											key: `${data.connectionId}`,
+											label: `${data.tableName}`,
+										};
+									})
+								),
+								menuItem,
+							]}
+							defaultOpenKeys={[MENU_CONFIG.MY_TASK]}
+							onClick={handleClick}
+						/>
+					</Sider>
+					<Layout className="site-layout">
+						<Header
+							className={styles.header}
+							style={{
+								background: colorBgContainer,
+							}}
+						>
+							<div>{username}</div>
+							<Button onClick={showConfirm}>退出</Button>
+						</Header>
+						<Content
+							className={styles.content}
+							style={{
+								margin: "0 16px",
+							}}
+						>
+							<Tabs
+								defaultActiveKey="1"
+								onTabClick={(key) => {
+									setTabkey(key);
+								}}
+								items={[
+									{
+										label: "可视化数据",
+										key: "1",
+										children: linkList.length ? (
+											<CharContent
+												linklist={linkList}
+												connectionId={connectionId}
+												missionName={missionName}
+												fetchData={fetchData}
+											/>
+										) : (
+											<Empty className={styles.empty} />
+										),
+									},
+									{
+										label: "管理",
+										key: "2",
+										children:
+											menuKey === MENU_CONFIG.PUBLIC_MANAGER ? (
+												<PublicManage />
+											) : linkList.length ? (
+												<Manage
+													missionName={missionName}
+                          linkList={linkList}
+													connectionId={connectionId}
+													fetchData={fetchData}
+													resetLinks={resetLinks}
+                          
+												/>
+											) : (
+												<Empty className={styles.empty} />
+											),
+									},
+									{
+										label: "个人中心",
+										key: "3",
+										children: "Tab 3",
+									},
+								]}
+								style={{
+									lineType: "none",
+								}}
+							/>
+						</Content>
+						<Footer
+							style={{
+								textAlign: "center",
+							}}
+						>
+							User Portrait ©2023 Created by Hunter Li & Zhenyue Wang
+						</Footer>
+					</Layout>
+					{isConnectionModalOpen && (
+						<AddConnectionForm
+							setIsConnectionModalOpen={setIsConnectionModalOpen}
+							addConnection={addConnection}
+						/>
+					)}
+				</Layout>
+			</main>
+		</>
+	);
 };
 export default Home;
