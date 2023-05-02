@@ -53,7 +53,7 @@ export default function ItemList(props) {
     setList([...list]);
     api.deleteViewInfo({ viewId: id }).then((res) => {
       message.success("删除成功");
-      props.deleteViewInfo(id);
+      props.deleteViewChar(id);
     });
   };
 
