@@ -7,6 +7,7 @@ import {
 	Input,
 	Modal,
 	Space,
+	Spin,
 	Tag,
 	theme,
 } from "antd";
@@ -32,6 +33,7 @@ export default function Manage(props) {
 	const [typeState, setTypeState] = useState(null); // 要传给table的type数据
 	const [clickedSearchType, setClickedSearchType] = useState(null); // 目前显示的搜索部分框字段
 	const [keyWord, setKeyWord] = useState(null); //搜索关键词对象
+  const [isLoading, setIsloading] = useState(true);
 
 	// ref
 	const typeRef = useRef(null); // 用以缓存未处理的type数据
@@ -127,6 +129,7 @@ export default function Manage(props) {
 			setClickedSearchType(null)
 		};
 	}, [props.linkList]);
+	//if(isLoading) return <Spin style={{display:'grid', placeContent:'center',height:'80vh'}} />
 
 	return (
 		<div className={styles.site_layout_content_show}>
