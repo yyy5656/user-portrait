@@ -35,12 +35,12 @@ export default function AddProperty(props) {
             {
               key: "1",
               label: "新增字段",
-              children: <PropertyCom connectionId={connectionId} type={1} />,
+              children: <PropertyCom connectionId={connectionId} setIsOpenAddPropertyModal={setIsOpenAddPropertyModal} type={1} />,
             },
             {
               key: "2",
               label: "更新数据",
-              children: <PropertyCom connectionId={connectionId} type={2} />,
+              children: <PropertyCom connectionId={connectionId} setIsOpenAddPropertyModal={setIsOpenAddPropertyModal} type={2} />,
             },
           ]}
           onChange={onChange}
