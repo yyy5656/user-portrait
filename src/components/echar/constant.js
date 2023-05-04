@@ -9,25 +9,6 @@ export const charTypeName = {
   [charTypeConfig.line]: "折线图",
 };
 
-// mock一些
-export const charListData = [
-  {
-    name: "图表1",
-    type: charTypeConfig.pie,
-    property: [
-      {
-        connectionId: 18,
-        linkComment: "性别",
-        linkId: 72,
-      },
-    ],
-    data: [
-      { value: 200, name: "男" },
-      { value: 735, name: "女" },
-    ],
-  },
-];
-
 export const charType = [
   {
     type: charTypeConfig.bar,
@@ -129,9 +110,4 @@ export const getCharOption = (type, data, title, linkComment) => {
         ],
       };
   }
-};
-
-export const addViewType = {
-  add_view: "add_view",
-  open_view: "open_view",
 };
