@@ -68,6 +68,7 @@ const ShowTable = (props) => {
 
 	// ref
 	const columns = useRef([]); // 暂存的表格位置
+	const tempData = useRef(null);
 
 	// methods
 	/**
@@ -76,6 +77,7 @@ const ShowTable = (props) => {
 	const getTableData = () => {
 		const { keyWord } = props;
 		if (keyWord) {
+			tempData.current = data;
 			api.queryData(keyWord).then((res) => {
 				setData(res.data.data);
 			});
