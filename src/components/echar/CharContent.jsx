@@ -8,6 +8,8 @@ import BasicBar from "./BasicBar";
 import { useEffect, useState } from "react";
 import api from "@/utils/api";
 
+const { confirm } = Modal;
+
 export default function CharContent(props) {
 	//console.log(props);
 	const [charList, setCharList] = useState([]);

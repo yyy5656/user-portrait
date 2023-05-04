@@ -36,10 +36,16 @@ export const getCharOption = (type, data, title, linkComment) => {
           // subtext: "Fake Data",
           left: "center",
         },
+        tooltip: {
+          trigger: "item",
+        },
         xAxis: {
           name: linkComment,
           type: "category",
           data: data.xAxisData,
+          axisTick: {
+            interval: '0'
+          },
         },
         yAxis: {
           type: "value",
