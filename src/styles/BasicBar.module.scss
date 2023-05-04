@@ -9,7 +9,8 @@
 
 .basicBar{
     width: 500px;
-    margin-left: 15%;
+    margin-left: 50%;
+    transform: translateX(-50%);
 }
 .left{
     width: 20%;
@@ -18,4 +19,5 @@
 .cancel{
     position: absolute;
     right: 15px;
+    cursor: pointer;
 }
