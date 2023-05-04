@@ -5,16 +5,8 @@ import { useEffect, useRef } from "react";
 import { getCharOption } from "./constant";
 
 export default function BasicBar(props) {
-	console.log("123", props);
-	const { name, property, type, data } = props.charOption;
+	const { name, property, type, data, status } = props.charOption;
 	const dom = useRef();
-
-	// const [myChart, setMyChart] = useState();
-
-	useEffect(() => {
-		let option = getCharOption(type, data, name, property[0].linkComment);
-		console.log("123", option);
-	}, []);
 
 	useEffect(() => {
 		const myChart = echarts.init(dom.current, null, {
@@ -22,12 +14,11 @@ export default function BasicBar(props) {
 			height: 400,
 		});
 		let option = getCharOption(type, data, name, property[0].linkComment);
-		console.log("123", option);
 		option && myChart.setOption(option);
 		return () => {
 			option = null;
 		};
-	}, [dom.current]);
+	}, [dom.current, data]);
 
 	return (
 		<>
@@ -35,7 +26,7 @@ export default function BasicBar(props) {
 				<div
 					className={styles.cancel}
 					onClick={() => {
-						props.deleteViewChar(props.viewId);
+						props.changeStatus(props.index, status);
 					}}
 				>
 					<CloseOutlined />

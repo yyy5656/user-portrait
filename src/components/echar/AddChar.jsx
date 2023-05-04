@@ -95,13 +95,14 @@ export default function AddChar(props) {
 	};
 
 	const addCharOption = (option) => {
+    console.log(option);
 		api.insertViewInfo({ viewData: JSON.stringify(option) }).then((res) => {
 			const viewId = res.data.msg;
-			props.addViewChar(
-				addViewType.add_view,
+			props.addViewChar(option)
+			/* props.addViewChar(
 				{ viewData: option },
 				Number(viewId)
-			);
+			); */
 		});
 	};
 
