@@ -4,12 +4,12 @@ import {
 	Collapse,
 	Dropdown,
 	Form,
-	Input,
+	Input, message,
 	Modal,
 	Space,
 	Spin,
 	Tag,
-	theme,
+	theme
 } from "antd";
 import {DownOutlined, RollbackOutlined, SearchOutlined} from "@ant-design/icons";
 import styles from "@/styles/Manage.module.scss";
@@ -111,11 +111,12 @@ export default function Manage(props) {
 	 * @param queryData
 	 */
 	const searchData = (queryData) => {
-        setIsSearching(true);
 		if (!queryData.searchName) {
 			//* 无搜索关键字
 			setKeyWord(null);
+			message.info("请输入要检索的内容。")
 		} else {
+			setIsSearching(true);
 			//* 搜索关键字
 			setKeyWord({
 				linkId: clickedSearchType.linkId,
