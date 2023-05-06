@@ -24,6 +24,7 @@ export default function AddConnectionForm(props) {
   const [maxNum, setMaxNum] = useState(2);
   const [isFinisedCreate, setIsFinisedCreate] = useState(false);
   const [isUpload, setIsUpload] = useState(false);
+  const [isloading,setIsloading] = useState(false);
 
   const uploadProps = {
     name: "file",
@@ -75,6 +76,7 @@ export default function AddConnectionForm(props) {
 
  // 创建新任务最后一步 
   const handleConnectionOk = () => {
+    setIsloading(true);
     api
       .importPropertyByLine({
         start: minNum,
@@ -263,6 +265,7 @@ export default function AddConnectionForm(props) {
               }
             }}
             disabled={stepItems[stepIndex].disabled}
+            loading={isloading}
           >
             {stepItems[stepIndex].buttonName}
           </Button>
