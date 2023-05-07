@@ -32,7 +32,6 @@ export default function CharContent(props) {
 		});
 		const newData = data.map(item => {
 			if(item.type != "PIE"){
-				console.log(item);
 				return {
 					...item,
 					data: { xAxisData: item.data.map((elem) => elem.name), yAxisData :item.data.map((elem) => elem.value)},
