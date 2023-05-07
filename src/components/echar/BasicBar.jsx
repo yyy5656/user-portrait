@@ -10,10 +10,11 @@ export default function BasicBar(props) {
 
 	useEffect(() => {
 		const myChart = echarts.init(dom.current, null, {
-			width: 500,
+			width: 600,
 			height: 400,
 		});
 		let option = getCharOption(type, data, name, property[0].linkComment);
+		//console.log(option);
 		option && myChart.setOption(option);
 		return () => {
 			option = null;

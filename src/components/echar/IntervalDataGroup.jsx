@@ -1,87 +1,59 @@
-import {
-  Modal,
-  Button,
-  Select,
-  Input,
-  InputNumber,
-  Checkbox,
-  message,
-} from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Button, Input, InputNumber, message } from "antd";
 import styles from "@/styles/AddChar.module.scss";
-import { useEffect, useRef, useState } from "react";
-import {
-  transfromLinkToSelect,
-  transfromSeleToList,
-  getBasicBarData,
-} from "@/utils/utils";
-import { getCharOption } from "./constant";
-import api from "@/utils/api";
+import { useEffect, useMemo, useState } from "react";
 
 export default function IntervalDataGroup(props) {
-  console.log(props);
-  const [groupList, setGroupList] = useState([]);
-  const [start, setStart] = useState();
-  const [end, setEnd] = useState();
-  return (
-    <>
-      <div>
-        <div>
-          分组：
-          <Button
-            type="primary"
-            onClick={() => {
-              setGroupList([...groupList, {}]);
-            }}
-          >
-            添加分组
-          </Button>
-        </div>
-        {groupList.map((item, index) => (
-          <div className={styles.interval_group} key={index}>
-            <Input
-              placeholder="输入分组名"
-              style={{ width: "130px", marginRight: "20px" }}
-              onChange={(e) => {
-                const newGourpList = [...groupList];
-                newGourpList[index].name = e.target.value;
-                setGroupList(newGourpList);
-              }}
-            />
-            <InputNumber
-              onChange={(value) => {
-                const newGourpList = [...groupList];
-                newGourpList[index].start = value;
-                setGroupList(newGourpList);
-              }}
-            />
-            <InputNumber
-              onChange={(value) => {
-                const newGourpList = [...groupList];
-                newGourpList[index].end = value;
-                setGroupList(newGourpList);
-              }}
-            />
-            <Button
-              onClick={() => {
-                api
-                  .getNumerical({
-                    start: groupList[index].start,
-                    end: groupList[index].end,
-                    link: props.selectProperty[0],
-                  })
-                  .then((res) => {
-                    groupList[index].value = res.data.data;
-                    props.changeCharListGroup(groupList);
-                  });
-                message.success("添加成功");
-              }}
-            >
-              确认添加
-            </Button>
-          </div>
-        ))}
-      </div>
-    </>
-  );
+	const { numberScope, setCurScope, curScope, selectProperty, setGroupData } =
+		props;
+	const [scope, setScope] = useState({});
+	const handleMinChange = (value) => {
+		setCurScope((pre) => ({ ...pre, start: value }));
+	};
+	const handleMaxChage = (value) => {
+		setCurScope((pre) => ({ ...pre, end: value }));
+	};
+	useEffect(() => {
+		setScope({ min: numberScope.min, max: numberScope.max });
+	}, [props.numberScope]);
+	useEffect(() => {
+		setGroupData((pre) => ({
+			...pre,
+			[selectProperty.linkId]: {
+				...curScope,
+				linkId: selectProperty.linkId,
+				linkType: selectProperty.linkType,
+			},
+		}));
+	}, [curScope]);
+
+	return (
+		<>
+			{
+				<div>
+					<div>
+						可选范围:{numberScope.min}~{numberScope.max}
+					</div>
+					{scope.min !== undefined && scope.max !== undefined && (
+						<div>
+							筛选条件: 最小值:
+							<InputNumber
+								name="min"
+								min={numberScope.min}
+								max={curScope.end || undefined}
+								defaultValue={numberScope.min}
+								onChange={handleMinChange}
+							/>
+							最大值:
+							<InputNumber
+								min={curScope.start}
+								max={numberScope.max}
+								defaultValue={numberScope.max || undefined}
+								onChange={handleMaxChage}
+							/>
+						</div>
+					)}
+				</div>
+			}
+		</>
+	);
 }

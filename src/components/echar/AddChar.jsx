@@ -1,29 +1,26 @@
-import { Modal, Button, Select, Input, message } from "antd";
+import { Modal, Select, Input, message, Button } from "antd";
 import styles from "@/styles/BasicBar.module.scss";
 import { useEffect, useRef, useState } from "react";
 import api from "@/utils/api";
 import DataGroup from "./DataGroup";
 import IntervalDataGroup from "./IntervalDataGroup";
-import { charTypeConfig, charType, addViewType } from "./constant";
+import { charTypeConfig, charType } from "./constant";
 
 export default function AddChar(props) {
 	const { propertyList, defaultOption } = props;
 	//console.log(defaultOption);
 	// const { name:defaultName, defaultType, defualtProperty, defualtData } =
 	//   defaultOption?.viewData;
-	// 选择的图表类型
-	const [selectCharType, setSelectCharType] = useState();
-
-	// 选中的属性类型 是名词还是区间 0/1
-	const [selectLinkType, setSelectLinkType] = useState();
-	// 名词性的属性的键值数组
-	const [singleLinkList, setSingleLinkList] = useState([]);
-	// 选中的单个属性
-	const [selectProperty, setSelectProperty] = useState();
-
+	const [selectCharType, setSelectCharType] = useState(); // 选择的图表类型
+	const [selectLinkType, setSelectLinkType] = useState(); // 选中的属性类型 是名词还是区间 0/1
+	const [numberScope, setNumberScope] = useState({}); //数值型属性可选范围
+	const [curScope, setCurScope] = useState({});
+	const [selectProperty, setSelectProperty] = useState(); // 选中的单个属性
+	const [groups, setGroups] = useState([]);
 	const [name, setName] = useState();
-	const [charData, setCharData] = useState();
-	const [originCharData, setOriginCharData] = useState([]);
+	const [groupName, setGroupName] = useState("");
+	const [charData, setCharData] = useState([]);
+	const [groupData, setGroupData] = useState({});
 
 	const linkType = {
 		singleLink: 1,
@@ -31,13 +28,70 @@ export default function AddChar(props) {
 	};
 
 	const handleModalOkClick = () => {
-		if (name && selectProperty.length && selectCharType && charData) {
+		if (
+			name &&
+			selectCharType &&
+			selectProperty &&
+			!charData.length &&
+			!groups.length &&
+			selectLinkType === linkType.intervalLink
+		) {
+			api
+				.getNumerical({
+					start: curScope.start,
+					end: curScope.end,
+					link: selectProperty,
+				})
+				.then((res) => {
+					const data = { name, value: res.data.data };
+					addCharOption({
+						name,
+						type: selectCharType,
+						property: [selectProperty],
+						data: [data],
+					});
+					props.setIsModalOpen(false);
+				});
+		}
+
+		if (groups.length > 0 && name && selectCharType && selectProperty) {
+			let data = groups.map(async (item) => {
+				const NAME = item.name;
+				const numDTOList = Object.values(item).filter(
+					(elem) => elem.linkType === 0
+				);
+				const nounsDTOList = Object.values(item).filter(
+					(elem) => elem.linkType === 1
+				);
+				const reqData = { numDTOList, nounsDTOList };
+				const response = await api.getNounsAndNumerical(reqData);
+				return { name: NAME, value: response.data.data };
+			});
+			Promise.all(data).then((res) => {
+				console.log(res);
+				addCharOption({
+					name,
+					type: selectCharType,
+					property: [selectProperty],
+					data: res,
+				});
+			});
+		}
+		if (
+			name &&
+			selectProperty &&
+			selectCharType &&
+			!curScope.length &&
+			!groups.length &&
+			selectLinkType === linkType.singleLink
+		) {
 			addCharOption({
 				name,
 				type: selectCharType,
-				property: selectProperty,
+				property: [selectProperty],
 				data: charData,
 			});
+
 			props.setIsModalOpen(false);
 		} else if (selectLinkType === linkType.intervalLink && !charData) {
 			message.info("请选择分组");
@@ -51,58 +105,73 @@ export default function AddChar(props) {
 		// 1调用getNouns
 		const { type } = option;
 		setSelectLinkType(type);
-		setSelectProperty([
-			{
-				linkId: option.value,
-				linkComment: option.label,
-				connectionId: props.connectionId.current,
-				linkType: type,
-			},
-		]);
-		if (type === linkType.singleLink) {
+		setSelectProperty({
+			linkId: option.value,
+			linkComment: option.label,
+			connectionId: props.connectionId.current,
+			linkType: type,
+		});
+	};
+
+	//选择的属性变化时请求数据
+	useEffect(() => {
+		if (selectProperty === undefined) return;
+		//获取名词属性数据
+		if (selectProperty.linkType === linkType.singleLink) {
 			api
 				.getNouns({
-					linkId: option.value,
-					linkComment: option.label,
+					linkId: selectProperty.linkId,
+					linkComment: selectProperty.linkComment,
 					connectionId: props.connectionId.current,
-					linkType: option.type,
+					linkType: selectProperty.linkType,
 				})
 				.then((res) => {
 					const data = res.data.data;
-					if (selectCharType === charTypeConfig.pie) {
-						const newData = Object.keys(data).map((key) => ({
-							name: key,
-							value: data[key],
-						}));
-						setOriginCharData(newData);
-						setCharData(newData);
-					} else if (
-						selectCharType === charTypeConfig.bar ||
-						selectCharType === charTypeConfig.line
-					) {
-						const newData = {
-							xAxisData: Object.keys(data),
-							yAxisData: Object.values(data),
-						};
-						setCharData(newData);
-					}
+					const newData = Object.keys(data).map((key) => ({
+						name: key,
+						value: data[key],
+					}));
+					setCharData(newData);
 				});
 		}
-	};
-
-	const changeCharListGroup = (value) => {
-		value.length && setCharData(value);
-	};
+		//获取数值属性数据
+		if (selectProperty.linkType === linkType.intervalLink) {
+			api
+				.getNumericalScope({
+					link: {
+						linkId: selectProperty.linkId,
+						linkComment: selectProperty.linkComment,
+						connectionId: props.connectionId.current,
+						linkType: selectProperty.linkType,
+					},
+				})
+				.then((res) => {
+					setNumberScope(res.data.data);
+					setCurScope({ start: res.data.data.min, end: res.data.data.max });
+				});
+		}
+	}, [selectProperty, selectCharType]);
 
 	const addCharOption = (option) => {
-    console.log(option);
 		api.insertViewInfo({ viewData: JSON.stringify(option) }).then((res) => {
 			const viewId = res.data.msg;
-			props.addViewChar(option)
-			/* props.addViewChar(
-				{ viewData: option },
-				Number(viewId)
-			); */
+			if (selectCharType === "PIE") {
+				props.addViewChar(option, viewId);
+			} else {
+				console.log(option);
+				const newData = {
+					xAxisData: option.data.map((item) => item.name),
+					yAxisData: option.data.map((item) => item.value),
+				};
+				const data = {
+					name,
+					type: selectCharType,
+					property: [selectProperty],
+					data: newData,
+				};
+				console.log(data);
+				props.addViewChar(data, viewId);
+			}
 		});
 	};
 
@@ -110,6 +179,7 @@ export default function AddChar(props) {
 		return () => {
 			setSelectCharType(null);
 			setSelectLinkType(null);
+			setNumberScope({});
 		};
 	}, []);
 
@@ -163,8 +233,8 @@ export default function AddChar(props) {
 										options:
 											propertyList[0] &&
 											propertyList[0].map((item) => ({
-												label: item.linkComment,
 												value: item.linkId,
+												label: item.linkComment,
 												type: linkType.intervalLink,
 											})),
 									},
@@ -182,20 +252,58 @@ export default function AddChar(props) {
 								]}
 							/>
 						</div>
-
+						<div>
+							当前分组：
+							{groups.length === 0
+								? charData.map((item, index) => (
+										<span key={index} style={{ marginRight: "10px" }}>
+											{item.name}
+										</span>
+								  ))
+								: groups.map((item, index) => (
+										<span key={index} style={{ marginRight: "10px" }}>
+											{item.name}
+										</span>
+								  ))}
+						</div>
 						{selectLinkType === linkType.singleLink &&
 							(selectProperty ? (
 								<DataGroup
-									charData={originCharData}
-									changeCharListGroup={changeCharListGroup}
+									charData={charData}
+									selectProperty={selectProperty}
+									groupData={groupData}
+									setGroupData={setGroupData}
 								/>
 							) : null)}
 						{selectLinkType === linkType.intervalLink && (
 							<IntervalDataGroup
+								numberScope={numberScope}
+								curScope={curScope}
+								setCurScope={setCurScope}
+								setGroups={setGroups}
 								selectProperty={selectProperty}
-								changeCharListGroup={changeCharListGroup}
+								setGroupData={setGroupData}
 							/>
 						)}
+						分组名:
+						<Input
+							placeholder="输入分组名"
+							style={{ width: "130px", height: "100%" }}
+							value={groupName}
+							onChange={(e) => {
+								setGroupName(e.target.value);
+							}}
+						/>
+						<Button
+							onClick={() => {
+								setGroups((pre) => [...pre, { ...groupData, name: groupName }]);
+								setGroupData([]);
+								setGroupName("");
+								message.success("添加成功");
+							}}
+						>
+							添加分组
+						</Button>
 					</>
 				)}
 			</Modal>
