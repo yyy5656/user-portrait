@@ -23,6 +23,11 @@ export default function AllTask(props) {
     public: "0",
     order: "1",
   };
+  const taskName = {
+    "-1": "私有",
+    0: "公开",
+    1: "指定类型",
+  };
 
   const handleFetch = (response, handleFn = () => {}) => {
     console.log(response);
@@ -73,7 +78,7 @@ export default function AllTask(props) {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const res = await api.getOtherALlUser();
+      const res = await api.getOtherAllUser();
       const data = handleFetch(res);
       setUserList(data);
     };
@@ -93,7 +98,7 @@ export default function AllTask(props) {
     setIsModalOpen(false);
     const params = {
       connectionId: taskInfo.connectionId,
-      connectionType: taskType,
+      connectionType: taskType || taskInfo.connectionType,
       shareInfo: {
         sharedUserId,
         shareType,
@@ -113,7 +118,6 @@ export default function AllTask(props) {
   };
 
   const handleChange = (value) => {
-    console.log(`selected ${value}`);
     setTaskType(value);
   };
 
@@ -189,7 +193,7 @@ export default function AllTask(props) {
         <div className={styles.modal_container}>
           <span>类别</span>：
           <Select
-            defaultValue={taskInfo?.connectionType}
+            defaultValue={taskName[taskInfo?.connectionType]}
             style={{ width: 120 }}
             onChange={handleChange}
             options={[
