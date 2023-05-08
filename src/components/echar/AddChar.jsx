@@ -1,6 +1,15 @@
-import { Modal, Select, Input, message, Button } from "antd";
+import {
+	Modal,
+	Select,
+	Input,
+	message,
+	Button,
+	Space,
+	Tag,
+	Tooltip,
+} from "antd";
 import styles from "@/styles/BasicBar.module.scss";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import api from "@/utils/api";
 import DataGroup from "./DataGroup";
 import IntervalDataGroup from "./IntervalDataGroup";
@@ -252,7 +261,7 @@ export default function AddChar(props) {
 								]}
 							/>
 						</div>
-						<div>
+						<Space size={"small"} wrap>
 							当前分组：
 							{groups.length === 0
 								? charData.map((item, index) => (
@@ -261,11 +270,22 @@ export default function AddChar(props) {
 										</span>
 								  ))
 								: groups.map((item, index) => (
-										<span key={index} style={{ marginRight: "10px" }}>
-											{item.name}
-										</span>
+										<Tooltip title={groups[index].name}>
+											<Tag
+												key={index}
+												closable
+												onClose={(e) => {
+													setGroups((pre) =>
+														pre.filter((_, idx) => index !== idx)
+													);
+													e.preventDefault();
+												}}
+											>
+												{item.name}
+											</Tag>
+										</Tooltip>
 								  ))}
-						</div>
+						</Space>
 						{selectLinkType === linkType.singleLink &&
 							(selectProperty ? (
 								<DataGroup
@@ -285,25 +305,31 @@ export default function AddChar(props) {
 								setGroupData={setGroupData}
 							/>
 						)}
-						分组名:
-						<Input
-							placeholder="输入分组名"
-							style={{ width: "130px", height: "100%" }}
-							value={groupName}
-							onChange={(e) => {
-								setGroupName(e.target.value);
-							}}
-						/>
-						<Button
-							onClick={() => {
-								setGroups((pre) => [...pre, { ...groupData, name: groupName }]);
-								setGroupData([]);
-								setGroupName("");
-								message.success("添加成功");
-							}}
-						>
-							添加分组
-						</Button>
+						<Space size="middle">
+							分组名:
+							<Input
+								placeholder="输入分组名"
+								style={{ width: "130px", height: "100%" }}
+								value={groupName}
+								onChange={(e) => {
+									setGroupName(e.target.value);
+								}}
+							/>
+							<Button
+								onClick={() => {
+									if (!groupName) return message.info("请输入分组名");
+									setGroups((pre) => [
+										...pre,
+										{ ...groupData, name: groupName },
+									]);
+									setGroupData([]);
+									setGroupName("");
+									message.success("添加成功");
+								}}
+							>
+								添加分组
+							</Button>
+						</Space>
 					</>
 				)}
 			</Modal>

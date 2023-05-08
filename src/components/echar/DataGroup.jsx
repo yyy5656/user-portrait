@@ -1,6 +1,5 @@
 import { Modal, Button, Select, Input, Checkbox, message } from "antd";
 import styles from "@/styles/AddChar.module.scss";
-import { useEffect, useState } from "react";
 
 
 export default function DataGroup(props) {
