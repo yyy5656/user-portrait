@@ -24,6 +24,7 @@ export default function PropertyCom(props) {
   const [stepTwoSelectProperty, setStepTwoSelectProperty] = useState();
   const [stepThrSelectPropertyOption, setStepThrSelectPropertyOption] =
     useState([]);
+  const [stepThrSelectLinkOption, setStepThrSelectLinkOption] = useState([]);
   const [stepThrSelectPropertyList, setStepThrSelectPropertyList] = useState(
     []
   );
@@ -75,7 +76,7 @@ export default function PropertyCom(props) {
       updateCategories: updateCategoriesList,
     };
     api.updateData(params).then((res) => {
-      if (res.code === 200) {
+      if (res.code == 200) {
         message.success("更新成功！");
         setIsOpenAddPropertyModal(false);
       } else {
@@ -98,6 +99,18 @@ export default function PropertyCom(props) {
         label: item.categoryName,
         type: item.categoryType,
         categoryIndex: item.categoryIndex,
+      }))
+    );
+  };
+  const filterChoosenLink = (linkId) => {
+    const filterLink = linkList.filter((item) => item.linkId !== linkId);
+    setStepThrSelectLinkOption(
+      filterLink.map((item) => ({
+        label: item.linkComment,
+        value: item.linkComment,
+        linkId: item.linkId,
+        connectionId: item.connectionId,
+        linkType: item.linkType,
       }))
     );
   };
@@ -187,6 +200,7 @@ export default function PropertyCom(props) {
                         connectionId: option.connectionId,
                         linkType: option.type,
                       });
+                      filterChoosenLink(option.linkId);
                     }}
                     options={linkList.map((item) => ({
                       label: item.linkComment,
@@ -329,7 +343,7 @@ export default function PropertyCom(props) {
                         <Select
                           allowClear
                           style={{ width: "60%" }}
-                          placeholder="选择属性"
+                          placeholder="选择字段："
                           onChange={(_, option) => {
                             stepThrList[index].link = {
                               linkComment: option.value,
@@ -338,14 +352,9 @@ export default function PropertyCom(props) {
                               linkType: option.linkType,
                             };
                             setStepThrList([...stepThrList]);
+                            // filterChoosenLink(option.linkId);
                           }}
-                          options={linkList.map((item) => ({
-                            label: item.linkComment,
-                            value: item.linkComment,
-                            linkId: item.linkId,
-                            connectionId: item.connectionId,
-                            linkType: item.linkType,
-                          }))}
+                          options={[...stepThrSelectLinkOption]}
                         />
                       </div>
                       <div style={{ width: "40%" }}>
@@ -363,6 +372,7 @@ export default function PropertyCom(props) {
                               categoryType: option.type,
                             };
                             setStepThrList([...stepThrList]);
+                            // filterChoosenPropetry(sheetIndex, option.categoryIndex);
                           }}
                           options={[...stepThrSelectPropertyOption]}
                         />

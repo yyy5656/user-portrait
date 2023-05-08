@@ -42,6 +42,7 @@ export default function TaskAuthority(props) {
               const { shareId } = record;
               api.deleteShareById({ shareId }).then((res) => {
                 message.success(res.data.msg);
+                props.fetchTableData();
               });
             }}
           >

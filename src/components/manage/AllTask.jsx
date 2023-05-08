@@ -30,7 +30,6 @@ export default function AllTask(props) {
   };
 
   const handleFetch = (response, handleFn = () => {}) => {
-    console.log(response);
     if (
       response.status === 200 &&
       response.data.code === 200 &&
@@ -86,6 +85,10 @@ export default function AllTask(props) {
       fetchUserData();
     }
   }, [isModalOpen]);
+
+  useEffect(()=>{
+    fetchData();
+  },[props.dataSource.length])
 
   const handleClick = (task) => {
     console.log(task);
