@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
 import { CloseOutlined } from "@ant-design/icons";
 import styles from "@/styles/PublicManager.module.scss";
 import { Table, Space, Tag, message } from "antd";
 import api from "@/utils/api";
 
 export default function TaskAuthority(props) {
-  console.log(props);
   const { dataSource } = props;
   const columns = [
     {

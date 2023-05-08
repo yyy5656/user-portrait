@@ -215,7 +215,7 @@ const Home = () => {
 	useEffect(() => {
 		fetchData();
 		fetchGetConnection();
-		//setUsername(localStorage.getItem("userName"));
+		setUsername(localStorage.getItem("userName"));
 		return () => {
 			setConnectionItemList([]);
 		};
