@@ -14,7 +14,6 @@ export default function BasicBar(props) {
 			height: 400,
 		});
 		let option = getCharOption(type, data, name, property[0].linkComment);
-		//console.log(option);
 		option && myChart.setOption(option);
 		return () => {
 			option = null;

@@ -1,17 +1,9 @@
-import {
-	Modal,
-	Select,
-	Input,
-	message,
-	Button,
-	Space,
-	Tag,
-	Tooltip,
-} from "antd";
+import { Modal, Select, Input, message, Space, Tag, Tooltip } from "antd";
 import styles from "@/styles/BasicBar.module.scss";
 import { useEffect, useState } from "react";
 import api from "@/utils/api";
 import DataGroup from "./DataGroup";
+import Composition from "./Composition";
 import IntervalDataGroup from "./IntervalDataGroup";
 import { charTypeConfig, charType } from "./constant";
 
@@ -25,11 +17,11 @@ export default function AddChar(props) {
 	const [numberScope, setNumberScope] = useState({}); //数值型属性可选范围
 	const [curScope, setCurScope] = useState({});
 	const [selectProperty, setSelectProperty] = useState(); // 选中的单个属性
-	const [groups, setGroups] = useState([]);
+	const [numsGroups, setNumsGroups] = useState([]);
+	const [nounsGroups, setNounsGroups] = useState([]);
 	const [name, setName] = useState();
-	const [groupName, setGroupName] = useState("");
+	const [selectedGroups, setSelectedGroups] = useState([]);
 	const [charData, setCharData] = useState([]);
-	const [groupData, setGroupData] = useState({});
 
 	const linkType = {
 		singleLink: 1,
@@ -37,74 +29,57 @@ export default function AddChar(props) {
 	};
 
 	const handleModalOkClick = () => {
-		if (
-			name &&
-			selectCharType &&
-			selectProperty &&
-			!charData.length &&
-			!groups.length &&
-			selectLinkType === linkType.intervalLink
-		) {
-			api
-				.getNumerical({
-					start: curScope.start,
-					end: curScope.end,
-					link: selectProperty,
-				})
-				.then((res) => {
-					const data = { name, value: res.data.data };
+		//信息是否完善
+		if (name && selectCharType && selectProperty) {
+			if (nounsGroups.length || numsGroups.length) {
+				//复合型
+				let data = selectedGroups.map(async (item) => {
+					const NAME = item.name;
+					const numDTOList = item.data.filter((elem) => elem.linkType === 0);
+					const nounsDTOList = item.data.filter((elem) => elem.linkType === 1);
+					const reqData = { numDTOList, nounsDTOList };
+					const response = await api.getNounsAndNumerical(reqData);
+					return { name: NAME, value: response.data.data };
+				});
+				Promise.all(data).then((res) => {
 					addCharOption({
 						name,
 						type: selectCharType,
 						property: [selectProperty],
-						data: [data],
+						data: res,
 					});
-					props.setIsModalOpen(false);
 				});
-		}
-
-		if (groups.length > 0 && name && selectCharType && selectProperty) {
-			let data = groups.map(async (item) => {
-				const NAME = item.name;
-				const numDTOList = Object.values(item).filter(
-					(elem) => elem.linkType === 0
-				);
-				const nounsDTOList = Object.values(item).filter(
-					(elem) => elem.linkType === 1
-				);
-				const reqData = { numDTOList, nounsDTOList };
-				const response = await api.getNounsAndNumerical(reqData);
-				return { name: NAME, value: response.data.data };
-			});
-			Promise.all(data).then((res) => {
-				console.log(res);
+				props.setIsModalOpen(false);
+			} else if (!charData.length && selectLinkType === linkType.intervalLink) {
+				//数值型
+				api
+					.getNumerical({
+						start: curScope.start,
+						end: curScope.end,
+						link: selectProperty,
+					})
+					.then((res) => {
+						const data = { name, value: res.data.data };
+						addCharOption({
+							name,
+							type: selectCharType,
+							property: [selectProperty],
+							data: [data],
+						});
+					});
+				props.setIsModalOpen(false);
+			} else if (selectLinkType === linkType.singleLink) {
+				//名词型
 				addCharOption({
 					name,
 					type: selectCharType,
 					property: [selectProperty],
-					data: res,
+					data: charData,
 				});
-			});
-		}
-		if (
-			name &&
-			selectProperty &&
-			selectCharType &&
-			!curScope.length &&
-			!groups.length &&
-			selectLinkType === linkType.singleLink
-		) {
-			addCharOption({
-				name,
-				type: selectCharType,
-				property: [selectProperty],
-				data: charData,
-			});
-
-			props.setIsModalOpen(false);
-		} else if (selectLinkType === linkType.intervalLink && !charData) {
-			message.info("请选择分组");
+				props.setIsModalOpen(false);
+			}
 		} else {
+			//信息不全
 			message.info("请完善信息");
 		}
 	};
@@ -139,6 +114,7 @@ export default function AddChar(props) {
 					const newData = Object.keys(data).map((key) => ({
 						name: key,
 						value: data[key],
+						linkId: selectProperty.linkId,
 					}));
 					setCharData(newData);
 				});
@@ -162,10 +138,16 @@ export default function AddChar(props) {
 	}, [selectProperty, selectCharType]);
 
 	const addCharOption = (option) => {
-		api.insertViewInfo({ viewData: JSON.stringify(option) }).then((res) => {
+		const pieOption = { ...option, property: [{ linkComment: "自定义" }] };
+		const newOption = {
+			...option,
+			data: option.data.map((item) => ({ name: item.name, value: item.value })),
+			property: [{ linkComment: "自定义" }],
+		};
+		api.insertViewInfo({ viewData: JSON.stringify(newOption) }).then((res) => {
 			const viewId = res.data.msg;
-			if (selectCharType === "PIE") {
-				props.addViewChar(option, viewId);
+			if (selectCharType === charTypeConfig.pie) {
+				props.addViewChar(pieOption, viewId);
 			} else {
 				console.log(option);
 				const newData = {
@@ -175,7 +157,7 @@ export default function AddChar(props) {
 				const data = {
 					name,
 					type: selectCharType,
-					property: [selectProperty],
+					property: [{ linkComment: "自定义" }],
 					data: newData,
 				};
 				console.log(data);
@@ -205,7 +187,7 @@ export default function AddChar(props) {
 				}}
 				okText="生成"
 				cancelText="取消"
-				width={600}
+				width={700}
 			>
 				<div>
 					<span>输入图表名称：</span>
@@ -263,19 +245,20 @@ export default function AddChar(props) {
 						</div>
 						<Space size={"small"} wrap>
 							当前分组：
-							{groups.length === 0
-								? charData.map((item, index) => (
-										<span key={index} style={{ marginRight: "10px" }}>
-											{item.name}
-										</span>
-								  ))
-								: groups.map((item, index) => (
-										<Tooltip title={groups[index].name}>
+							{nounsGroups.length === 0 && numsGroups.length === 0 ? (
+								charData.map((item, index) => (
+									<span key={index} style={{ marginRight: "10px" }}>
+										{item.name}
+									</span>
+								))
+							) : (
+								<div>
+									{nounsGroups.map((item, index) => (
+										<Tooltip key={index} title={nounsGroups[index].value}>
 											<Tag
-												key={index}
 												closable
 												onClose={(e) => {
-													setGroups((pre) =>
+													setNounsGroups((pre) =>
 														pre.filter((_, idx) => index !== idx)
 													);
 													e.preventDefault();
@@ -284,52 +267,50 @@ export default function AddChar(props) {
 												{item.name}
 											</Tag>
 										</Tooltip>
-								  ))}
+									))}
+									{numsGroups.map((item, index) => (
+										<Tooltip
+											key={index}
+											title={`${numsGroups[index].start}-${numsGroups[index].end}`}
+										>
+											<Tag
+												closable
+												onClose={(e) => {
+													setNumsGroups((pre) =>
+														pre.filter((_, idx) => index !== idx)
+													);
+													e.preventDefault();
+												}}
+											>
+												{item.name}
+											</Tag>
+										</Tooltip>
+									))}
+								</div>
+							)}
 						</Space>
-						{selectLinkType === linkType.singleLink &&
-							(selectProperty ? (
-								<DataGroup
-									charData={charData}
-									selectProperty={selectProperty}
-									groupData={groupData}
-									setGroupData={setGroupData}
-								/>
-							) : null)}
 						{selectLinkType === linkType.intervalLink && (
 							<IntervalDataGroup
 								numberScope={numberScope}
 								curScope={curScope}
 								setCurScope={setCurScope}
-								setGroups={setGroups}
+								setNumsGroups={setNumsGroups}
 								selectProperty={selectProperty}
-								setGroupData={setGroupData}
 							/>
 						)}
-						<Space size="middle">
-							分组名:
-							<Input
-								placeholder="输入分组名"
-								style={{ width: "130px", height: "100%" }}
-								value={groupName}
-								onChange={(e) => {
-									setGroupName(e.target.value);
-								}}
+						{selectLinkType === linkType.singleLink && (
+							<DataGroup
+								charData={charData}
+								numberScope={numberScope}
+								selectProperty={selectProperty}
+								setNounsGroups={setNounsGroups}
 							/>
-							<Button
-								onClick={() => {
-									if (!groupName) return message.info("请输入分组名");
-									setGroups((pre) => [
-										...pre,
-										{ ...groupData, name: groupName },
-									]);
-									setGroupData([]);
-									setGroupName("");
-									message.success("添加成功");
-								}}
-							>
-								添加分组
-							</Button>
-						</Space>
+						)}
+						<Composition
+							nounsGroups={nounsGroups}
+							numsGroups={numsGroups}
+							setSelectedGroups={setSelectedGroups}
+						/>
 					</>
 				)}
 			</Modal>
