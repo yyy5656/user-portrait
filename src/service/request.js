@@ -10,6 +10,9 @@ const HTTP = axios.create({
 // 请求拦截器
 HTTP.interceptors.request.use(
     (config) => {
+        if(config.headers.token){
+            return config;
+        }
         let token = localStorage.getItem("token");
         if (token) {
             config.headers["token"] = token;

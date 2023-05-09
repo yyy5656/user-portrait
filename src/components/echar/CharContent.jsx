@@ -7,10 +7,12 @@ import ItemList from "@/components/echar/ItemList";
 import BasicBar from "./BasicBar";
 import { useEffect, useState } from "react";
 import api from "@/utils/api";
+import { MENU_CONFIG } from "@/utils/constant";
 
 const { confirm } = Modal;
 
 export default function CharContent(props) {
+  console.log("ranyu123", props);
   const [charList, setCharList] = useState([]);
   // 属性分组
   const [propertyList, setPropertyList] = useState({});
@@ -99,10 +101,21 @@ export default function CharContent(props) {
 
   //获取图表信息
   useEffect(() => {
-    api.getViewInfo().then((res) => {
-      getViewChar(res.data.data);
-    });
-	// 这里要拿connectionId做依赖项啊 不然点击任务切换的时候viewInfo的数据不会更新
+    setTimeout(() => {
+      if (props.menuKey === MENU_CONFIG.SHARED_CONNECTION) {
+        const token = localStorage.getItem("token_shared");
+
+        api.getViewInfo(token).then((res) => {
+          getViewChar(res.data.data);
+        });
+      } else {
+        api.getViewInfo().then((res) => {
+          getViewChar(res.data.data);
+        });
+      }
+    }, 500);
+
+    // 这里要拿connectionId做依赖项啊 不然点击任务切换的时候viewInfo的数据不会更新
   }, [props.connectionId.current]);
 
   return (
@@ -113,6 +126,7 @@ export default function CharContent(props) {
       <ShowProperty property={handlePropsData()} />
       {charList.length !== 0 && (
         <ItemList
+          shareType={props.shareType}
           connectionId={props.connectionId.current}
           charList={charList}
           changeStatus={changeStatus}
@@ -120,9 +134,12 @@ export default function CharContent(props) {
           changeViewInfo={changeViewInfo}
         />
       )}
-      <Button style={{ marginTop: "20px" }} onClick={handleClick}>
-        生成图表
-      </Button>
+      {props.shareType ? (
+        <Button style={{ marginTop: "20px" }} onClick={handleClick}>
+          生成图表
+        </Button>
+      ) : null}
+
       {isModalOpen && (
         <AddChar
           isModalOpen={isModalOpen}
