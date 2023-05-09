@@ -68,11 +68,11 @@ export default function PropertyCom(props) {
       category: stepThrSelectPropertyList,
     };
     api.addData(params).then((res) => {
-      if (res.code === 200) {
+      if (res.data.data.code === 200) {
         message.success("添加成功！");
         setIsOpenAddPropertyModal(false);
       } else {
-        message.info(res.data.msg);
+        message.info(res.data.data.msg);
       }
     });
   };
@@ -86,11 +86,11 @@ export default function PropertyCom(props) {
       updateCategories: updateCategoriesList,
     };
     api.updateData(params).then((res) => {
-      if (res.code == 200) {
+      if (res.data.data.code == 200) {
         message.success("更新成功！");
         setIsOpenAddPropertyModal(false);
       } else {
-        message.info(res.data.msg);
+        message.info(res.data.data.msg);
       }
     });
   };
@@ -139,7 +139,6 @@ export default function PropertyCom(props) {
         message.success("上传成功！");
         // setIsUpload(true);
         sePpropertyData(res.data.data);
-        setMaxNum(Number(res.data.data));
       });
     },
     beforeUpload(file) {
@@ -185,6 +184,7 @@ export default function PropertyCom(props) {
                 placeholder="选择表格"
                 onChange={(value) => {
                   setSheetIndex(value);
+                  setMaxNum(Number(propertyData.sheetList[value].dataLine));
                 }}
                 options={
                   propertyData.sheetList &&
