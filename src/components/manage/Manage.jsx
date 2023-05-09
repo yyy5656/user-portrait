@@ -177,7 +177,18 @@ export default function Manage(props) {
             className={styles.import_data_btn}
             onClick={() => {
               api.getAddInfo().then((res) => {
-                setImportDataSource(res.data.data);
+                setImportDataSource(
+                  res.data.data.map((item) => {
+                    const addData = JSON.parse(item.addData);
+                    return {
+                      unImportDataList: addData.unImportDataList,
+                      unMatchPrimaryKey: addData.unMatchPrimaryKey,
+                      addTime: item.addTime,
+                      connectionId: item.connectionId,
+                      addId: item.addId,
+                    };
+                  })
+                );
                 setIsOpenImportModal(true);
               });
             }}
@@ -348,19 +359,81 @@ export default function Manage(props) {
         }}
       >
         <Table
+          className={styles.table_div}
           rowKey={(e) => e.addId}
           size="small"
+          style={{ minHeight: 200, width: "800px !important" }}
+          pagination={false}
           dataSource={[...importDataSource]}
           columns={[
-            {
-              title: "数据信息",
-              dataIndex: "addData",
-              key: "addData",
-            },
             {
               title: "添加时间",
               dataIndex: "addTime",
               key: "addTime",
+              width: "20%",
+            },
+            {
+              title: "未导入数据信息",
+              dataIndex: "unImportDataList",
+              key: "unImportDataList",
+              render: (text) => {
+                const len = text[0].unImportData.length;
+                return (
+                  <table
+                    style={{
+                      borderRadius: 0,
+                      border: "0.5px solid",
+                    }}
+                    className={styles.table_hand}
+                    border={1}
+                    cellpadding={1}
+                  >
+                    <tr>
+                      <th width="20%">primaryKey</th>
+                      <th colspan={len} style={{ textAlign: "center" }}>
+                        数据
+                      </th>
+                    </tr>
+                    {text.map((item, index) => (
+                      <tr key={index}>
+                        <td style={{ textAlign: "center" }}>
+                          {item.primaryKey}
+                        </td>
+                        {item.unImportData.map((e, index) => (
+                          <td
+                            style={{ minWidth: "10px", textAlign: "center" }}
+                            key={index}
+                            border={1}
+                          >
+                            {e}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </table>
+                );
+              },
+            },
+            {
+              title: "未匹配",
+              dataIndex: "unMatchPrimaryKey",
+              key: "unMatchPrimaryKey",
+              render: (text) => {
+                return (
+                  <table border={1}>
+                    <tr>
+                      {text.map((item, index) => (
+                        <td
+                          key={index}
+                          style={{ minWidth: "10px", textAlign: "center" }}
+                        >
+                          {item}
+                        </td>
+                      ))}
+                    </tr>
+                  </table>
+                );
+              },
             },
           ]}
         />

@@ -101,11 +101,10 @@ export default function CharContent(props) {
 
   //获取图表信息
   useEffect(() => {
+    // 最后执行，不然拿不到最新的token
     setTimeout(() => {
       if (props.menuKey === MENU_CONFIG.SHARED_CONNECTION) {
-        const token = localStorage.getItem("token_shared");
-
-        api.getViewInfo(token).then((res) => {
+        api.share_getViewInfo().then((res) => {
           getViewChar(res.data.data);
         });
       } else {
@@ -113,8 +112,7 @@ export default function CharContent(props) {
           getViewChar(res.data.data);
         });
       }
-    }, 500);
-
+    }, 200);
     // 这里要拿connectionId做依赖项啊 不然点击任务切换的时候viewInfo的数据不会更新
   }, [props.connectionId.current]);
 
