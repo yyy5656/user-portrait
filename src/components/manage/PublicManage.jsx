@@ -36,8 +36,8 @@ export default function PublicManager(props) {
   return (
     <>
       <div style={{fontSize:"16px",fontWeight:"bold",marginTop:"10px"}}>任务共享管理</div>
-      <AllTask fetchTableData={fetchTableData} />
-      <TaskAuthority dataSource={dataSource} />
+      <AllTask fetchTableData={fetchTableData} dataSource={dataSource}/>
+      <TaskAuthority fetchTableData={fetchTableData} dataSource={dataSource} />
     </>
   );
 }

@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
-import { InputNumber, Steps, message, Upload, Button, Select } from "antd";
+import {
+  InputNumber,
+  Steps,
+  message,
+  Upload,
+  Button,
+  Select,
+  Tag,
+  Table,
+} from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import styles from "@/styles/Manage.module.scss";
 
@@ -24,15 +33,17 @@ export default function PropertyCom(props) {
   const [stepTwoSelectProperty, setStepTwoSelectProperty] = useState();
   const [stepThrSelectPropertyOption, setStepThrSelectPropertyOption] =
     useState([]);
+  const [stepThrSelectLinkOption, setStepThrSelectLinkOption] = useState([]);
   const [stepThrSelectPropertyList, setStepThrSelectPropertyList] = useState(
     []
   );
 
   // type为2
-  const [stepThrList, setStepThrList] = useState([{}]);
+  const [stepThrList, setStepThrList] = useState({});
   const [minNum, setMinNum] = useState(2);
   const [maxNum, setMaxNum] = useState(2);
   const [updateCategoriesList, setUpdateCategoriesList] = useState([]);
+  const [dataSource, setDataSource] = useState([]);
 
   const fetchData = async (connectionId) => {
     const res = await api.chooseConnection({ connectionId });
@@ -57,11 +68,11 @@ export default function PropertyCom(props) {
       category: stepThrSelectPropertyList,
     };
     api.addData(params).then((res) => {
-      if (res.code === 200) {
+      if (res.data.data.code === 200) {
         message.success("添加成功！");
         setIsOpenAddPropertyModal(false);
       } else {
-        message.info(res.data.msg);
+        message.info(res.data.data.msg);
       }
     });
   };
@@ -75,29 +86,43 @@ export default function PropertyCom(props) {
       updateCategories: updateCategoriesList,
     };
     api.updateData(params).then((res) => {
-      if (res.code === 200) {
+      if (res.data.data.code == 200) {
         message.success("更新成功！");
         setIsOpenAddPropertyModal(false);
       } else {
-        message.info(res.data.msg);
+        message.info(res.data.data.msg);
       }
     });
   };
 
-  const filterChoosenPropetry = (sheetIndex, categoryIndex) => {
-    if (!propertyData.sheetList?.[sheetIndex]) {
+  const filterChoosenPropetry = (categoryIndex, list) => {
+    if (!list) {
       return [];
     }
-    const filterList = propertyData.sheetList?.[sheetIndex].categoryList.filter(
+    const filterList = list.filter(
       (item) => item.categoryIndex !== categoryIndex
     );
-    console.log(filterList);
     setStepThrSelectPropertyOption(
       filterList.map((item) => ({
         value: item.categoryName,
         label: item.categoryName,
         type: item.categoryType,
         categoryIndex: item.categoryIndex,
+        categoryName: item.categoryName,
+        categoryType: item.categoryType,
+      }))
+    );
+  };
+  const filterChoosenLink = (linkId, list) => {
+    const filterLink = list.filter((item) => item.linkId !== linkId);
+    setStepThrSelectLinkOption(
+      filterLink.map((item) => ({
+        label: item.linkComment,
+        value: item.linkComment,
+        linkId: item.linkId,
+        connectionId: item.connectionId,
+        linkType: item.linkType,
+        linkComment: item.linkComment,
       }))
     );
   };
@@ -114,7 +139,6 @@ export default function PropertyCom(props) {
         message.success("上传成功！");
         // setIsUpload(true);
         sePpropertyData(res.data.data);
-        setMaxNum(Number(res.data.data));
       });
     },
     beforeUpload(file) {
@@ -160,6 +184,7 @@ export default function PropertyCom(props) {
                 placeholder="选择表格"
                 onChange={(value) => {
                   setSheetIndex(value);
+                  setMaxNum(Number(propertyData.sheetList[value].dataLine));
                 }}
                 options={
                   propertyData.sheetList &&
@@ -187,6 +212,7 @@ export default function PropertyCom(props) {
                         connectionId: option.connectionId,
                         linkType: option.type,
                       });
+                      filterChoosenLink(option.linkId, linkList);
                     }}
                     options={linkList.map((item) => ({
                       label: item.linkComment,
@@ -209,7 +235,10 @@ export default function PropertyCom(props) {
                         categoryName: option.value,
                         categoryType: option.type,
                       });
-                      filterChoosenPropetry(sheetIndex, option.categoryIndex);
+                      filterChoosenPropetry(
+                        option.categoryIndex,
+                        propertyData.sheetList?.[sheetIndex]?.categoryList
+                      );
                     }}
                     options={
                       propertyData.sheetList?.[sheetIndex]
@@ -280,7 +309,7 @@ export default function PropertyCom(props) {
                       <span>
                         选择导入数据行数 总计
                         {propertyData.sheetList?.[sheetIndex].dataLine}
-                        条数据:
+                        条数据：
                       </span>
                       <InputNumber
                         min={2}
@@ -291,7 +320,7 @@ export default function PropertyCom(props) {
                         keyboard={true}
                         defaultValue={2}
                       />
-                      ——
+                      -
                       <InputNumber
                         min={2}
                         max={Number(
@@ -306,87 +335,141 @@ export default function PropertyCom(props) {
                     </>
                   ) : null}
                 </div>
-                <Button
-                  onClick={() => {
-                    setStepThrList([...stepThrList, {}]);
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginTop: "5px",
                   }}
                 >
-                  新增一组
-                </Button>
-                {stepThrList.map((item, index) => (
-                  <>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        marginTop: "5px",
-                      }}
-                    >
-                      <div style={{ width: "40%" }}>
-                        <span className={styles.add_property_spa}>
-                          选择字段：
-                        </span>
-                        <Select
-                          allowClear
-                          style={{ width: "60%" }}
-                          placeholder="选择属性"
-                          onChange={(_, option) => {
-                            stepThrList[index].link = {
-                              linkComment: option.value,
-                              linkId: option.linkId,
-                              connectionId: option.connectionId,
-                              linkType: option.linkType,
-                            };
-                            setStepThrList([...stepThrList]);
-                          }}
-                          options={linkList.map((item) => ({
-                            label: item.linkComment,
-                            value: item.linkComment,
-                            linkId: item.linkId,
-                            connectionId: item.connectionId,
-                            linkType: item.linkType,
-                          }))}
-                        />
-                      </div>
-                      <div style={{ width: "40%" }}>
-                        <span className={styles.add_property_span}>
-                          选择属性：
-                        </span>
-                        <Select
-                          allowClear
-                          style={{ width: "60%" }}
-                          placeholder="选择属性"
-                          onChange={(_, option) => {
-                            stepThrList[index].property = {
-                              categoryIndex: option.categoryIndex,
-                              categoryName: option.value,
-                              categoryType: option.type,
-                            };
-                            setStepThrList([...stepThrList]);
-                          }}
-                          options={[...stepThrSelectPropertyOption]}
-                        />
-                      </div>
-                      <Button
-                        onClick={() => {
-                          const temp = stepThrList[index];
-                          const params = {
-                            categoryIndex: temp.property.categoryIndex,
-                            categoryName: temp.property.categoryName,
-                            linkId: temp.link.linkId,
+                  <div style={{ width: "40%" }}>
+                    <span className={styles.add_property_span}>选择字段：</span>
+                    <Select
+                      allowClear
+                      style={{ width: "60%" }}
+                      placeholder="选择字段："
+                      onChange={(_, option) => {
+                        if (option) {
+                          stepThrList.link = {
+                            linkComment: option.value,
+                            linkId: option.linkId,
+                            connectionId: option.connectionId,
+                            linkType: option.linkType,
                           };
-                          setUpdateCategoriesList([
-                            ...updateCategoriesList,
-                            params,
-                          ]);
-                          message.success("添加成功！");
-                        }}
-                      >
-                        点击添加
-                      </Button>
-                    </div>
-                  </>
-                ))}
+                        }
+                        setStepThrList({ ...stepThrList });
+                      }}
+                      options={stepThrSelectLinkOption}
+                    />
+                  </div>
+                  <div style={{ width: "40%" }}>
+                    <span className={styles.add_property_span}>选择属性：</span>
+                    <Select
+                      allowClear
+                      style={{ width: "60%" }}
+                      placeholder="选择属性"
+                      onChange={(_, option) => {
+                        if (option) {
+                          stepThrList.property = {
+                            categoryIndex: option.categoryIndex,
+                            categoryName: option.value,
+                            categoryType: option.type,
+                          };
+                        }
+                        setStepThrList({ ...stepThrList });
+                      }}
+                      options={stepThrSelectPropertyOption}
+                    />
+                  </div>
+                  <Button
+                    onClick={() => {
+                      const temp = stepThrList;
+                      const params = {
+                        categoryIndex: temp.property.categoryIndex,
+                        categoryName: temp.property.categoryName,
+                        linkId: temp.link.linkId,
+                      };
+                      // 去除已选择的option
+                      filterChoosenPropetry(
+                        params.categoryIndex,
+                        stepThrSelectPropertyOption
+                      );
+                      filterChoosenLink(params.linkId, stepThrSelectLinkOption);
+                      setDataSource([
+                        ...dataSource,
+                        {
+                          link: temp.link.linkComment,
+                          property: temp.property.categoryName,
+                          linkParamas: temp.link,
+                          propertyParamas: temp.property,
+                        },
+                      ]);
+                      setUpdateCategoriesList([
+                        ...updateCategoriesList,
+                        params,
+                      ]);
+                      message.success("添加成功！");
+                    }}
+                  >
+                    点击添加
+                  </Button>
+                </div>
+                <Table
+                  dataSource={[...dataSource]}
+                  size="small"
+                  style={{ marginTop: 5 }}
+                  pagination={false}
+                  columns={[
+                    {
+                      title: "字段",
+                      dataIndex: "link",
+                      key: "link",
+                      align: "center",
+                    },
+                    {
+                      title: "属性",
+                      dataIndex: "property",
+                      key: "property",
+                      align: "center",
+                    },
+                    {
+                      title: "操作",
+                      dataIndex: "操作",
+                      key: "操作",
+                      align: "center",
+                      render: (_, record, index) => (
+                        <Tag
+                          className={styles.tags}
+                          color={"blue"}
+                          onClick={() => {
+                            // 删除后将option有加回来
+                            setStepThrSelectLinkOption([
+                              ...stepThrSelectLinkOption,
+                              {
+                                value: record.propertyParamas.linkComment,
+                                label: record.propertyParamas.linkComment,
+                                ...record.propertyParamas,
+                              },
+                            ]);
+                            setStepThrSelectPropertyOption([
+                              ...stepThrSelectPropertyOption,
+                              {
+                                value: record.propertyParamas.categoryName,
+                                label: record.propertyParamas.categoryName,
+                                type: record.propertyParamas.categoryType,
+                                ...record.propertyParamas,
+                              },
+                            ]);
+                            dataSource.splice(index, 1);
+                            setDataSource([...dataSource]);
+                          }}
+                        >
+                          删除
+                        </Tag>
+                      ),
+                    },
+                  ]}
+                />
               </div>
             </>
           ),

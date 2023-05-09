@@ -74,6 +74,14 @@
   padding: 0;
 }
 
+.site_layout_content_show .table_div {
+  width: 800px !important;
+}
+
+.site_layout_content_show .table_hand {
+  border-radius: 0px;
+}
+
 .add_property_div {
   margin-top: 5px;
 }
