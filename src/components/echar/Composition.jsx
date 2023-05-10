@@ -1,11 +1,10 @@
 import { Form, Button, Divider, Select, Space, Input } from "antd";
 import { MinusCircleOutlined, WarningOutlined } from "@ant-design/icons";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function Composition(props) {
-	const { nounsGroups, numsGroups, setSelectedGroups } = props;
+	const { nounsGroups, numsGroups, setSelectedGroups, confirmed, setConfirmed } = props;
 
-	const [confirmed, setconfirmed] = useState(false);
 	const [form] = Form.useForm();
 
 	const onFinish = (data) => {
@@ -18,14 +17,34 @@ export default function Composition(props) {
 					return { ...numsGroups[elem.value], name: elem.label };
 				}
 			});
-			return { name: item.name || "", data: mapedData };
+			return { name: item.groupName || "", data: mapedData };
 		});
+		setConfirmed(true)
 		setSelectedGroups(reqData);
 	};
 
+	useEffect(() => {
+		const originData = form.getFieldsValue().selectedGroups
+		if(!originData) return ;
+		if(!nounsGroups.length && !numsGroups.length){
+			form.resetFields()
+			return ;
+		}
+		//重置分组组合中的选项
+		form.setFieldValue(
+			"selectedGroups",
+			originData.map((item) => ({ ...item, data: [] }))
+		);
+	}, [numsGroups, nounsGroups])
+
 	return (
-		<Form name="groups" form={form} onFinish={onFinish}>
-			<Divider />
+		<Form
+			name="groups"
+			form={form}
+			onFinish={onFinish}
+			style={{ minHeight: "115px" }}
+		>
+			<Divider style={{marginTop:0}} />
 			<Form.List name="selectedGroups">
 				{(fields, { add, remove }) => (
 					<>
@@ -39,8 +58,15 @@ export default function Composition(props) {
 							>
 								<Form.Item
 									{...restField}
-									name={[name, "name"]}
+									name={[name, "groupName"]}
 									label={`组合名称`}
+									rules={[
+										{
+											required: true,
+											message: "未输入组合名称",
+											
+										},
+									]}
 								>
 									<Input style={{ width: 100 }} />
 								</Form.Item>
@@ -48,12 +74,6 @@ export default function Composition(props) {
 									{...restField}
 									label={`分组组合${CompositionIdx + 1}`}
 									name={[name, "data"]}
-									rules={[
-										{
-											required: true,
-											message: "未选择属性",
-										},
-									]}
 								>
 									<Select
 										mode="multiple"
@@ -80,16 +100,18 @@ export default function Composition(props) {
 								<MinusCircleOutlined onClick={() => remove(name)} />
 							</Space>
 						))}
-						<Space>
-							<Button onClick={() => add()}>新增组合</Button>
-							<Button
-								htmlType="submit"
-								disabled={!fields.length}
-								onClick={() => setconfirmed(true)}
-							>
-								确认
-							</Button>
-						</Space>
+						{!confirmed && (
+							<Space>
+								<Button disabled={!nounsGroups.length && !numsGroups.length} onClick={() => add()}>新增组合</Button>
+								<Button
+									htmlType="submit"
+									type="primary"
+									disabled={!fields.length}
+								>
+									确认
+								</Button>
+							</Space>
+						)}
 					</>
 				)}
 			</Form.List>

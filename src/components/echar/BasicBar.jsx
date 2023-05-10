@@ -7,7 +7,7 @@ import { getCharOption } from "./constant";
 export default function BasicBar(props) {
 	const { name, property, type, data, status } = props.charOption;
 	const dom = useRef();
-
+	console.log(data);
 	useEffect(() => {
 		const myChart = echarts.init(dom.current, null, {
 			width: 600,
