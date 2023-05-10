@@ -1,4 +1,13 @@
-import { Modal, Select, Input, message, Space, Tag, Tooltip } from "antd";
+import {
+	Modal,
+	Select,
+	Input,
+	message,
+	Space,
+	Tag,
+	Tooltip,
+	Button,
+} from "antd";
 import styles from "@/styles/BasicBar.module.scss";
 import { useEffect, useState } from "react";
 import api from "@/utils/api";
@@ -22,6 +31,7 @@ export default function AddChar(props) {
 	const [name, setName] = useState();
 	const [selectedGroups, setSelectedGroups] = useState([]);
 	const [charData, setCharData] = useState([]);
+	const [confirmed, setConfirmed] = useState(false);
 
 	const linkType = {
 		singleLink: 1,
@@ -45,7 +55,7 @@ export default function AddChar(props) {
 					addCharOption({
 						name,
 						type: selectCharType,
-						property: [selectProperty],
+						property: [{ linkComment: "自定义" }],
 						data: res,
 					});
 				});
@@ -69,6 +79,7 @@ export default function AddChar(props) {
 					});
 				props.setIsModalOpen(false);
 			} else if (selectLinkType === linkType.singleLink) {
+				console.log("名词");
 				//名词型
 				addCharOption({
 					name,
@@ -138,18 +149,15 @@ export default function AddChar(props) {
 	}, [selectProperty, selectCharType]);
 
 	const addCharOption = (option) => {
-		const pieOption = { ...option, property: [{ linkComment: "自定义" }] };
 		const newOption = {
 			...option,
 			data: option.data.map((item) => ({ name: item.name, value: item.value })),
-			property: [{ linkComment: "自定义" }],
 		};
 		api.insertViewInfo({ viewData: JSON.stringify(newOption) }).then((res) => {
 			const viewId = res.data.msg;
 			if (selectCharType === charTypeConfig.pie) {
-				props.addViewChar(pieOption, viewId);
+				props.addViewChar(option, viewId);
 			} else {
-				console.log(option);
 				const newData = {
 					xAxisData: option.data.map((item) => item.name),
 					yAxisData: option.data.map((item) => item.value),
@@ -160,7 +168,6 @@ export default function AddChar(props) {
 					property: [{ linkComment: "自定义" }],
 					data: newData,
 				};
-				console.log(data);
 				props.addViewChar(data, viewId);
 			}
 		});
@@ -180,139 +187,157 @@ export default function AddChar(props) {
 				title="生成图表"
 				open={props.isModalOpen}
 				destroyOnClose={true}
-				onOk={handleModalOkClick}
-				onCancel={() => {
-					setSelectCharType(null);
-					props.setIsModalOpen(false);
-				}}
-				okText="生成"
-				cancelText="取消"
+				footer={[
+					<Button
+						key="back"
+						onClick={() => {
+							setSelectCharType(null);
+							props.setIsModalOpen(false);
+						}}
+					>
+						取消
+					</Button>,
+					<Button
+						key="submit"
+						type="primary"
+						disabled={
+							(nounsGroups.length || numsGroups.length) ? !confirmed : false
+						}
+						onClick={handleModalOkClick}
+					>
+						生成
+					</Button>,
+				]}
 				width={700}
 			>
-				<div>
-					<span>输入图表名称：</span>
-					<Input
-						placeholder="输入图表名称"
-						style={{ width: "300px", marginLeft: "20px" }}
-						onChange={(e) => {
-							setName(e.target.value);
-						}}
-						// defaultValue={defaultName}
-					/>
-				</div>
-				<div>
-					生成图表类型:
-					<Select
-						style={{ width: 300, marginLeft: "20px" }}
-						onChange={(value) => {
-							setSelectCharType(value);
-						}}
-						options={charType}
-					/>
-				</div>
-				{selectCharType && (
-					<>
-						<div>
-							选择属性：
-							<Select
-								style={{ width: 200 }}
-								onChange={handleChange}
-								options={[
-									{
-										label: "区间性属性",
-										key: 0,
-										options:
-											propertyList[0] &&
-											propertyList[0].map((item) => ({
-												value: item.linkId,
-												label: item.linkComment,
-												type: linkType.intervalLink,
-											})),
-									},
-									{
-										label: "名词性属性",
-										key: 1,
-										options:
-											propertyList[1] &&
-											propertyList[1].map((item) => ({
-												label: item.linkComment,
-												value: item.linkId,
-												type: linkType.singleLink,
-											})),
-									},
-								]}
-							/>
-						</div>
-						<Space size={"small"} wrap>
-							当前分组：
-							{nounsGroups.length === 0 && numsGroups.length === 0 ? (
-								charData.map((item, index) => (
-									<span key={index} style={{ marginRight: "10px" }}>
-										{item.name}
-									</span>
-								))
-							) : (
-								<div>
-									{nounsGroups.map((item, index) => (
-										<Tooltip key={index} title={nounsGroups[index].value}>
-											<Tag
-												closable
-												onClose={(e) => {
-													setNounsGroups((pre) =>
-														pre.filter((_, idx) => index !== idx)
-													);
-													e.preventDefault();
-												}}
-											>
-												{item.name}
-											</Tag>
-										</Tooltip>
-									))}
-									{numsGroups.map((item, index) => (
-										<Tooltip
-											key={index}
-											title={`${numsGroups[index].start}-${numsGroups[index].end}`}
-										>
-											<Tag
-												closable
-												onClose={(e) => {
-													setNumsGroups((pre) =>
-														pre.filter((_, idx) => index !== idx)
-													);
-													e.preventDefault();
-												}}
-											>
-												{item.name}
-											</Tag>
-										</Tooltip>
-									))}
-								</div>
-							)}
-						</Space>
-						{selectLinkType === linkType.intervalLink && (
-							<IntervalDataGroup
-								numberScope={numberScope}
-								curScope={curScope}
-								setCurScope={setCurScope}
-								setNumsGroups={setNumsGroups}
-								selectProperty={selectProperty}
-							/>
-						)}
-						{selectLinkType === linkType.singleLink && (
-							<DataGroup
-								charData={charData}
-								numberScope={numberScope}
-								selectProperty={selectProperty}
-								setNounsGroups={setNounsGroups}
-							/>
-						)}
-						<Composition
-							nounsGroups={nounsGroups}
-							numsGroups={numsGroups}
-							setSelectedGroups={setSelectedGroups}
+				<Space direction="vertical" style={{width:"100%"}}>
+					<div>
+						<span>输入图表名称：</span>
+						<Input
+							placeholder="输入图表名称"
+							style={{ width: "300px", marginLeft: "20px" }}
+							onChange={(e) => {
+								setName(e.target.value);
+							}}
+							// defaultValue={defaultName}
 						/>
-					</>
-				)}
+					</div>
+					<div>
+						生成图表类型:
+						<Select
+							style={{ width: 300, marginLeft: "20px" }}
+							onChange={(value) => {
+								setSelectCharType(value);
+							}}
+							options={charType}
+						/>
+					</div>
+					{selectCharType && (
+						<>
+							<div>
+								选择属性：
+								<Select
+									style={{ width: 200 }}
+									onChange={handleChange}
+									options={[
+										{
+											label: "区间性属性",
+											key: 0,
+											options:
+												propertyList[0] &&
+												propertyList[0].map((item) => ({
+													value: item.linkId,
+													label: item.linkComment,
+													type: linkType.intervalLink,
+												})),
+										},
+										{
+											label: "名词性属性",
+											key: 1,
+											options:
+												propertyList[1] &&
+												propertyList[1].map((item) => ({
+													label: item.linkComment,
+													value: item.linkId,
+													type: linkType.singleLink,
+												})),
+										},
+									]}
+								/>
+							</div>
+							<Space size={"small"} wrap>
+								当前分组：
+								{nounsGroups.length === 0 && numsGroups.length === 0 ? (
+									charData.map((item, index) => (
+										<span key={index} style={{ marginRight: "10px" }}>
+											{item.name}
+										</span>
+									))
+								) : (
+									<div>
+										{nounsGroups.map((item, index) => (
+											<Tooltip key={index} title={nounsGroups[index].value}>
+												<Tag
+													closable={!confirmed}
+													onClose={(e) => {
+														setNounsGroups((pre) =>
+															pre.filter((_, idx) => index !== idx)
+														);
+														e.preventDefault();
+													}}
+												>
+													{item.name}
+												</Tag>
+											</Tooltip>
+										))}
+										{numsGroups.map((item, index) => (
+											<Tooltip
+												key={index}
+												title={`${numsGroups[index].start}-${numsGroups[index].end}`}
+											>
+												<Tag
+													closable
+													onClose={(e) => {
+														setNumsGroups((pre) =>
+															pre.filter((_, idx) => index !== idx)
+														);
+														e.preventDefault();
+													}}
+												>
+													{item.name}
+												</Tag>
+											</Tooltip>
+										))}
+									</div>
+								)}
+							</Space>
+							{selectLinkType === linkType.intervalLink && (
+								<IntervalDataGroup
+									numberScope={numberScope}
+									curScope={curScope}
+									setCurScope={setCurScope}
+									setNumsGroups={setNumsGroups}
+									selectProperty={selectProperty}
+								/>
+							)}
+							{selectLinkType === linkType.singleLink && (
+								<DataGroup
+									charData={charData}
+									numberScope={numberScope}
+									selectProperty={selectProperty}
+									setNounsGroups={setNounsGroups}
+								/>
+							)}
+							<Composition
+								nounsGroups={nounsGroups}
+								numsGroups={numsGroups}
+								confirmed={confirmed}
+								setConfirmed={setConfirmed}
+								setSelectedGroups={setSelectedGroups}
+							/>
+						</>
+					)}
+				</Space>
 			</Modal>
 		</>
 	);
