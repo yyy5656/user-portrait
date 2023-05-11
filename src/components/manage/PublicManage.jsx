@@ -9,7 +9,7 @@ export default function PublicManager(props) {
   const [dataSource, setDataSource] = useState([]);
 
   const shareTypeConfig = {
-    0: "已读",
+    0: "只读",
     1: "修改视图",
   };
 

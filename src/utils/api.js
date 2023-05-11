@@ -478,12 +478,13 @@ const api = {
    * ry的视图——获得任务所有视图数据
    * @returns {*}
    */
-  getViewInfo() {
+  getViewInfo(token = undefined) {
     return HTTP({
       url: "/data/getViewInfo",
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=UTF-8",
+        token: token,
       },
     });
   },
@@ -672,6 +673,17 @@ const api = {
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=UTF-8",
+        token: localStorage.getItem("token_shared"),
+      },
+    });
+  },
+  share_getViewInfo() {
+    return HTTP({
+      url: "/share/getViewInfo",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+        token: localStorage.getItem("token_shared"),
       },
     });
   },
