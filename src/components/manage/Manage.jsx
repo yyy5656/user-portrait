@@ -33,9 +33,9 @@ export default function Manage(props) {
 	const [typeState, setTypeState] = useState(null); // 要传给table的type数据
 	const [clickedSearchType, setClickedSearchType] = useState('???'); // 目前显示的搜索部分框字段
 	const [keyWord, setKeyWord] = useState(null); //搜索关键词对象
-    const [isLoading, setIsloading] = useState(true);
-    const [isSearching, setIsSearching] = useState(false);
-
+  const [isLoading, setIsloading] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
+	
 	// ref
 	const typeRef = useRef(null); // 用以缓存未处理的type数据
 

@@ -65,6 +65,7 @@ const ShowTable = (props) => {
 	// state
 	const [data, setData] = useState([]); // 源数据
 	const [editingKey, setEditingKey] = useState(""); // 修改的位置
+	const [pagination, setPagination] = useState({ size: 10, page: 1, total: 0 });
 
 	// ref
 	const columns = useRef([]); // 暂存的表格位置
@@ -80,10 +81,21 @@ const ShowTable = (props) => {
 			tempData.current = data;
 			api.queryData(keyWord).then((res) => {
 				setData(res.data.data);
+				setPagination({
+					page: 1,
+					size: 10,
+					total: res.data.data.length,
+				});
 			});
 		} else {
-			api.getAllData().then((res) => {
-				setData(res.data.data);
+			const pageReq = { size: pagination.size, page: pagination.page };
+			api.getAllDataByPage(pageReq).then((res) => {
+				setData(res.data.data.data);
+				setPagination({
+					page: res.data.data.page,
+					size: res.data.data.size,
+					total: res.data.data.total,
+				});
 			});
 		}
 		columns.current = handleColumns();
@@ -190,8 +202,9 @@ const ShowTable = (props) => {
 	/**
 	 * 取消编辑(x键)
 	 */
-	const cancel = () => {
+	const handleChangePage = (value) => {
 		setEditingKey("");
+		setPagination((pre) => ({ ...pre, page: value }));
 	};
 
 	/**
@@ -265,9 +278,9 @@ const ShowTable = (props) => {
 		},
 		bordered: true,
 		pagination: {
-			// position: ["none", "bottomRight"],
-			// pageSize: 6
-			onChange: cancel,
+			pageSize: 10,
+			total: pagination.total,
+			onChange: handleChangePage,
 		},
 		scroll: {
 			x: `${props.types ? 120 * props.types.flat(1).length : 0}px`,
@@ -280,7 +293,7 @@ const ShowTable = (props) => {
 
 	useEffect(() => {
 		getTableData();
-	}, [props.types, editingKey, props.keyWord]);
+	}, [props.types, editingKey, props.keyWord, pagination.page]);
 
 	return (
 		<Form form={form} component={false}>

@@ -281,6 +281,17 @@ const api = {
 		});
 	},
 
+	getAllDataByPage(pagination){
+		return HTTP({
+			url: '/data/getAllDataByPage',
+			method: "POST",
+			data:pagination,
+			headers: {
+				"Content-Type": "application/json;charset=UTF-8",
+			},
+		})
+	},
+
 	// /**
 	//  * 19.查询后单条更新信息(该接口不用)
 	//  * @param data
