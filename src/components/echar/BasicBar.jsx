@@ -1,4 +1,5 @@
 import { CloseOutlined } from "@ant-design/icons";
+import { Table } from "antd";
 import styles from "@/styles/BasicBar.module.scss";
 import * as echarts from "echarts";
 import { useEffect, useRef } from "react";
@@ -31,7 +32,12 @@ export default function BasicBar(props) {
 					<CloseOutlined />
 				</div>
 				<div>{name}</div>
-				<div className={styles.basicBar} ref={dom}></div>
+				<div style={{ display: "flex" }}>
+					<div className={styles.basicBar} ref={dom}></div>
+					<Table
+						
+					/>
+				</div>
 			</div>
 		</>
 	);

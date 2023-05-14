@@ -122,7 +122,7 @@ export default function CharContent(props) {
 	if (isLoading) {
 		return (
 			<div style={{ height: "80vh", display: "grid", placeContent: "center" }}>
-				<Spin />{" "}
+				<Spin />
 			</div>
 		);
 	}
@@ -156,6 +156,7 @@ export default function CharContent(props) {
 					connectionId={props.connectionId}
 					addViewChar={addViewChar}
 					propertyList={propertyList}
+					linkList={linklist}
 					defaultOption={defaultOption}
 				/>
 			)}
@@ -168,6 +169,7 @@ export default function CharContent(props) {
 									index={index}
 									charOption={item}
 									changeStatus={changeStatus}
+									linklist={linklist}
 								/>
 							);
 						}

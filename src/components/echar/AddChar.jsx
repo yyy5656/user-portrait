@@ -9,15 +9,14 @@ import {
 	Tooltip,
 	Button,
 } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import api from "@/utils/api";
-import DataGroup from "./DataGroup";
 import Composition from "./Composition";
 import IntervalDataGroup from "./IntervalDataGroup";
 import { charTypeConfig, charType } from "./constant";
 
 export default function AddChar(props) {
-	const { propertyList } = props;
+	const { propertyList, linkList } = props;
 	const [selectCharType, setSelectCharType] = useState(); // 选择的图表类型
 	const [selectLinkType, setSelectLinkType] = useState(); // 选中的属性类型 是名词还是区间 0/1
 	const [numberScope, setNumberScope] = useState({}); //数值型属性可选范围
@@ -187,9 +186,32 @@ export default function AddChar(props) {
 		};
 	}, []);
 
-	useEffect(() => {
-		console.log(nounsGroups);
-	}, [nounsGroups]);
+	/* useEffect(() => {
+		const newA = [...nounsGroups.concat(numsGroups)];
+		console.log(newA);
+		let links = [];
+		newA.forEach((item) => {
+			const linkData = linkList.find((obj) => obj.linkId === item.linkId);
+			links.push({ linkId: linkData.linkId, name: linkData.linkComment });
+		});
+		console.log(links);
+		const uniqueLinks = [...new Set(links.map((obj) => obj.linkid))].map(
+			(linkid) => links.filter((obj) => obj.linkid === linkid)[0]
+		);
+	}, [nounsGroups, numsGroups]); */
+	const uniqueLinks = useMemo(() => {
+		const newA = [...nounsGroups.concat(numsGroups)];
+		let links = [];
+		newA.forEach((item) => {
+			const linkData = linkList.find((obj) => obj.linkId === item.linkId);
+			links.push({ linkId: linkData.linkId, name: linkData.linkComment });
+		});
+		const uniqueLinks = [...new Set(links.map((obj) => obj.linkId))].map(
+			(linkId) => links.filter((obj) => obj.linkId === linkId)[0]
+		);
+		return uniqueLinks;
+	}, [nounsGroups, numsGroups]);
+	
 
 	return (
 		<>
@@ -345,6 +367,7 @@ export default function AddChar(props) {
 							)}
 							<Composition
 								propertyList={propertyList}
+								uniqueLinks={uniqueLinks}
 								nounsGroups={nounsGroups}
 								numsGroups={numsGroups}
 								confirmed={confirmed}

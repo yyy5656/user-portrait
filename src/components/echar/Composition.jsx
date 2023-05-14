@@ -1,6 +1,6 @@
 import { Form, Button, Select, Space, Input } from "antd";
 import { MinusCircleOutlined, WarningOutlined } from "@ant-design/icons";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 export default function Composition(props) {
 	const {
@@ -9,9 +9,29 @@ export default function Composition(props) {
 		setSelectedGroups,
 		confirmed,
 		setConfirmed,
+		uniqueLinks,
 	} = props;
 
 	const [form] = Form.useForm();
+
+	const options = useMemo(() => {
+		let idx = 0;
+		return uniqueLinks.map((item) => {
+			return {
+				label: item.name,
+				options: [...nounsGroups, ...numsGroups]
+					.filter((obj) => obj.linkId === item.linkId)
+					.map((item, index) => {
+						idx++;
+						return {
+							label: item.name,
+							value: idx,
+							title: item.linkType,
+						};
+					}),
+			};
+		});
+	}, [uniqueLinks])
 
 	const onFinish = (data) => {
 		const reqData = data.selectedGroups.map((item) => {
@@ -90,15 +110,7 @@ export default function Composition(props) {
 												未添加分组
 											</Space>
 										}
-										options={[...nounsGroups, ...numsGroups].map(
-											(item, index) => {
-												return {
-													label: item.name,
-													value: index,
-													title: item.linkType,
-												};
-											}
-										)}
+										options={options}
 									/>
 								</Form.Item>
 								{!confirmed && (
