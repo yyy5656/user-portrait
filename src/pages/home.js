@@ -1,15 +1,5 @@
 import { FileOutlined, PlusOutlined, UserOutlined } from "@ant-design/icons";
-import {
-	Layout,
-	Menu,
-	theme,
-	Tabs,
-	Button,
-	Modal,
-	Empty,
-	Message,
-	message,
-} from "antd";
+import { Layout, Menu, theme, Tabs, Button, Modal, Empty, message } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import styles from "@/styles/Home.module.scss";
@@ -60,9 +50,11 @@ const Home = () => {
 	const [tabKey, setTabkey] = useState("1");
 	const [menuKey, setMenuKey] = useState();
 	const [menuItem, setMenuItem] = useState();
-
+	const [changeShare, setChangeShare] = useState(true);
+	const [curConnectionId, setCurConnectionId] = useState();
 	const connectionId = useRef(null);
 	const missionName = useRef(null);
+	const [isLoading, setIsLoading] = useState(true);
 
 	/**
 	 * 获取左侧表名数据
@@ -70,7 +62,6 @@ const Home = () => {
 	 */
 	const fetchData = async () => {
 		const res = (await api.getConnection()).data;
-		//console.log(res);
 		res.data && setConnectionItemList(res.data);
 	};
 
@@ -93,18 +84,37 @@ const Home = () => {
 		}
 	};
 
+	const fetchPublicLinkData = async (data) => {
+		const res = await api.choosePublicConnection(data);
+		if (res.status === 200 && res.data.data) {
+			localStorage.setItem("share_token", res.data.data);
+		}
+		const linkRes = await api.share_getLink();
+		if (linkRes.data.code === 200) {
+			setLinklist(linkRes.data.data.links);
+		} else {
+			setLinklist([]);
+			message.warning("未上传数据");
+		}
+	};
+
 	const fetchShareLinkData = async (data) => {
 		const res = await api.share_chooseConnection(data);
 		if (res.status === 200 && res.data.data) {
-			localStorage.setItem("token_shared", res.data.data);
+			localStorage.setItem("share_token", res.data.data);
 		}
 		const linkRes = await api.share_getLink();
 		if (linkRes.status === 200 && linkRes.data) {
 			setLinklist(linkRes.data.data.links);
+		} else {
+			setLinklist([]);
+			message.warning("未上传数据");
 		}
 	};
 
 	const handleClick = (e) => {
+		setIsLoading(true);
+		setCurConnectionId(e.key);
 		if (
 			e.key !== MENU_CONFIG.CREATE_TASK &&
 			e.key !== MENU_CONFIG.PUBLIC_MANAGER &&
@@ -125,8 +135,10 @@ const Home = () => {
 			setMenuKey(MENU_CONFIG.PUBLIC_MANAGER);
 		} else if (e.keyPath && e.keyPath.includes(MENU_CONFIG.PUBLIC_CONNECTION)) {
 			setMenuKey(MENU_CONFIG.PUBLIC_CONNECTION);
-			console.log("only", e);
-			fetchLinkData({ connectionId: e.key });
+			const data = publicConnectionItemList.filter(
+				(item) => item.connectionId == e.key
+			);
+			fetchPublicLinkData(data[0]);
 		} else if (e.keyPath && e.keyPath.includes(MENU_CONFIG.SHARED_CONNECTION)) {
 			setMenuKey(MENU_CONFIG.SHARED_CONNECTION);
 			const id = Number(e.key);
@@ -136,6 +148,11 @@ const Home = () => {
 					connection = item;
 				}
 			});
+			if (connection?.shareType === 1) {
+				setChangeShare(true);
+			} else {
+				setChangeShare(false);
+			}
 			fetchShareLinkData({
 				shareId: connection.shareId,
 				userId: connection.userId,
@@ -203,7 +220,9 @@ const Home = () => {
 						sharedConnectionRes?.data.data?.map((data) => {
 							return {
 								key: `${data.data.connectionId}`,
-								label: `${data.data.tableName}`,
+								label: `${data.data.tableName}${
+									data.shareType == 0 ? "-只读" : ""
+								}`,
 							};
 						})
 					),
@@ -215,7 +234,7 @@ const Home = () => {
 	useEffect(() => {
 		fetchData();
 		fetchGetConnection();
-		//setUsername(localStorage.getItem("userName"));
+		setUsername(localStorage.getItem("userName"));
 		return () => {
 			setConnectionItemList([]);
 		};
@@ -241,6 +260,7 @@ const Home = () => {
 						MENU_CONFIG.SHARED_CONNECTION,
 						<FileOutlined />,
 						sharedConnectionItemList.map((data) => {
+							console.log(data);
 							return {
 								key: `${data.data.connectionId}`,
 								label: `${data.data.tableName}`,
@@ -254,7 +274,7 @@ const Home = () => {
 				getItem("共享管理", MENU_CONFIG.PUBLIC_MANAGER, <FileOutlined />)
 			);
 		}
-	}, [tabKey]);
+	}, [tabKey, curConnectionId]);
 
 	return (
 		<>
@@ -330,6 +350,10 @@ const Home = () => {
 												connectionId={connectionId}
 												missionName={missionName}
 												fetchData={fetchData}
+												changeShare={changeShare}
+												menuKey={menuKey}
+												isLoading={isLoading}
+												setIsLoading={setIsLoading}
 											/>
 										) : (
 											<Empty className={styles.empty} />

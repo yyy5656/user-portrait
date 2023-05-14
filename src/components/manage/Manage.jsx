@@ -4,14 +4,19 @@ import {
 	Collapse,
 	Dropdown,
 	Form,
-	Input, message,
+	Input,
+	message,
 	Modal,
 	Space,
 	Spin,
 	Tag,
-	theme
+	theme,
 } from "antd";
-import {DownOutlined, RollbackOutlined, SearchOutlined} from "@ant-design/icons";
+import {
+	DownOutlined,
+	RollbackOutlined,
+	SearchOutlined,
+} from "@ant-design/icons";
 import styles from "@/styles/Manage.module.scss";
 import deleteConnection from "@/utils/deleteConnection";
 import ShowTable from "@/components/manage/ShowTable";
@@ -31,17 +36,15 @@ export default function Manage(props) {
 	// state
 	const [types, setTypes] = useState([[], []]); // 渲染的属性列表
 	const [typeState, setTypeState] = useState(null); // 要传给table的type数据
-	const [clickedSearchType, setClickedSearchType] = useState('???'); // 目前显示的搜索部分框字段
+	const [clickedSearchType, setClickedSearchType] = useState("???"); // 目前显示的搜索部分框字段
 	const [keyWord, setKeyWord] = useState(null); //搜索关键词对象
-  const [isLoading, setIsloading] = useState(true);
-  const [isSearching, setIsSearching] = useState(false);
-	
+	const [isSearching, setIsSearching] = useState(false);
+
 	// ref
 	const typeRef = useRef(null); // 用以缓存未处理的type数据
 
 	// props
-	const { linkList } = props;
-
+	const { linkList, isLoading } = props;
 	// methods
 	/**
 	 * 获取属性类别
@@ -114,7 +117,9 @@ export default function Manage(props) {
 		if (!queryData.searchName) {
 			//* 无搜索关键字
 			setKeyWord(null);
-			message.info("请输入要检索的内容。")
+			message.info("请输入要检索的内容");
+		} else if (!clickedSearchType) {
+			message.info("请选择要检索的属性");
 		} else {
 			setIsSearching(true);
 			//* 搜索关键字
@@ -128,16 +133,15 @@ export default function Manage(props) {
 	const cancelSearch = () => {
 		setKeyWord(null);
 		setIsSearching(false);
-	}
+	};
 
 	useEffect(() => {
 		getTypes();
 		return () => {
 			setTypes([[], []]);
-			setClickedSearchType(null)
+			setClickedSearchType(null);
 		};
 	}, [props.linkList]);
-	//if(isLoading) return <Spin style={{display:'grid', placeContent:'center',height:'80vh'}} />
 
 	return (
 		<div className={styles.site_layout_content_show}>
@@ -290,7 +294,7 @@ export default function Manage(props) {
 					</Form.Item>
 					<Button
 						className={styles.search_btn}
-						style={{marginRight:"10px"}}
+						style={{ marginRight: "10px" }}
 						type={"primary"}
 						htmlType={"submit"}
 					>
@@ -302,7 +306,7 @@ export default function Manage(props) {
 						danger={true}
 						disabled={!isSearching}
 						onClick={cancelSearch}
-						>
+					>
 						<RollbackOutlined />
 					</Button>
 				</Form>

@@ -5,7 +5,7 @@ import TaskAuthority from "./TaskAuthority";
 import api from "@/utils/api";
 
 export default function PublicManager(props) {
-  console.log(props);
+  //console.log(props);
   const [dataSource, setDataSource] = useState([]);
 
   const shareTypeConfig = {

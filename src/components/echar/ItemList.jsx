@@ -9,7 +9,7 @@ export default function ItemList(props) {
 	const {
 		token: { colorBgContainer },
 	} = theme.useToken();
-	const { charList, deleteChar, changeStatus } = props;
+	const { charList, deleteChar, changeStatus, changeShare } = props;
 
 	const openStatus = {
 		open: {
@@ -31,7 +31,7 @@ export default function ItemList(props) {
 							<Col key={item.viewId}>
 								<div key={index} className={styles.item_big_box}>
 									<div
-										style={{ backgroundColor: colorBgContainer }}
+										style={{ backgroundColor: colorBgContainer, width: 'auto', paddingRight:15 }}
 										className={styles.item_box}
 									>
 										<div>
@@ -68,17 +68,6 @@ export default function ItemList(props) {
 													type={"primary"}
 													size={"small"}
 													onClick={() => {
-														console.log(charList[index]);
-														//props.changeViewInfo(true, charList[index]);
-													}}
-												>
-													修改
-												</Button>
-												<Button
-													className={styles.open_button}
-													type={"primary"}
-													size={"small"}
-													onClick={() => {
 														if (item.status === "close") {
 															changeStatus(index, item.status);
 														} else {
@@ -88,7 +77,7 @@ export default function ItemList(props) {
 												>
 													{openStatus[item.status].btnText}
 												</Button>
-												<Button
+												{changeShare && <Button
 													className={styles.open_button}
 													type={"primary"}
 													size={"small"}
@@ -97,7 +86,7 @@ export default function ItemList(props) {
 													}}
 												>
 													删除
-												</Button>
+												</Button>}
 											</div>
 										</div>
 									</div>

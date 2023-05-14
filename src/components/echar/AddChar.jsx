@@ -4,6 +4,7 @@ import {
 	Input,
 	message,
 	Space,
+	Divider,
 	Tag,
 	Tooltip,
 	Button,
@@ -32,7 +33,6 @@ export default function AddChar(props) {
 	const [selectedGroups, setSelectedGroups] = useState([]);
 	const [charData, setCharData] = useState([]);
 	const [confirmed, setConfirmed] = useState(false);
-
 	const linkType = {
 		singleLink: 1,
 		intervalLink: 0,
@@ -173,6 +173,16 @@ export default function AddChar(props) {
 		});
 	};
 
+	const tagify = () => {
+		const data = charData.map((item) => ({
+			name: item.name,
+			value: item.name,
+			linkType: selectProperty.linkType,
+			linkId: item.linkId
+		}));
+		setNounsGroups(pre => [...pre, ...data])
+	};
+
 	useEffect(() => {
 		return () => {
 			setSelectCharType(null);
@@ -181,11 +191,19 @@ export default function AddChar(props) {
 		};
 	}, []);
 
+	useEffect(() => {
+		console.log(nounsGroups);
+	}, [nounsGroups]);
+
 	return (
 		<>
 			<Modal
 				title="生成图表"
 				open={props.isModalOpen}
+				onCancel={() => {
+					setSelectCharType(null);
+					props.setIsModalOpen(false);
+				}}
 				destroyOnClose={true}
 				footer={[
 					<Button
@@ -201,7 +219,7 @@ export default function AddChar(props) {
 						key="submit"
 						type="primary"
 						disabled={
-							(nounsGroups.length || numsGroups.length) ? !confirmed : false
+							nounsGroups.length || numsGroups.length ? !confirmed : false
 						}
 						onClick={handleModalOkClick}
 					>
@@ -210,7 +228,7 @@ export default function AddChar(props) {
 				]}
 				width={700}
 			>
-				<Space direction="vertical" style={{width:"100%"}}>
+				<Space direction="vertical" style={{ width: "100%" }}>
 					<div>
 						<span>输入图表名称：</span>
 						<Input
@@ -219,7 +237,6 @@ export default function AddChar(props) {
 							onChange={(e) => {
 								setName(e.target.value);
 							}}
-							// defaultValue={defaultName}
 						/>
 					</div>
 					<div>
@@ -264,52 +281,62 @@ export default function AddChar(props) {
 										},
 									]}
 								/>
+								<Button
+									type="primary"
+									disabled={selectProperty?.linkType !== 1}
+									style={{ marginLeft: 10 }}
+									onClick={tagify}
+								>
+									标签化
+								</Button>
 							</div>
-							<Space size={"small"} wrap>
+							<Space size="small" wrap>
 								当前分组：
-								{nounsGroups.length === 0 && numsGroups.length === 0 ? (
-									charData.map((item, index) => (
-										<span key={index} style={{ marginRight: "10px" }}>
-											{item.name}
-										</span>
-									))
-								) : (
-									<div>
-										{nounsGroups.map((item, index) => (
-											<Tooltip key={index} title={nounsGroups[index].value}>
-												<Tag
-													closable={!confirmed}
-													onClose={(e) => {
-														setNounsGroups((pre) =>
-															pre.filter((_, idx) => index !== idx)
-														);
-														e.preventDefault();
-													}}
-												>
-													{item.name}
-												</Tag>
-											</Tooltip>
-										))}
-										{numsGroups.map((item, index) => (
-											<Tooltip
-												key={index}
-												title={`${numsGroups[index].start}-${numsGroups[index].end}`}
+								{charData.map((item, index) => (
+									<span key={index} style={{ marginRight: "10px" }}>
+										{item.name}
+									</span>
+								))}
+							</Space>
+							<Space size="small" wrap>
+								<div>
+									<span style={{ marginRight: "13px" }}>当前标签:</span>
+									{nounsGroups.map((item, index) => (
+										<Tooltip key={index} title={nounsGroups[index].value}>
+											<Tag
+												style={{ marginBottom:5}}
+												closable={!confirmed}
+												onClose={(e) => {
+													setNounsGroups((pre) =>
+														pre.filter((_, idx) => index !== idx)
+													);
+													e.preventDefault();
+												}}
 											>
-												<Tag
-													closable
-													onClose={(e) => {
-														setNumsGroups((pre) =>
-															pre.filter((_, idx) => index !== idx)
-														);
-														e.preventDefault();
-													}}
-												>
-													{item.name}
-												</Tag>
-											</Tooltip>
-										))}
-									</div>
-								)}
+												{item.name}
+											</Tag>
+										</Tooltip>
+									))}
+									
+									{numsGroups.map((item, index) => (
+										<Tooltip
+											key={index}
+											title={`${numsGroups[index].start}-${numsGroups[index].end}`}
+										>
+											<Tag
+												closable
+												onClose={(e) => {
+													setNumsGroups((pre) =>
+														pre.filter((_, idx) => index !== idx)
+													);
+													e.preventDefault();
+												}}
+											>
+												{item.name}
+											</Tag>
+										</Tooltip>
+									))}
+								</div>
 							</Space>
 							{selectLinkType === linkType.intervalLink && (
 								<IntervalDataGroup
@@ -329,11 +356,13 @@ export default function AddChar(props) {
 								/>
 							)}
 							<Composition
+								propertyList={propertyList}
 								nounsGroups={nounsGroups}
 								numsGroups={numsGroups}
 								confirmed={confirmed}
 								setConfirmed={setConfirmed}
 								setSelectedGroups={setSelectedGroups}
+								handleModalOkClick={handleModalOkClick}
 							/>
 						</>
 					)}

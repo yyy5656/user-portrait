@@ -267,7 +267,6 @@ const ShowTable = (props) => {
 			},
 		};
 	});
-
 	// tableProps
 	const tableProps = {
 		size: "middle",

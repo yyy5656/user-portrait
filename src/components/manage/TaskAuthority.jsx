@@ -5,7 +5,7 @@ import { Table, Space, Tag, message } from "antd";
 import api from "@/utils/api";
 
 export default function TaskAuthority(props) {
-  console.log(props);
+  //console.log(props);
   const { dataSource } = props;
   const columns = [
     {
@@ -40,7 +40,7 @@ export default function TaskAuthority(props) {
         <Space size="middle">
           <a
             onClick={() => {
-              console.log(record);
+              //console.log(record);
               const { shareId } = record;
               api.deleteShareById({ shareId }).then((res) => {
                 message.success(res.data.msg);

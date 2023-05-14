@@ -1,5 +1,5 @@
 import QS from "qs";
-import HTTP from "@/service/request";
+import HTTP, { SHAREDHTTP } from "@/service/request";
 
 const api = {
 	/**
@@ -281,15 +281,15 @@ const api = {
 		});
 	},
 
-	getAllDataByPage(pagination){
+	getAllDataByPage(pagination) {
 		return HTTP({
-			url: '/data/getAllDataByPage',
+			url: "/data/getAllDataByPage",
 			method: "POST",
-			data:pagination,
+			data: pagination,
 			headers: {
 				"Content-Type": "application/json;charset=UTF-8",
 			},
-		})
+		});
 	},
 
 	// /**
@@ -498,6 +498,15 @@ const api = {
 			},
 		});
 	},
+	getPublicViewInfo() {
+		return SHAREDHTTP({
+			url: "/share/getViewInfo",
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json;charset=UTF-8",
+			},
+		});
+	},
 
 	/**
 	 * ry的视图——更新指定视图数据
@@ -536,14 +545,13 @@ const api = {
 	 * @param data
 	 * @returns {*}
 	 */
-	getOtherAllUser(data) {
+	getOtherAllUser() {
 		return HTTP({
 			url: "/share/getOtherALlUser",
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json;charset=UTF-8",
 			},
-			data,
 		});
 	},
 
@@ -632,7 +640,7 @@ const api = {
 	 */
 	choosePublicConnection(data) {
 		return HTTP({
-			url: "/share/choosePublicConnection",
+			url: "/share/choosePubicConnection",
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json;charset=UTF-8",
@@ -678,7 +686,7 @@ const api = {
 	 * @returns {*}
 	 */
 	share_getLink() {
-		return HTTP({
+		return SHAREDHTTP({
 			url: "/share/getLink",
 			method: "POST",
 			headers: {
@@ -707,7 +715,7 @@ const api = {
 			},
 			data,
 		});
-	}
+	},
 };
 
 export default api;

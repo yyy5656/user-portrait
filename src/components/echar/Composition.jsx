@@ -3,7 +3,13 @@ import { MinusCircleOutlined, WarningOutlined } from "@ant-design/icons";
 import { useEffect } from "react";
 
 export default function Composition(props) {
-	const { nounsGroups, numsGroups, setSelectedGroups, confirmed, setConfirmed } = props;
+	const {
+		nounsGroups,
+		numsGroups,
+		setSelectedGroups,
+		confirmed,
+		setConfirmed,
+	} = props;
 
 	const [form] = Form.useForm();
 
@@ -19,23 +25,23 @@ export default function Composition(props) {
 			});
 			return { name: item.groupName || "", data: mapedData };
 		});
-		setConfirmed(true)
+		setConfirmed(true);
 		setSelectedGroups(reqData);
 	};
 
 	useEffect(() => {
-		const originData = form.getFieldsValue().selectedGroups
-		if(!originData) return ;
-		if(!nounsGroups.length && !numsGroups.length){
-			form.resetFields()
-			return ;
+		const originData = form.getFieldsValue().selectedGroups;
+		if (!originData) return;
+		if (!nounsGroups.length && !numsGroups.length) {
+			form.resetFields();
+			return;
 		}
 		//重置分组组合中的选项
 		form.setFieldValue(
 			"selectedGroups",
 			originData.map((item) => ({ ...item, data: [] }))
 		);
-	}, [numsGroups, nounsGroups])
+	}, [numsGroups, nounsGroups]);
 
 	return (
 		<Form
@@ -44,7 +50,7 @@ export default function Composition(props) {
 			onFinish={onFinish}
 			style={{ minHeight: "115px" }}
 		>
-			<Divider style={{marginTop:0}} />
+			<Divider style={{ marginTop: 0 }} />
 			<Form.List name="selectedGroups">
 				{(fields, { add, remove }) => (
 					<>
@@ -64,7 +70,6 @@ export default function Composition(props) {
 										{
 											required: true,
 											message: "未输入组合名称",
-											
 										},
 									]}
 								>
@@ -97,21 +102,31 @@ export default function Composition(props) {
 										)}
 									/>
 								</Form.Item>
-								<MinusCircleOutlined onClick={() => remove(name)} />
+								{!confirmed && (
+									<MinusCircleOutlined onClick={() => remove(name)} />
+								)}
 							</Space>
 						))}
-						{!confirmed && (
-							<Space>
-								<Button disabled={!nounsGroups.length && !numsGroups.length} onClick={() => add()}>新增组合</Button>
+
+						<Space>
+							<Button
+								disabled={
+									(!nounsGroups.length && !numsGroups.length) || confirmed
+								}
+								onClick={() => add()}
+							>
+								新增组合
+							</Button>
+							{
 								<Button
 									htmlType="submit"
 									type="primary"
-									disabled={!fields.length}
+									disabled={!fields.length || confirmed}
 								>
-									确认
+									锁定
 								</Button>
-							</Space>
-						)}
+							}
+						</Space>
 					</>
 				)}
 			</Form.List>

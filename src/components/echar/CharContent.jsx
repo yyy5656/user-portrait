@@ -1,4 +1,4 @@
-import { Button, message, Modal } from "antd";
+import { Button, message, Spin } from "antd";
 
 import styles from "@/styles/CharContent.module.scss";
 import ShowProperty from "./ShowProperty";
@@ -8,9 +8,9 @@ import BasicBar from "./BasicBar";
 import { useEffect, useState } from "react";
 import api from "@/utils/api";
 
-const { confirm } = Modal;
-
 export default function CharContent(props) {
+	const { menuKey, linklist, changeShare, isLoading, setIsLoading } = props;
+
 	const [charList, setCharList] = useState([]);
 	// 属性分组
 	const [propertyList, setPropertyList] = useState({});
@@ -22,8 +22,16 @@ export default function CharContent(props) {
 		setCharList([]);
 	}, [props.connectionId.current]);
 
+	//设置400毫秒loading时间
+	useEffect(() => {
+		setTimeout(() => {
+			setIsLoading(false);
+		}, 400);
+	}, [charList]);
+
 	//获得图表
 	const getViewChar = (viewDataList) => {
+		if (!viewDataList) return;
 		const data = viewDataList.map((item) => {
 			item.viewData = {
 				...JSON.parse(item.viewData),
@@ -32,16 +40,19 @@ export default function CharContent(props) {
 			};
 			return item.viewData;
 		});
-		const newData = data.map(item => {
-			if(item.type != "PIE"){
+		const newData = data.map((item) => {
+			if (item.type != "PIE") {
 				return {
 					...item,
-					data: { xAxisData: item.data.map((elem) => elem.name), yAxisData :item.data.map((elem) => elem.value)},
+					data: {
+						xAxisData: item.data.map((elem) => elem.name),
+						yAxisData: item.data.map((elem) => elem.value),
+					},
 				};
-			}else{
-				return item
+			} else {
+				return item;
 			}
-		})
+		});
 		setCharList(newData);
 	};
 
@@ -53,7 +64,6 @@ export default function CharContent(props) {
 
 	// 删除图表
 	const deleteChar = (index) => {
-		console.log(charList);
 		const viewId = charList[index].viewId;
 		api.deleteViewInfo({ viewId }).then((res) => {
 			message.success(res.data.msg);
@@ -65,9 +75,8 @@ export default function CharContent(props) {
 	const changeStatus = (index, status) => {
 		const data = [...charList];
 		const newStatus = status === "open" ? "close" : "open";
-		const newState = data.splice(index, 1);
-		newState[0].status = newStatus;
-		setCharList([...data, ...newState]);
+		data[index].status = newStatus;
+		setCharList(data);
 	};
 
 	//获取已导入的属性
@@ -93,13 +102,26 @@ export default function CharContent(props) {
 		setIsModalOpen(bool);
 		defaultOption && setDefaultOption(defaultOption);
 	};
-
 	//获取图表信息
 	useEffect(() => {
-		api.getViewInfo().then((res) => {
-			getViewChar(res.data.data);
-		});
-	}, []);
+		if (menuKey === "PUBLIC_CONNECTION") {
+			api.getPublicViewInfo().then((res) => {
+				getViewChar(res.data.data);
+			});
+		} else if (menuKey === "SHARED_CONNECTION") {
+			api.getPublicViewInfo().then((res) => {
+				getViewChar(res.data.data);
+			});
+		} else {
+			api.getViewInfo().then((res) => {
+				getViewChar(res.data.data);
+			});
+		}
+	}, [menuKey, linklist]);
+	
+	if (isLoading) {
+		return <div style={{height: '80vh', display:'grid', placeContent: 'center'}}><Spin /> </div>;
+	}
 
 	return (
 		<div className={styles.site_layout_content_show}>
@@ -111,14 +133,17 @@ export default function CharContent(props) {
 				<ItemList
 					connectionId={props.connectionId.current}
 					charList={charList}
+					changeShare={changeShare}
 					changeStatus={changeStatus}
 					deleteChar={deleteChar}
 					changeViewInfo={changeViewInfo}
 				/>
 			)}
-			<Button style={{ marginTop: "20px" }} onClick={handleClick}>
-				生成图表
-			</Button>
+			{changeShare && (
+				<Button style={{ marginTop: "20px" }} onClick={handleClick}>
+					生成图表
+				</Button>
+			)}
 			{isModalOpen && (
 				<AddChar
 					isModalOpen={isModalOpen}
