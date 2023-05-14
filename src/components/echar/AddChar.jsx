@@ -178,9 +178,9 @@ export default function AddChar(props) {
 			name: item.name,
 			value: item.name,
 			linkType: selectProperty.linkType,
-			linkId: item.linkId
+			linkId: item.linkId,
 		}));
-		setNounsGroups(pre => [...pre, ...data])
+		setNounsGroups((pre) => [...pre, ...data]);
 	};
 
 	useEffect(() => {
@@ -304,7 +304,7 @@ export default function AddChar(props) {
 									{nounsGroups.map((item, index) => (
 										<Tooltip key={index} title={nounsGroups[index].value}>
 											<Tag
-												style={{ marginBottom:5}}
+												style={{ marginBottom: 5 }}
 												closable={!confirmed}
 												onClose={(e) => {
 													setNounsGroups((pre) =>
@@ -317,7 +317,7 @@ export default function AddChar(props) {
 											</Tag>
 										</Tooltip>
 									))}
-									
+
 									{numsGroups.map((item, index) => (
 										<Tooltip
 											key={index}

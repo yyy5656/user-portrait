@@ -118,9 +118,13 @@ export default function CharContent(props) {
 			});
 		}
 	}, [menuKey, linklist]);
-	
+
 	if (isLoading) {
-		return <div style={{height: '80vh', display:'grid', placeContent: 'center'}}><Spin /> </div>;
+		return (
+			<div style={{ height: "80vh", display: "grid", placeContent: "center" }}>
+				<Spin />{" "}
+			</div>
+		);
 	}
 
 	return (

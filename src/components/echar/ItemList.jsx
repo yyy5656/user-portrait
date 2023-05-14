@@ -31,7 +31,11 @@ export default function ItemList(props) {
 							<Col key={item.viewId}>
 								<div key={index} className={styles.item_big_box}>
 									<div
-										style={{ backgroundColor: colorBgContainer, width: 'auto', paddingRight:15 }}
+										style={{
+											backgroundColor: colorBgContainer,
+											width: "auto",
+											paddingRight: 15,
+										}}
 										className={styles.item_box}
 									>
 										<div>
@@ -60,9 +64,7 @@ export default function ItemList(props) {
 													className={styles.status_light}
 													style={{ backgroundColor: "#80ad97" }}
 												/>
-												<div className={styles.open_status}>
-													{item.status}
-												</div>
+												<div className={styles.open_status}>{item.status}</div>
 												<Button
 													className={styles.open_button}
 													type={"primary"}
@@ -77,16 +79,18 @@ export default function ItemList(props) {
 												>
 													{openStatus[item.status].btnText}
 												</Button>
-												{changeShare && <Button
-													className={styles.open_button}
-													type={"primary"}
-													size={"small"}
-													onClick={() => {
-														deleteChar(index);
-													}}
-												>
-													删除
-												</Button>}
+												{changeShare && (
+													<Button
+														className={styles.open_button}
+														type={"primary"}
+														size={"small"}
+														onClick={() => {
+															deleteChar(index);
+														}}
+													>
+														删除
+													</Button>
+												)}
 											</div>
 										</div>
 									</div>
