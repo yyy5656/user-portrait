@@ -9,7 +9,6 @@ import {
 	Tooltip,
 	Button,
 } from "antd";
-import styles from "@/styles/BasicBar.module.scss";
 import { useEffect, useState } from "react";
 import api from "@/utils/api";
 import DataGroup from "./DataGroup";
@@ -18,10 +17,7 @@ import IntervalDataGroup from "./IntervalDataGroup";
 import { charTypeConfig, charType } from "./constant";
 
 export default function AddChar(props) {
-	const { propertyList, defaultOption } = props;
-	//console.log(defaultOption);
-	// const { name:defaultName, defaultType, defualtProperty, defualtData } =
-	//   defaultOption?.viewData;
+	const { propertyList } = props;
 	const [selectCharType, setSelectCharType] = useState(); // 选择的图表类型
 	const [selectLinkType, setSelectLinkType] = useState(); // 选中的属性类型 是名词还是区间 0/1
 	const [numberScope, setNumberScope] = useState({}); //数值型属性可选范围
@@ -298,6 +294,7 @@ export default function AddChar(props) {
 									</span>
 								))}
 							</Space>
+							<Divider style={{ margin: 0 }} />
 							<Space size="small" wrap>
 								<div>
 									<span style={{ marginRight: "13px" }}>当前标签:</span>
@@ -317,7 +314,6 @@ export default function AddChar(props) {
 											</Tag>
 										</Tooltip>
 									))}
-
 									{numsGroups.map((item, index) => (
 										<Tooltip
 											key={index}
@@ -345,14 +341,6 @@ export default function AddChar(props) {
 									setCurScope={setCurScope}
 									setNumsGroups={setNumsGroups}
 									selectProperty={selectProperty}
-								/>
-							)}
-							{selectLinkType === linkType.singleLink && (
-								<DataGroup
-									charData={charData}
-									numberScope={numberScope}
-									selectProperty={selectProperty}
-									setNounsGroups={setNounsGroups}
 								/>
 							)}
 							<Composition

@@ -1,4 +1,4 @@
-import { Form, Button, Divider, Select, Space, Input } from "antd";
+import { Form, Button, Select, Space, Input } from "antd";
 import { MinusCircleOutlined, WarningOutlined } from "@ant-design/icons";
 import { useEffect } from "react";
 
@@ -50,7 +50,6 @@ export default function Composition(props) {
 			onFinish={onFinish}
 			style={{ minHeight: "115px" }}
 		>
-			<Divider style={{ marginTop: 0 }} />
 			<Form.List name="selectedGroups">
 				{(fields, { add, remove }) => (
 					<>
@@ -107,7 +106,6 @@ export default function Composition(props) {
 								)}
 							</Space>
 						))}
-
 						<Space>
 							<Button
 								disabled={
