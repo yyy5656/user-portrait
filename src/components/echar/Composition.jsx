@@ -102,7 +102,7 @@ export default function Composition(props) {
 									<Select
 										mode="multiple"
 										labelInValue
-										style={{ width: 300 }}
+										style={{ width: 250 }}
 										disabled={confirmed}
 										notFoundContent={
 											<Space align="center">

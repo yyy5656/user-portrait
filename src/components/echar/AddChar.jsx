@@ -13,7 +13,7 @@ import { useEffect, useMemo, useState } from "react";
 import api from "@/utils/api";
 import Composition from "./Composition";
 import IntervalDataGroup from "./IntervalDataGroup";
-import { charTypeConfig, charType } from "./constant";
+import { charTypeConfig, charType, addViewType } from "./constant";
 
 export default function AddChar(props) {
 	const { propertyList, linkList } = props;
@@ -34,58 +34,17 @@ export default function AddChar(props) {
 	};
 
 	const handleModalOkClick = () => {
-		//信息是否完善
-		if (name && selectCharType && selectProperty) {
-			if (nounsGroups.length || numsGroups.length) {
-				//复合型
-				let data = selectedGroups.map(async (item) => {
-					const NAME = item.name;
-					const numDTOList = item.data.filter((elem) => elem.linkType === 0);
-					const nounsDTOList = item.data.filter((elem) => elem.linkType === 1);
-					const reqData = { numDTOList, nounsDTOList };
-					const response = await api.getNounsAndNumerical(reqData);
-					return { name: NAME, value: response.data.data };
-				});
-				Promise.all(data).then((res) => {
-					addCharOption({
-						name,
-						type: selectCharType,
-						property: [{ linkComment: "自定义" }],
-						data: res,
-					});
-				});
-				props.setIsModalOpen(false);
-			} else if (!charData.length && selectLinkType === linkType.intervalLink) {
-				//数值型
-				api
-					.getNumerical({
-						start: curScope.start,
-						end: curScope.end,
-						link: selectProperty,
-					})
-					.then((res) => {
-						const data = { name, value: res.data.data };
-						addCharOption({
-							name,
-							type: selectCharType,
-							property: [selectProperty],
-							data: [data],
-						});
-					});
-				props.setIsModalOpen(false);
-			} else if (selectLinkType === linkType.singleLink) {
-				console.log("名词");
-				//名词型
-				addCharOption({
-					name,
-					type: selectCharType,
-					property: [selectProperty],
-					data: charData,
-				});
-				props.setIsModalOpen(false);
-			}
+		if (name && selectProperty.length && selectCharType && charData) {
+			addCharOption({
+				name,
+				type: selectCharType,
+				property: selectProperty,
+				data: charData,
+			});
+			props.setIsModalOpen(false);
+		} else if (selectLinkType === linkType.intervalLink && !charData) {
+			message.info("请选择分组");
 		} else {
-			//信息不全
 			message.info("请完善信息");
 		}
 	};
@@ -182,23 +141,9 @@ export default function AddChar(props) {
 		return () => {
 			setSelectCharType(null);
 			setSelectLinkType(null);
-			setNumberScope({});
 		};
 	}, []);
 
-	/* useEffect(() => {
-		const newA = [...nounsGroups.concat(numsGroups)];
-		console.log(newA);
-		let links = [];
-		newA.forEach((item) => {
-			const linkData = linkList.find((obj) => obj.linkId === item.linkId);
-			links.push({ linkId: linkData.linkId, name: linkData.linkComment });
-		});
-		console.log(links);
-		const uniqueLinks = [...new Set(links.map((obj) => obj.linkid))].map(
-			(linkid) => links.filter((obj) => obj.linkid === linkid)[0]
-		);
-	}, [nounsGroups, numsGroups]); */
 	const uniqueLinks = useMemo(() => {
 		const newA = [...nounsGroups.concat(numsGroups)];
 		let links = [];
@@ -218,33 +163,15 @@ export default function AddChar(props) {
 			<Modal
 				title="生成图表"
 				open={props.isModalOpen}
+				destroyOnClose={true}
+				onOk={handleModalOkClick}
 				onCancel={() => {
 					setSelectCharType(null);
 					props.setIsModalOpen(false);
 				}}
-				destroyOnClose={true}
-				footer={[
-					<Button
-						key="back"
-						onClick={() => {
-							setSelectCharType(null);
-							props.setIsModalOpen(false);
-						}}
-					>
-						取消
-					</Button>,
-					<Button
-						key="submit"
-						type="primary"
-						disabled={
-							nounsGroups.length || numsGroups.length ? !confirmed : false
-						}
-						onClick={handleModalOkClick}
-					>
-						生成
-					</Button>,
-				]}
-				width={700}
+				okText="生成"
+				cancelText="取消"
+				width={650}
 			>
 				<Space direction="vertical" style={{ width: "100%" }}>
 					<div>
