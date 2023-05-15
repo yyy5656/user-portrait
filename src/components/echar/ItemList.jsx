@@ -11,16 +11,16 @@ export default function ItemList(props) {
 	} = theme.useToken();
 	const { charList, deleteChar, changeStatus, changeShare } = props;
 
-	const openStatus = {
-		open: {
-			btnText: "关闭",
-			statusText: "已打开",
-		},
-		close: {
-			btnText: "打开",
-			statusText: "已关闭",
-		},
-	};
+  const openStatus = {
+    open: {
+      btnText: "关闭",
+      statusText: "已打开",
+    },
+    close: {
+      btnText: "打开",
+      statusText: "已关闭",
+    },
+  };
 
 	return (
 		<>

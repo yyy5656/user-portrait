@@ -8,10 +8,10 @@ export default function PublicManager(props) {
 	//console.log(props);
 	const [dataSource, setDataSource] = useState([]);
 
-	const shareTypeConfig = {
-		0: "已读",
-		1: "修改视图",
-	};
+  const shareTypeConfig = {
+    0: "只读",
+    1: "修改视图",
+  };
 
 	const fetchTableData = () => {
 		api.getShareList().then((res) => {
@@ -33,11 +33,11 @@ export default function PublicManager(props) {
 		fetchTableData();
 	}, []);
 
-	return (
-		<>
-			<div>任务共享管理</div>
-			<AllTask fetchTableData={fetchTableData} />
-			<TaskAuthority dataSource={dataSource} />
-		</>
-	);
+  return (
+    <>
+      <div style={{fontSize:"16px",fontWeight:"bold",marginTop:"10px"}}>任务共享管理</div>
+      <AllTask fetchTableData={fetchTableData} dataSource={dataSource}/>
+      <TaskAuthority fetchTableData={fetchTableData} dataSource={dataSource} />
+    </>
+  );
 }

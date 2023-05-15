@@ -25,13 +25,15 @@ import AddProperty from "./AddProperty";
 import api from "@/utils/api";
 
 export default function Manage(props) {
-	// hooks
-	const {
-		token: { colorBgContainer },
-	} = theme.useToken();
+  // hooks
+  const {
+    token: { colorBgContainer },
+  } = theme.useToken();
 
-	const [isOpenAddDataModal, setIsOpenAddDataModal] = useState();
-	const [isOpenAddPropertyModal, setIsOpenAddPropertyModal] = useState();
+  const [isOpenAddDataModal, setIsOpenAddDataModal] = useState();
+  const [isOpenAddPropertyModal, setIsOpenAddPropertyModal] = useState();
+  const [isOpenImportModal, setIsOpenImportModal] = useState(false);
+  const [importDataSource, setImportDataSource] = useState([]);
 
 	// state
 	const [types, setTypes] = useState([[], []]); // 渲染的属性列表
@@ -40,8 +42,8 @@ export default function Manage(props) {
 	const [keyWord, setKeyWord] = useState(null); //搜索关键词对象
 	const [isSearching, setIsSearching] = useState(false);
 
-	// ref
-	const typeRef = useRef(null); // 用以缓存未处理的type数据
+  // ref
+  const typeRef = useRef(null); // 用以缓存未处理的type数据
 
 	// props
 	const { linkList, isLoading } = props;
@@ -62,52 +64,52 @@ export default function Manage(props) {
 		setTypes(output);
 	};
 
-	/**
-	 * 转换属性类别
-	 * @param target
-	 * @param fromWhere
-	 */
-	const changeType = (target, fromWhere) => {
-		const findResult = typeRef.current[fromWhere].find((value) => {
-			return value.linkComment === target;
-		});
-		api.changeLinkType(findResult).then(
-			() => {
-				getTypes();
-			},
-			(err) => {
-				console.error(err);
-			}
-		);
-	};
-	/**
-	 * 生成搜索框列表
-	 * @type {{label: string, key: string}[]}
-	 */
-	const getItems = linkList.map((value) => {
-		return {
-			label: value.linkComment,
-			key: value.linkId.toString(),
-		};
-	});
+  /**
+   * 转换属性类别
+   * @param target
+   * @param fromWhere
+   */
+  const changeType = (target, fromWhere) => {
+    const findResult = typeRef.current[fromWhere].find((value) => {
+      return value.linkComment === target;
+    });
+    api.changeLinkType(findResult).then(
+      () => {
+        getTypes();
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
+  };
+  /**
+   * 生成搜索框列表
+   * @type {{label: string, key: string}[]}
+   */
+  const getItems = linkList.map((value) => {
+    return {
+      label: value.linkComment,
+      key: value.linkId.toString(),
+    };
+  });
 
-	/**
-	 * 点击后切换字段
-	 * @param e
-	 */
-	const handleMenuClick = (e) => {
-		setClickedSearchType(
-			linkList.find((value) => {
-				return value.linkId.toString() === e.key;
-			})
-		);
-	};
+  /**
+   * 点击后切换字段
+   * @param e
+   */
+  const handleMenuClick = (e) => {
+    setClickedSearchType(
+      linkList.find((value) => {
+        return value.linkId.toString() === e.key;
+      })
+    );
+  };
 
-	// Dropdown列表菜单
-	const menu = {
-		items: getItems,
-		onClick: handleMenuClick,
-	};
+  // Dropdown列表菜单
+  const menu = {
+    items: getItems,
+    onClick: handleMenuClick,
+  };
 
 	/**
 	 * 搜索指定字段内容

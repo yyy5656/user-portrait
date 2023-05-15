@@ -7,6 +7,7 @@ import ItemList from "@/components/echar/ItemList";
 import BasicBar from "./BasicBar";
 import { useEffect, useState } from "react";
 import api from "@/utils/api";
+import { MENU_CONFIG } from "@/utils/constant";
 
 export default function CharContent(props) {
 	const { menuKey, linklist, changeShare, isLoading, setIsLoading } = props;
@@ -18,9 +19,9 @@ export default function CharContent(props) {
 	const [isModalOpen, setIsModalOpen] = useState();
 	const [defaultOption, setDefaultOption] = useState();
 
-	useEffect(() => {
-		setCharList([]);
-	}, [props.connectionId.current]);
+  useEffect(() => {
+    setCharList([]);
+  }, [props.connectionId.current]);
 
 	//设置400毫秒loading时间
 	useEffect(() => {
@@ -56,11 +57,11 @@ export default function CharContent(props) {
 		setCharList(newData);
 	};
 
-	// 增加图表
-	const addViewChar = (viewData, viewId) => {
-		const data = { ...viewData, viewId, status: "open" };
-		setCharList((pre) => [...pre, data]);
-	};
+  // 增加图表
+  const addViewChar = (viewData, viewId) => {
+    const data = { ...viewData, viewId, status: "open" };
+    setCharList((pre) => [...pre, data]);
+  };
 
 	// 删除图表
 	const deleteChar = (index) => {
@@ -79,23 +80,23 @@ export default function CharContent(props) {
 		setCharList(data);
 	};
 
-	//获取已导入的属性
-	const handlePropsData = () => {
-		return props.linklist.map((value) => {
-			return value.linkComment;
-		});
-	};
+  //获取已导入的属性
+  const handlePropsData = () => {
+    return props.linklist.map((value) => {
+      return value.linkComment;
+    });
+  };
 
-	// 生成图表
-	const handleClick = () => {
-		// 点击后请求属性
-		setIsModalOpen(true);
-		api.getLinksByType().then((res) => {
-			if (res.status === 200 && res.data.data) {
-				setPropertyList(res.data.data);
-			}
-		});
-	};
+  // 生成图表
+  const handleClick = () => {
+    // 点击后请求属性
+    setIsModalOpen(true);
+    api.getLinksByType().then((res) => {
+      if (res.status === 200 && res.data.data) {
+        setPropertyList(res.data.data);
+      }
+    });
+  };
 
 	//修改图表
 	const changeViewInfo = (bool, defaultOption = undefined) => {
