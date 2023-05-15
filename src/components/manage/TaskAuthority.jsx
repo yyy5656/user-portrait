@@ -53,12 +53,12 @@ export default function TaskAuthority(props) {
     },
   ];
 
-  return (
-    <>
-      <div className={styles.allTask_container}>
-        <div className={styles.title}>指定可见任务详情</div>
-        <Table columns={columns} dataSource={dataSource} />
-      </div>
-    </>
-  );
+	return (
+		<>
+			<div className={styles.allTask_container}>
+				<div className={styles.title}>指定可见任务详情</div>
+				<Table columns={columns} dataSource={dataSource} />
+			</div>
+		</>
+	);
 }

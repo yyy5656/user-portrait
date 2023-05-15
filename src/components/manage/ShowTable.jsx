@@ -65,6 +65,7 @@ const ShowTable = (props) => {
 	// state
 	const [data, setData] = useState([]); // 源数据
 	const [editingKey, setEditingKey] = useState(""); // 修改的位置
+	const [pagination, setPagination] = useState({ size: 10, page: 1, total: 0 });
 
 	// ref
 	const columns = useRef([]); // 暂存的表格位置
@@ -74,16 +75,29 @@ const ShowTable = (props) => {
 	/**
 	 * 获取表格源数据
 	 */
-	const getTableData = () => {
+	const getTableData = (page) => {
 		const { keyWord } = props;
+		if (page) {
+			//更新数据
+			const pageReq = { size: pagination.size, page: page };
+			api.getAllDataByPage(pageReq).then((res) => {
+				setData(res.data.data.data);
+				setPagination(pre => ({...pre, page}));
+			});
+			return ;
+		}
 		if (keyWord) {
 			tempData.current = data;
 			api.queryData(keyWord).then((res) => {
 				setData(res.data.data);
+				setPagination(pre=> ({...pre, total: res.data.data.total}));
 			});
 		} else {
-			api.getAllData().then((res) => {
-				setData(res.data.data);
+			const pageReq = { size: pagination.size, page: pagination.page };
+			console.log(pagination);
+			api.getAllDataByPage(pageReq).then((res) => {
+				setData(res.data.data.data);
+				setPagination((pre) => ({ ...pre, total: res.data.data.total }));
 			});
 		}
 		columns.current = handleColumns();
@@ -190,8 +204,9 @@ const ShowTable = (props) => {
 	/**
 	 * 取消编辑(x键)
 	 */
-	const cancel = () => {
+	const handleChangePage = (value) => {
 		setEditingKey("");
+		setPagination((pre) => ({ ...pre, page: value }));
 	};
 
 	/**
@@ -233,6 +248,10 @@ const ShowTable = (props) => {
 		});
 	};
 
+	const handleSizeChange = (current, value) => {
+		setPagination(pre => ({...pre, size: value, page: current}))
+	}
+
 	/**
 	 * 对传入的column进行精细化处理，使得能够被正式渲染上去
 	 * @type {unknown[]}
@@ -254,7 +273,6 @@ const ShowTable = (props) => {
 			},
 		};
 	});
-
 	// tableProps
 	const tableProps = {
 		size: "middle",
@@ -265,9 +283,11 @@ const ShowTable = (props) => {
 		},
 		bordered: true,
 		pagination: {
-			// position: ["none", "bottomRight"],
-			// pageSize: 6
-			onChange: cancel,
+			hideOnSinglePage: true,
+			defaultPageSize: 10,
+			total: pagination.total,
+			onChange: handleChangePage,
+			onShowSizeChange: handleSizeChange
 		},
 		scroll: {
 			x: `${props.types ? 120 * props.types.flat(1).length : 0}px`,
@@ -279,8 +299,15 @@ const ShowTable = (props) => {
 	};
 
 	useEffect(() => {
+	}, [])
+
+	useEffect(() => {
 		getTableData();
 	}, [props.types, editingKey, props.keyWord]);
+
+	useEffect(() => {
+		getTableData(pagination.page);
+	}, [pagination.page, pagination.size]);
 
 	return (
 		<Form form={form} component={false}>

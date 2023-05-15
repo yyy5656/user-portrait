@@ -3,16 +3,17 @@ import styles from "@/styles/AddChar.module.scss";
 import { useRef } from "react";
 
 export default function IntervalDataGroup(props) {
-	const { numberScope, setCurScope, curScope, selectProperty, setNumsGroups } = props;
+	const { numberScope, setCurScope, curScope, selectProperty, setNumsGroups } =
+		props;
 
 	const formRef = useRef(null);
 
 	const handleMinChange = (value) => {
 		setCurScope((pre) => ({ ...pre, start: value }));
-	}
+	};
 	const handleMaxChange = (value) => {
-		setCurScope(pre => ({...pre, end:value}))
-	}
+		setCurScope((pre) => ({ ...pre, end: value }));
+	};
 
 	const onFinish = (data) => {
 		setNumsGroups((pre) => [
@@ -22,7 +23,7 @@ export default function IntervalDataGroup(props) {
 				start: data.min,
 				end: data.max,
 				name: data.name,
-				linkType: selectProperty.linkType
+				linkType: selectProperty.linkType,
 			},
 		]);
 		formRef.current?.resetFields();
@@ -33,8 +34,7 @@ export default function IntervalDataGroup(props) {
 			{
 				<div>
 					<div>
-						{selectProperty.linkComment}可选范围:{numberScope.min}~
-						{numberScope.max}
+						可选范围:{numberScope.min}~{numberScope.max}
 					</div>
 					<Form
 						name="numsData"
@@ -50,15 +50,15 @@ export default function IntervalDataGroup(props) {
 						>
 							<Form.Item
 								name="name"
-								label="分组名:"
+								label="标签名:"
 								rules={[
 									{
 										required: true,
-										message: "缺少分组名",
+										message: "缺少标签名",
 									},
 								]}
 							>
-								<Input placeholder="请输入分组名" style={{ width: 120 }} />
+								<Input placeholder="请输入标签名" style={{ width: 120 }} />
 							</Form.Item>
 							<Form.Item label="最小值" name="min">
 								<InputNumber

@@ -4,23 +4,19 @@ import {
 	Input,
 	message,
 	Space,
+	Divider,
 	Tag,
 	Tooltip,
 	Button,
 } from "antd";
-import styles from "@/styles/BasicBar.module.scss";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import api from "@/utils/api";
-import DataGroup from "./DataGroup";
 import Composition from "./Composition";
 import IntervalDataGroup from "./IntervalDataGroup";
 import { charTypeConfig, charType } from "./constant";
 
 export default function AddChar(props) {
-	const { propertyList, defaultOption } = props;
-	//console.log(defaultOption);
-	// const { name:defaultName, defaultType, defualtProperty, defualtData } =
-	//   defaultOption?.viewData;
+	const { propertyList, linkList } = props;
 	const [selectCharType, setSelectCharType] = useState(); // 选择的图表类型
 	const [selectLinkType, setSelectLinkType] = useState(); // 选中的属性类型 是名词还是区间 0/1
 	const [numberScope, setNumberScope] = useState({}); //数值型属性可选范围
@@ -32,18 +28,18 @@ export default function AddChar(props) {
 	const [selectedGroups, setSelectedGroups] = useState([]);
 	const [charData, setCharData] = useState([]);
 	const [confirmed, setConfirmed] = useState(false);
-
 	const linkType = {
 		singleLink: 1,
 		intervalLink: 0,
 	};
-
+	
 	const handleModalOkClick = () => {
 		//信息是否完善
 		if (name && selectCharType && selectProperty) {
-			if (nounsGroups.length || numsGroups.length) {
+			if (uniqueLinks.length > 1) {
 				//复合型
 				let data = selectedGroups.map(async (item) => {
+					console.log(item.data);
 					const NAME = item.name;
 					const numDTOList = item.data.filter((elem) => elem.linkType === 0);
 					const nounsDTOList = item.data.filter((elem) => elem.linkType === 1);
@@ -78,8 +74,10 @@ export default function AddChar(props) {
 						});
 					});
 				props.setIsModalOpen(false);
-			} else if (selectLinkType === linkType.singleLink) {
-				console.log("名词");
+			} else if (
+				selectLinkType === linkType.singleLink &&
+				uniqueLinks.length === 1
+			) {
 				//名词型
 				addCharOption({
 					name,
@@ -90,7 +88,6 @@ export default function AddChar(props) {
 				props.setIsModalOpen(false);
 			}
 		} else {
-			//信息不全
 			message.info("请完善信息");
 		}
 	};
@@ -151,7 +148,10 @@ export default function AddChar(props) {
 	const addCharOption = (option) => {
 		const newOption = {
 			...option,
-			data: option.data.map((item) => ({ name: item.name, value: item.value })),
+			data: option.data.map((item) => ({
+				name: item.name,
+				value: item.value,
+			})),
 		};
 		api.insertViewInfo({ viewData: JSON.stringify(newOption) }).then((res) => {
 			const viewId = res.data.msg;
@@ -173,13 +173,37 @@ export default function AddChar(props) {
 		});
 	};
 
+	const tagify = () => {
+		const data = charData.map((item) => ({
+			name: item.name,
+			value: item.name,
+			linkType: selectProperty.linkType,
+			linkId: item.linkId,
+		}));
+		setNounsGroups((pre) => [...pre, ...data]);
+	};
+
 	useEffect(() => {
 		return () => {
 			setSelectCharType(null);
 			setSelectLinkType(null);
-			setNumberScope({});
 		};
 	}, []);
+
+	const uniqueLinks = useMemo(() => {
+		const newA = [...nounsGroups.concat(numsGroups)];
+		let links = [];
+		newA.forEach((item) => {
+			const linkData = linkList.find((obj) => obj.linkId === item.linkId);
+			links.push({ linkId: linkData.linkId, name: linkData.linkComment });
+		});
+		const uniqueLinks = [...new Set(links.map((obj) => obj.linkId))].map(
+			(linkId) => links.filter((obj) => obj.linkId === linkId)[0]
+		);
+		return uniqueLinks;
+	}, [nounsGroups, numsGroups]);
+
+	console.log(uniqueLinks);
 
 	return (
 		<>
@@ -187,30 +211,16 @@ export default function AddChar(props) {
 				title="生成图表"
 				open={props.isModalOpen}
 				destroyOnClose={true}
-				footer={[
-					<Button
-						key="back"
-						onClick={() => {
-							setSelectCharType(null);
-							props.setIsModalOpen(false);
-						}}
-					>
-						取消
-					</Button>,
-					<Button
-						key="submit"
-						type="primary"
-						disabled={
-							(nounsGroups.length || numsGroups.length) ? !confirmed : false
-						}
-						onClick={handleModalOkClick}
-					>
-						生成
-					</Button>,
-				]}
-				width={700}
+				onOk={handleModalOkClick}
+				onCancel={() => {
+					setSelectCharType(null);
+					props.setIsModalOpen(false);
+				}}
+				okText="生成"
+				cancelText="取消"
+				width={650}
 			>
-				<Space direction="vertical" style={{width:"100%"}}>
+				<Space direction="vertical" style={{ width: "100%" }}>
 					<div>
 						<span>输入图表名称：</span>
 						<Input
@@ -219,7 +229,6 @@ export default function AddChar(props) {
 							onChange={(e) => {
 								setName(e.target.value);
 							}}
-							// defaultValue={defaultName}
 						/>
 					</div>
 					<div>
@@ -264,52 +273,62 @@ export default function AddChar(props) {
 										},
 									]}
 								/>
+								<Button
+									type="primary"
+									disabled={selectProperty?.linkType !== 1}
+									style={{ marginLeft: 10 }}
+									onClick={tagify}
+								>
+									标签化
+								</Button>
 							</div>
-							<Space size={"small"} wrap>
+							<Space size="small" wrap>
 								当前分组：
-								{nounsGroups.length === 0 && numsGroups.length === 0 ? (
-									charData.map((item, index) => (
-										<span key={index} style={{ marginRight: "10px" }}>
-											{item.name}
-										</span>
-									))
-								) : (
-									<div>
-										{nounsGroups.map((item, index) => (
-											<Tooltip key={index} title={nounsGroups[index].value}>
-												<Tag
-													closable={!confirmed}
-													onClose={(e) => {
-														setNounsGroups((pre) =>
-															pre.filter((_, idx) => index !== idx)
-														);
-														e.preventDefault();
-													}}
-												>
-													{item.name}
-												</Tag>
-											</Tooltip>
-										))}
-										{numsGroups.map((item, index) => (
-											<Tooltip
-												key={index}
-												title={`${numsGroups[index].start}-${numsGroups[index].end}`}
+								{charData.map((item, index) => (
+									<span key={index} style={{ marginRight: "10px" }}>
+										{item.name}
+									</span>
+								))}
+							</Space>
+							<Divider style={{ margin: 0 }} />
+							<Space size="small" wrap>
+								<div>
+									<span style={{ marginRight: "13px" }}>当前标签:</span>
+									{nounsGroups.map((item, index) => (
+										<Tooltip key={index} title={nounsGroups[index].value}>
+											<Tag
+												style={{ marginBottom: 5 }}
+												closable={!confirmed}
+												onClose={(e) => {
+													setNounsGroups((pre) =>
+														pre.filter((_, idx) => index !== idx)
+													);
+													e.preventDefault();
+												}}
 											>
-												<Tag
-													closable
-													onClose={(e) => {
-														setNumsGroups((pre) =>
-															pre.filter((_, idx) => index !== idx)
-														);
-														e.preventDefault();
-													}}
-												>
-													{item.name}
-												</Tag>
-											</Tooltip>
-										))}
-									</div>
-								)}
+												{item.name}
+											</Tag>
+										</Tooltip>
+									))}
+									{numsGroups.map((item, index) => (
+										<Tooltip
+											key={index}
+											title={`${numsGroups[index].start}-${numsGroups[index].end}`}
+										>
+											<Tag
+												closable
+												onClose={(e) => {
+													setNumsGroups((pre) =>
+														pre.filter((_, idx) => index !== idx)
+													);
+													e.preventDefault();
+												}}
+											>
+												{item.name}
+											</Tag>
+										</Tooltip>
+									))}
+								</div>
 							</Space>
 							{selectLinkType === linkType.intervalLink && (
 								<IntervalDataGroup
@@ -320,20 +339,15 @@ export default function AddChar(props) {
 									selectProperty={selectProperty}
 								/>
 							)}
-							{selectLinkType === linkType.singleLink && (
-								<DataGroup
-									charData={charData}
-									numberScope={numberScope}
-									selectProperty={selectProperty}
-									setNounsGroups={setNounsGroups}
-								/>
-							)}
 							<Composition
+								propertyList={propertyList}
+								uniqueLinks={uniqueLinks}
 								nounsGroups={nounsGroups}
 								numsGroups={numsGroups}
 								confirmed={confirmed}
 								setConfirmed={setConfirmed}
 								setSelectedGroups={setSelectedGroups}
+								handleModalOkClick={handleModalOkClick}
 							/>
 						</>
 					)}
