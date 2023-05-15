@@ -20,6 +20,15 @@ export default function BasicBar(props) {
 		};
 	}, [dom.current, data]);
 
+	const columns = [
+		...property.map((item) => ({
+			title: item.linkComment,
+			dataIndex: item.linkComment,
+			key: item.linkComment,
+		})),
+		{ title: "数量", dataIndex: "value" },
+	];
+
 	return (
 		<>
 			<div className={styles.basicBar_container}>
@@ -34,8 +43,15 @@ export default function BasicBar(props) {
 				<div>{name}</div>
 				<div style={{ display: "flex" }}>
 					<div className={styles.basicBar} ref={dom}></div>
-					<Table
-						
+					<Table 
+						size="small"
+						columns={columns}
+						dataSource={data.map((item, idx) => ({
+							[property[0].linkComment]: item.name,
+							value: item.value,
+							key: idx,
+						}))}
+						pagination={{ hideOnSinglePage: true, defaultPageSize: 7 }}
 					/>
 				</div>
 			</div>

@@ -13,7 +13,7 @@ import { useEffect, useMemo, useState } from "react";
 import api from "@/utils/api";
 import Composition from "./Composition";
 import IntervalDataGroup from "./IntervalDataGroup";
-import { charTypeConfig, charType, addViewType } from "./constant";
+import { charTypeConfig, charType } from "./constant";
 
 export default function AddChar(props) {
 	const { propertyList, linkList } = props;
@@ -32,18 +32,61 @@ export default function AddChar(props) {
 		singleLink: 1,
 		intervalLink: 0,
 	};
-
+	
 	const handleModalOkClick = () => {
-		if (name && selectProperty.length && selectCharType && charData) {
-			addCharOption({
-				name,
-				type: selectCharType,
-				property: selectProperty,
-				data: charData,
-			});
-			props.setIsModalOpen(false);
-		} else if (selectLinkType === linkType.intervalLink && !charData) {
-			message.info("请选择分组");
+		//信息是否完善
+		if (name && selectCharType && selectProperty) {
+			if (uniqueLinks.length > 1) {
+				//复合型
+				let data = selectedGroups.map(async (item) => {
+					console.log(item.data);
+					const NAME = item.name;
+					const numDTOList = item.data.filter((elem) => elem.linkType === 0);
+					const nounsDTOList = item.data.filter((elem) => elem.linkType === 1);
+					const reqData = { numDTOList, nounsDTOList };
+					const response = await api.getNounsAndNumerical(reqData);
+					return { name: NAME, value: response.data.data };
+				});
+				Promise.all(data).then((res) => {
+					addCharOption({
+						name,
+						type: selectCharType,
+						property: [{ linkComment: "自定义" }],
+						data: res,
+					});
+				});
+				props.setIsModalOpen(false);
+			} else if (!charData.length && selectLinkType === linkType.intervalLink) {
+				//数值型
+				api
+					.getNumerical({
+						start: curScope.start,
+						end: curScope.end,
+						link: selectProperty,
+					})
+					.then((res) => {
+						const data = { name, value: res.data.data };
+						addCharOption({
+							name,
+							type: selectCharType,
+							property: [selectProperty],
+							data: [data],
+						});
+					});
+				props.setIsModalOpen(false);
+			} else if (
+				selectLinkType === linkType.singleLink &&
+				uniqueLinks.length === 1
+			) {
+				//名词型
+				addCharOption({
+					name,
+					type: selectCharType,
+					property: [selectProperty],
+					data: charData,
+				});
+				props.setIsModalOpen(false);
+			}
 		} else {
 			message.info("请完善信息");
 		}
@@ -105,7 +148,10 @@ export default function AddChar(props) {
 	const addCharOption = (option) => {
 		const newOption = {
 			...option,
-			data: option.data.map((item) => ({ name: item.name, value: item.value })),
+			data: option.data.map((item) => ({
+				name: item.name,
+				value: item.value,
+			})),
 		};
 		api.insertViewInfo({ viewData: JSON.stringify(newOption) }).then((res) => {
 			const viewId = res.data.msg;
@@ -156,7 +202,8 @@ export default function AddChar(props) {
 		);
 		return uniqueLinks;
 	}, [nounsGroups, numsGroups]);
-	
+
+	console.log(uniqueLinks);
 
 	return (
 		<>

@@ -169,6 +169,7 @@ export default function CharContent(props) {
 									index={index}
 									charOption={item}
 									changeStatus={changeStatus}
+									
 									linklist={linklist}
 								/>
 							);

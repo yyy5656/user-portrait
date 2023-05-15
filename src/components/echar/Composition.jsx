@@ -15,7 +15,7 @@ export default function Composition(props) {
 	const [form] = Form.useForm();
 
 	const options = useMemo(() => {
-		let idx = 0;
+		let idx = -1;
 		return uniqueLinks.map((item) => {
 			return {
 				label: item.name,
@@ -40,7 +40,7 @@ export default function Composition(props) {
 					return { ...nounsGroups[elem.value], name: elem.label };
 				}
 				if (elem.title == 0) {
-					return { ...numsGroups[elem.value], name: elem.label };
+					return { ...nounsGroups.concat(numsGroups)[elem.value], name: elem.label };
 				}
 			});
 			return { name: item.groupName || "", data: mapedData };
@@ -125,7 +125,7 @@ export default function Composition(props) {
 								}
 								onClick={() => add()}
 							>
-								新增组合
+								新增分组
 							</Button>
 							{
 								<Button

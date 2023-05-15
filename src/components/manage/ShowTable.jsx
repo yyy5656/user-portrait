@@ -75,27 +75,29 @@ const ShowTable = (props) => {
 	/**
 	 * 获取表格源数据
 	 */
-	const getTableData = () => {
+	const getTableData = (page) => {
 		const { keyWord } = props;
+		if (page) {
+			//更新数据
+			const pageReq = { size: pagination.size, page: page };
+			api.getAllDataByPage(pageReq).then((res) => {
+				setData(res.data.data.data);
+				setPagination(pre => ({...pre, page}));
+			});
+			return ;
+		}
 		if (keyWord) {
 			tempData.current = data;
 			api.queryData(keyWord).then((res) => {
 				setData(res.data.data);
-				setPagination({
-					page: 1,
-					size: 10,
-					total: res.data.data.length,
-				});
+				setPagination(pre=> ({...pre, total: res.data.data.total}));
 			});
 		} else {
 			const pageReq = { size: pagination.size, page: pagination.page };
+			console.log(pagination);
 			api.getAllDataByPage(pageReq).then((res) => {
 				setData(res.data.data.data);
-				setPagination({
-					page: res.data.data.page,
-					size: res.data.data.size,
-					total: res.data.data.total,
-				});
+				setPagination((pre) => ({ ...pre, total: res.data.data.total }));
 			});
 		}
 		columns.current = handleColumns();
@@ -246,6 +248,10 @@ const ShowTable = (props) => {
 		});
 	};
 
+	const handleSizeChange = (current, value) => {
+		setPagination(pre => ({...pre, size: value, page: current}))
+	}
+
 	/**
 	 * 对传入的column进行精细化处理，使得能够被正式渲染上去
 	 * @type {unknown[]}
@@ -277,9 +283,11 @@ const ShowTable = (props) => {
 		},
 		bordered: true,
 		pagination: {
-			pageSize: 10,
+			hideOnSinglePage: true,
+			defaultPageSize: 10,
 			total: pagination.total,
 			onChange: handleChangePage,
+			onShowSizeChange: handleSizeChange
 		},
 		scroll: {
 			x: `${props.types ? 120 * props.types.flat(1).length : 0}px`,
@@ -291,8 +299,15 @@ const ShowTable = (props) => {
 	};
 
 	useEffect(() => {
+	}, [])
+
+	useEffect(() => {
 		getTableData();
-	}, [props.types, editingKey, props.keyWord, pagination.page]);
+	}, [props.types, editingKey, props.keyWord]);
+
+	useEffect(() => {
+		getTableData(pagination.page);
+	}, [pagination.page, pagination.size]);
 
 	return (
 		<Form form={form} component={false}>

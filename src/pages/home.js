@@ -260,7 +260,6 @@ const Home = () => {
 						MENU_CONFIG.SHARED_CONNECTION,
 						<FileOutlined />,
 						sharedConnectionItemList.map((data) => {
-							console.log(data);
 							return {
 								key: `${data.data.connectionId}`,
 								label: `${data.data.tableName}`,

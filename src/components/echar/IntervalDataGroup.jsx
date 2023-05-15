@@ -50,15 +50,15 @@ export default function IntervalDataGroup(props) {
 						>
 							<Form.Item
 								name="name"
-								label="分组名:"
+								label="标签名:"
 								rules={[
 									{
 										required: true,
-										message: "缺少分组名",
+										message: "缺少标签名",
 									},
 								]}
 							>
-								<Input placeholder="请输入分组名" style={{ width: 120 }} />
+								<Input placeholder="请输入标签名" style={{ width: 120 }} />
 							</Form.Item>
 							<Form.Item label="最小值" name="min">
 								<InputNumber
