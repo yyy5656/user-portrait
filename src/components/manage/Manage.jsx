@@ -354,6 +354,7 @@ export default function Manage(props) {
         title="导入记录"
         footer={null}
         open={isOpenImportModal}
+        width={900}
         onCancel={() => {
           setIsOpenImportModal(false);
         }}
@@ -362,7 +363,7 @@ export default function Manage(props) {
           className={styles.table_div}
           rowKey={(e) => e.addId}
           size="small"
-          style={{ minHeight: 200, width: "800px !important" }}
+          style={{ minHeight: 200 }}
           pagination={false}
           dataSource={[...importDataSource]}
           columns={[
@@ -370,7 +371,7 @@ export default function Manage(props) {
               title: "添加时间",
               dataIndex: "addTime",
               key: "addTime",
-              width: "20%",
+              width: "25%",
             },
             {
               title: "未导入数据信息",
@@ -383,6 +384,7 @@ export default function Manage(props) {
                     style={{
                       borderRadius: 0,
                       border: "0.5px solid",
+                      borderColor: "rgb(214 214 214)",
                     }}
                     className={styles.table_hand}
                     border={1}
@@ -420,7 +422,16 @@ export default function Manage(props) {
               key: "unMatchPrimaryKey",
               render: (text) => {
                 return (
-                  <table border={1}>
+                  <table
+                    border={1}
+                    cellpadding={1}
+                    className={styles.table_hand}
+                    style={{
+                      borderRadius: 0,
+                      border: "0.5px solid",
+                      borderColor: "rgb(214 214 214)",
+                    }}
+                  >
                     <tr>
                       {text.map((item, index) => (
                         <td
