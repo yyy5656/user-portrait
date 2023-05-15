@@ -5,7 +5,7 @@ import { Divider, Space, Tag, Empty, Modal, Select, message } from "antd";
 import api from "@/utils/api";
 
 export default function AllTask(props) {
-  console.log(props);
+  //console.log(props);
   const [allTaskList, setAllTaskList] = useState([]);
   const [publicTaskList, setPublicTaskList] = useState([]);
   const [orderTaskList, setOrderTaskList] = useState([]);
@@ -23,13 +23,9 @@ export default function AllTask(props) {
     public: "0",
     order: "1",
   };
-  const taskName = {
-    "-1": "私有",
-    0: "公开",
-    1: "指定类型",
-  };
 
   const handleFetch = (response, handleFn = () => {}) => {
+    //console.log(response);
     if (
       response.status === 200 &&
       response.data.code === 200 &&
@@ -47,7 +43,7 @@ export default function AllTask(props) {
       {
         type: taskTypeConfig.all,
         handleRes: (value) => {
-          console.log(value);
+          //console.log(value);
           setAllTaskList(value);
         },
       },
@@ -76,22 +72,20 @@ export default function AllTask(props) {
   }, []);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const res = await api.getOtherAllUser();
-      const data = handleFetch(res);
-      setUserList(data);
-    };
     if (isModalOpen) {
+      const fetchUserData = async () => {
+        const res = await api.getOtherAllUser();
+        const data = handleFetch(res);
+        setUserList(data);
+      };
       fetchUserData();
     }
   }, [isModalOpen]);
-
-  useEffect(()=>{
+  useEffect(() => {
     fetchData();
-  },[props.dataSource.length])
+  }, [props.dataSource.length]);
 
   const handleClick = (task) => {
-    console.log(task);
     setTaskInfo(task);
     setIsModalOpen(true);
   };
@@ -101,7 +95,7 @@ export default function AllTask(props) {
     setIsModalOpen(false);
     const params = {
       connectionId: taskInfo.connectionId,
-      connectionType: taskType || taskInfo.connectionType,
+      connectionType: taskType,
       shareInfo: {
         sharedUserId,
         shareType,
@@ -196,7 +190,13 @@ export default function AllTask(props) {
         <div className={styles.modal_container}>
           <span>类别</span>：
           <Select
-            defaultValue={taskName[taskInfo?.connectionType]}
+            defaultValue={
+              taskInfo?.connectionType == -1
+                ? "私有"
+                : taskInfo?.connectionType == 0
+                ? "公开"
+                : "指定可见"
+            }
             style={{ width: 120 }}
             onChange={handleChange}
             options={[

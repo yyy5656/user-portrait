@@ -1,5 +1,5 @@
 import QS from "qs";
-import HTTP from "@/service/request";
+import HTTP, { SHAREDHTTP } from "@/service/request";
 
 const api = {
   /**
@@ -281,6 +281,17 @@ const api = {
     });
   },
 
+  getAllDataByPage(pagination) {
+    return HTTP({
+      url: "/data/getAllDataByPage",
+      method: "POST",
+      data: pagination,
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+    });
+  },
+
   // /**
   //  * 19.查询后单条更新信息(该接口不用)
   //  * @param data
@@ -478,13 +489,30 @@ const api = {
    * ry的视图——获得任务所有视图数据
    * @returns {*}
    */
-  getViewInfo(token = undefined) {
+  getViewInfo() {
     return HTTP({
       url: "/data/getViewInfo",
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=UTF-8",
-        token: token,
+      },
+    });
+  },
+  share_getViewInfo() {
+    return SHAREDHTTP({
+      url: "/share/getViewInfo",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+    });
+  },
+  getPublicViewInfo() {
+    return SHAREDHTTP({
+      url: "/share/getViewInfo",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
       },
     });
   },
@@ -526,14 +554,13 @@ const api = {
    * @param data
    * @returns {*}
    */
-  getOtherAllUser(data) {
+  getOtherAllUser() {
     return HTTP({
       url: "/share/getOtherALlUser",
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=UTF-8",
       },
-      data,
     });
   },
 
@@ -622,7 +649,7 @@ const api = {
    */
   choosePublicConnection(data) {
     return HTTP({
-      url: "/share/choosePublicConnection",
+      url: "/share/choosePubicConnection",
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=UTF-8",
@@ -668,22 +695,11 @@ const api = {
    * @returns {*}
    */
   share_getLink() {
-    return HTTP({
+    return SHAREDHTTP({
       url: "/share/getLink",
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=UTF-8",
-        token: localStorage.getItem("token_shared"),
-      },
-    });
-  },
-  share_getViewInfo() {
-    return HTTP({
-      url: "/share/getViewInfo",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json;charset=UTF-8",
-        token: localStorage.getItem("token_shared"),
       },
     });
   },

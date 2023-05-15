@@ -8,7 +8,6 @@ import {
   message,
   Modal,
   Space,
-  Spin,
   Table,
   Tag,
   theme,
@@ -41,15 +40,13 @@ export default function Manage(props) {
   const [typeState, setTypeState] = useState(null); // 要传给table的type数据
   const [clickedSearchType, setClickedSearchType] = useState("???"); // 目前显示的搜索部分框字段
   const [keyWord, setKeyWord] = useState(null); //搜索关键词对象
-  const [isLoading, setIsloading] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
 
   // ref
   const typeRef = useRef(null); // 用以缓存未处理的type数据
 
   // props
-  const { linkList } = props;
-
+  const { linkList, isLoading } = props;
   // methods
   /**
    * 获取属性类别
@@ -122,7 +119,9 @@ export default function Manage(props) {
     if (!queryData.searchName) {
       //* 无搜索关键字
       setKeyWord(null);
-      message.info("请输入要检索的内容。");
+      message.info("请输入要检索的内容");
+    } else if (!clickedSearchType) {
+      message.info("请选择要检索的属性");
     } else {
       setIsSearching(true);
       //* 搜索关键字
@@ -145,7 +144,6 @@ export default function Manage(props) {
       setClickedSearchType(null);
     };
   }, [props.linkList]);
-  //if(isLoading) return <Spin style={{display:'grid', placeContent:'center',height:'80vh'}} />
 
   return (
     <div className={styles.site_layout_content_show}>
