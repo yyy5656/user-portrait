@@ -203,8 +203,6 @@ export default function AddChar(props) {
 		return uniqueLinks;
 	}, [nounsGroups, numsGroups]);
 
-	console.log(uniqueLinks);
-
 	return (
 		<>
 			<Modal

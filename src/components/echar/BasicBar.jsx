@@ -2,7 +2,7 @@ import { CloseOutlined } from "@ant-design/icons";
 import { Table } from "antd";
 import styles from "@/styles/BasicBar.module.scss";
 import * as echarts from "echarts";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { getCharOption } from "./constant";
 
 export default function BasicBar(props) {
@@ -29,6 +29,26 @@ export default function BasicBar(props) {
 		{ title: "数量", dataIndex: "value" },
 	];
 
+	//根据数据类型生成对应图表数据
+	const tableData = useMemo(() => {
+		if (Array.isArray(data)) {
+			const tableData = data.map((item, idx) => ({
+				[property[0].linkComment]: item.name,
+				value: item.value,
+				key: idx,
+			}));
+			return tableData;
+		} else {
+			return Object.values(data)[1].map((item, index) => {
+				console.log(item);
+				return {
+					value: item,
+					key: index,
+					[property[0].linkComment]: data.xAxisData[index],
+				};
+			});
+		}
+	}, [data]);
 	return (
 		<>
 			<div className={styles.basicBar_container}>
@@ -43,14 +63,11 @@ export default function BasicBar(props) {
 				<div>{name}</div>
 				<div style={{ display: "flex" }}>
 					<div className={styles.basicBar} ref={dom}></div>
-					<Table 
+					<Table
+						bordered
 						size="small"
 						columns={columns}
-						dataSource={data.map((item, idx) => ({
-							[property[0].linkComment]: item.name,
-							value: item.value,
-							key: idx,
-						}))}
+						dataSource={tableData}
 						pagination={{ hideOnSinglePage: true, defaultPageSize: 7 }}
 					/>
 				</div>
