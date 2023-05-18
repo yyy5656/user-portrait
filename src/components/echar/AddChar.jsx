@@ -303,39 +303,27 @@ export default function AddChar(props) {
 							<Space size="small" wrap>
 								<div>
 									<span style={{ marginRight: "13px" }}>当前标签:</span>
-									{nounsGroups.map((item, index) => (
-										<Tooltip key={index} title={nounsGroups[index].value}>
-											<Tag
-												style={{ marginBottom: 5 }}
-												closable={!confirmed}
-												onClose={(e) => {
-													setNounsGroups((pre) =>
-														pre.filter((_, idx) => index !== idx)
-													);
-													e.preventDefault();
-												}}
-											>
-												{item.name}
-											</Tag>
-										</Tooltip>
-									))}
-									{numsGroups.map((item, index) => (
-										<Tooltip
-											key={index}
-											title={`${numsGroups[index].start}-${numsGroups[index].end}`}
-										>
-											<Tag
-												closable={!confirmed}
-												onClose={(e) => {
-													setNumsGroups((pre) =>
-														pre.filter((_, idx) => index !== idx)
-													);
-													e.preventDefault();
-												}}
-											>
-												{item.name}
-											</Tag>
-										</Tooltip>
+									{uniqueLinks.map((item, uLIndex) => (
+										<div key={"item.naem" + uLIndex}>
+											<span style={{ marginRight: 10 }}>{item.name}:</span>
+											{nounsGroups
+												.concat(numsGroups)
+												.filter((tags) => tags.linkId === item.linkId)
+												.map((tag) => (
+													<Tag
+														style={{ marginBottom: 5 }}
+														closable={!confirmed}
+														onClose={(e) => {
+															setNounsGroups((pre) => {
+																return pre.filter((item) => tag.name !== item.name);
+															});
+															e.preventDefault();
+														}}
+													>
+														{tag.name}
+													</Tag>
+												))}
+										</div>
 									))}
 								</div>
 							</Space>

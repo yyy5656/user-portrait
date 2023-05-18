@@ -101,7 +101,7 @@ export default function Compare(props) {
 										options={barList.map((item) => ({
 											label: item.name,
 											value: item.viewId,
-										}))}
+										}))}index
 										onChange={setSelectedBarId}
 									/>
 								</Form.Item>
