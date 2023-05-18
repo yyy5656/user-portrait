@@ -32,11 +32,12 @@ export default function AddChar(props) {
 		singleLink: 1,
 		intervalLink: 0,
 	};
-	
+
 	const handleModalOkClick = () => {
 		//信息是否完善
 		if (name && selectCharType && selectProperty) {
-			if (uniqueLinks.length > 1) {
+			console.log(selectedGroups.length);
+			if (selectedGroups.length) {
 				//复合型
 				let data = selectedGroups.map(async (item) => {
 					console.log(item.data);
@@ -280,14 +281,24 @@ export default function AddChar(props) {
 									标签化
 								</Button>
 							</div>
-							<Space size="small" wrap>
-								当前分组：
-								{charData.map((item, index) => (
-									<span key={index} style={{ marginRight: "10px" }}>
-										{item.name}
-									</span>
-								))}
-							</Space>
+							{selectLinkType === linkType.intervalLink ? (
+								<IntervalDataGroup
+									numberScope={numberScope}
+									curScope={curScope}
+									setCurScope={setCurScope}
+									setNumsGroups={setNumsGroups}
+									selectProperty={selectProperty}
+								/>
+							) : (
+								<Space size="small" wrap>
+									当前分组：
+									{charData.map((item, index) => (
+										<span key={index} style={{ marginRight: "10px" }}>
+											{item.name}
+										</span>
+									))}
+								</Space>
+							)}
 							<Divider style={{ margin: 0 }} />
 							<Space size="small" wrap>
 								<div>
@@ -314,7 +325,7 @@ export default function AddChar(props) {
 											title={`${numsGroups[index].start}-${numsGroups[index].end}`}
 										>
 											<Tag
-												closable
+												closable={!confirmed}
 												onClose={(e) => {
 													setNumsGroups((pre) =>
 														pre.filter((_, idx) => index !== idx)
@@ -328,17 +339,8 @@ export default function AddChar(props) {
 									))}
 								</div>
 							</Space>
-							{selectLinkType === linkType.intervalLink && (
-								<IntervalDataGroup
-									numberScope={numberScope}
-									curScope={curScope}
-									setCurScope={setCurScope}
-									setNumsGroups={setNumsGroups}
-									selectProperty={selectProperty}
-								/>
-							)}
 							<Composition
-								propertyList={propertyList}
+								selectCharType={selectCharType}
 								uniqueLinks={uniqueLinks}
 								nounsGroups={nounsGroups}
 								numsGroups={numsGroups}

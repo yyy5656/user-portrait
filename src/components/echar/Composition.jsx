@@ -63,83 +63,83 @@ export default function Composition(props) {
 		);
 	}, [numsGroups, nounsGroups]);
 
-	return (
-		<Form
-			name="groups"
-			form={form}
-			onFinish={onFinish}
-			style={{ minHeight: "115px" }}
-		>
-			<Form.List name="selectedGroups">
-				{(fields, { add, remove }) => (
-					<>
-						{fields.map(({ key, name, ...restField }, CompositionIdx) => (
-							<Space
-								key={key}
-								style={{
-									display: "flex",
-								}}
-								align="baseline"
-							>
-								<Form.Item
-									{...restField}
-									name={[name, "groupName"]}
-									label={`组合名称`}
-									rules={[
-										{
-											required: true,
-											message: "未输入组合名称",
-										},
-									]}
+		return (
+			<Form
+				name="groups"
+				form={form}
+				onFinish={onFinish}
+				style={{ minHeight: "115px" }}
+			>
+				<Form.List name="selectedGroups">
+					{(fields, { add, remove }) => (
+						<>
+							{fields.map(({ key, name, ...restField }, CompositionIdx) => (
+								<Space
+									key={key}
+									style={{
+										display: "flex",
+									}}
+									align="baseline"
 								>
-									<Input style={{ width: 100 }} />
-								</Form.Item>
-								<Form.Item
-									{...restField}
-									label={`分组组合${CompositionIdx + 1}`}
-									name={[name, "data"]}
-								>
-									<Select
-										mode="multiple"
-										labelInValue
-										style={{ width: 250 }}
-										disabled={confirmed}
-										notFoundContent={
-											<Space align="center">
-												<WarningOutlined />
-												未添加分组
-											</Space>
-										}
-										options={options}
-									/>
-								</Form.Item>
-								{!confirmed && (
-									<MinusCircleOutlined onClick={() => remove(name)} />
-								)}
-							</Space>
-						))}
-						<Space>
-							<Button
-								disabled={
-									(!nounsGroups.length && !numsGroups.length) || confirmed
-								}
-								onClick={() => add()}
-							>
-								新增分组
-							</Button>
-							{
+									<Form.Item
+										{...restField}
+										name={[name, "groupName"]}
+										label={`组合名称`}
+										rules={[
+											{
+												required: true,
+												message: "未输入组合名称",
+											},
+										]}
+									>
+										<Input style={{ width: 100 }} />
+									</Form.Item>
+									<Form.Item
+										{...restField}
+										label={`分组组合${CompositionIdx + 1}`}
+										name={[name, "data"]}
+									>
+										<Select
+											mode="multiple"
+											labelInValue
+											style={{ width: 250 }}
+											disabled={confirmed}
+											notFoundContent={
+												<Space align="center">
+													<WarningOutlined />
+													未添加分组
+												</Space>
+											}
+											options={options}
+										/>
+									</Form.Item>
+									{!confirmed && (
+										<MinusCircleOutlined onClick={() => remove(name)} />
+									)}
+								</Space>
+							))}
+							<Space>
 								<Button
-									htmlType="submit"
-									type="primary"
-									disabled={!fields.length || confirmed}
+									disabled={
+										(!nounsGroups.length && !numsGroups.length) || confirmed
+									}
+									onClick={() => add()}
 								>
-									锁定
+									新增分组
 								</Button>
-							}
-						</Space>
-					</>
-				)}
-			</Form.List>
-		</Form>
-	);
+								{
+									<Button
+										htmlType="submit"
+										type="primary"
+										disabled={!fields.length || confirmed}
+									>
+										锁定
+									</Button>
+								}
+							</Space>
+						</>
+					)}
+				</Form.List>
+			</Form>
+		);
 }
