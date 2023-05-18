@@ -32,11 +32,12 @@ export default function AddChar(props) {
 		singleLink: 1,
 		intervalLink: 0,
 	};
-	
+
 	const handleModalOkClick = () => {
 		//信息是否完善
 		if (name && selectCharType && selectProperty) {
-			if (uniqueLinks.length > 1) {
+			console.log(selectedGroups.length);
+			if (selectedGroups.length) {
 				//复合型
 				let data = selectedGroups.map(async (item) => {
 					console.log(item.data);
@@ -280,55 +281,7 @@ export default function AddChar(props) {
 									标签化
 								</Button>
 							</div>
-							<Space size="small" wrap>
-								当前分组：
-								{charData.map((item, index) => (
-									<span key={index} style={{ marginRight: "10px" }}>
-										{item.name}
-									</span>
-								))}
-							</Space>
-							<Divider style={{ margin: 0 }} />
-							<Space size="small" wrap>
-								<div>
-									<span style={{ marginRight: "13px" }}>当前标签:</span>
-									{nounsGroups.map((item, index) => (
-										<Tooltip key={index} title={nounsGroups[index].value}>
-											<Tag
-												style={{ marginBottom: 5 }}
-												closable={!confirmed}
-												onClose={(e) => {
-													setNounsGroups((pre) =>
-														pre.filter((_, idx) => index !== idx)
-													);
-													e.preventDefault();
-												}}
-											>
-												{item.name}
-											</Tag>
-										</Tooltip>
-									))}
-									{numsGroups.map((item, index) => (
-										<Tooltip
-											key={index}
-											title={`${numsGroups[index].start}-${numsGroups[index].end}`}
-										>
-											<Tag
-												closable
-												onClose={(e) => {
-													setNumsGroups((pre) =>
-														pre.filter((_, idx) => index !== idx)
-													);
-													e.preventDefault();
-												}}
-											>
-												{item.name}
-											</Tag>
-										</Tooltip>
-									))}
-								</div>
-							</Space>
-							{selectLinkType === linkType.intervalLink && (
+							{selectLinkType === linkType.intervalLink ? (
 								<IntervalDataGroup
 									numberScope={numberScope}
 									curScope={curScope}
@@ -336,9 +289,46 @@ export default function AddChar(props) {
 									setNumsGroups={setNumsGroups}
 									selectProperty={selectProperty}
 								/>
+							) : (
+								<Space size="small" wrap>
+									当前分组：
+									{charData.map((item, index) => (
+										<span key={index} style={{ marginRight: "10px" }}>
+											{item.name}
+										</span>
+									))}
+								</Space>
 							)}
+							<Divider style={{ margin: 0 }} />
+							<Space size="small" wrap>
+								<div>
+									<span style={{ marginRight: "13px" }}>当前标签:</span>
+									{uniqueLinks.map((item, uLIndex) => (
+										<div key={"item.naem" + uLIndex}>
+											<span style={{ marginRight: 10 }}>{item.name}:</span>
+											{nounsGroups
+												.concat(numsGroups)
+												.filter((tags) => tags.linkId === item.linkId)
+												.map((tag) => (
+													<Tag
+														style={{ marginBottom: 5 }}
+														closable={!confirmed}
+														onClose={(e) => {
+															setNounsGroups((pre) => {
+																return pre.filter((item) => tag.name !== item.name);
+															});
+															e.preventDefault();
+														}}
+													>
+														{tag.name}
+													</Tag>
+												))}
+										</div>
+									))}
+								</div>
+							</Space>
 							<Composition
-								propertyList={propertyList}
+								selectCharType={selectCharType}
 								uniqueLinks={uniqueLinks}
 								nounsGroups={nounsGroups}
 								numsGroups={numsGroups}
