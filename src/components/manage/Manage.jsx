@@ -418,6 +418,7 @@ export default function Manage(props) {
               title: "数据库未匹配",
               dataIndex: "unMatchPrimaryKey",
               key: "unMatchPrimaryKey",
+              width:"15%",
               render: (text) => {
                 return (
                   <table
@@ -430,19 +431,13 @@ export default function Manage(props) {
                       borderColor: "rgb(214 214 214)",
                     }}
                   >
-                    <tr>
-                      <th colSpan={999}>主键</th>
-                    </tr>
-                    <tr>
-                      {text.map((item, index) => (
-                        <td
-                          key={index}
-                          style={{ minWidth: "10px", textAlign: "center" }}
-                        >
+                    {text.map((item, index) => (
+                      <tr key={index}>
+                        <td style={{ minWidth: "10px", textAlign: "center" }}>
                           {item}
                         </td>
-                      ))}
-                    </tr>
+                      </tr>
+                    ))}
                   </table>
                 );
               },
