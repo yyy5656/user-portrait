@@ -94,7 +94,6 @@ const ShowTable = (props) => {
 			});
 		} else {
 			const pageReq = { size: pagination.size, page: pagination.page };
-			console.log(pagination);
 			api.getAllDataByPage(pageReq).then((res) => {
 				setData(res.data.data.data);
 				setPagination((pre) => ({ ...pre, total: res.data.data.total }));

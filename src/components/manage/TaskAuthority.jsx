@@ -38,7 +38,6 @@ export default function TaskAuthority(props) {
         <Space size="middle">
           <a
             onClick={() => {
-              console.log(record);
               const { shareId } = record;
               api.deleteShareById({ shareId }).then((res) => {
                 message.success(res.data.msg);
