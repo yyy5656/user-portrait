@@ -17,19 +17,19 @@ const { Header, Content, Footer, Sider } = Layout;
 const { confirm } = Modal;
 
 function getItem(label, key, icon, children) {
-  return {
-    key,
-    icon,
-    children,
-    label,
-  };
+	return {
+		key,
+		icon,
+		children,
+		label,
+	};
 }
 
 const Home = () => {
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
-  const route = useRouter();
+	const {
+		token: { colorBgContainer },
+	} = theme.useToken();
+	const route = useRouter();
 
 	// connectionId: number
 	// linkName: null
@@ -65,24 +65,24 @@ const Home = () => {
 		res.data && setConnectionItemList(res.data);
 	};
 
-  /**
-   * 这个是请求属性
-   * @returns {Promise<void>}
-   * @param data
-   */
-  const fetchLinkData = async (data) => {
-    const res = await api.chooseConnection(data);
-    if (res.status === 200 && res.data.data) {
-      localStorage.setItem("token", res.data.data);
-    }
-    const linkRes = await api.getLink();
-    if (linkRes.data.code === 200) {
-      setLinklist(linkRes.data.data.links);
-    } else {
-      setLinklist([]);
-      message.warning("未上传数据");
-    }
-  };
+	/**
+	 * 这个是请求属性
+	 * @returns {Promise<void>}
+	 * @param data
+	 */
+	const fetchLinkData = async (data) => {
+		const res = await api.chooseConnection(data);
+		if (res.status === 200 && res.data.data) {
+			localStorage.setItem("token", res.data.data);
+		}
+		const linkRes = await api.getLink();
+		if (linkRes.data.code === 200) {
+			setLinklist(linkRes.data.data.links);
+		} else {
+			setLinklist([]);
+			message.warning("未上传数据");
+		}
+	};
 
 	const fetchPublicLinkData = async (data) => {
 		const res = await api.choosePublicConnection(data);
@@ -120,13 +120,23 @@ const Home = () => {
 			e.key !== MENU_CONFIG.PUBLIC_MANAGER &&
 			e.key !== MENU_CONFIG.SHARED_CONNECTION
 		) {
-			let findResult = connectionItemList?.find((element) => {
-				return element.connectionId === parseInt(e.key);
-			});
+			let findResult =
+				connectionItemList?.find((element) => {
+					return element.connectionId === parseInt(e.key);
+				}) ||
+				publicConnectionItemList?.find((element) => {
+					return element.connectionId === parseInt(e.key);
+				}) ||
+				sharedConnectionItemList?.find((element) => {
+					return element.connectionId === parseInt(e.key);
+				});
 			connectionId.current = findResult?.connectionId;
-			missionName.current = findResult?.tableName;
+			const shareType = findResult.shareType === 0 ? "-只读" : "-可修改";
+			missionName.current =
+				findResult?.tableName || findResult.data.tableName + shareType;
 		}
 		if (e.keyPath && e.keyPath.includes(MENU_CONFIG.MY_TASK)) {
+			setChangeShare(true);
 			fetchLinkData({ connectionId: e.key });
 			setMenuKey(MENU_CONFIG.MY_TASK);
 		} else if (e.keyPath && e.keyPath.includes(MENU_CONFIG.CREATE_TASK)) {
@@ -139,6 +149,7 @@ const Home = () => {
 				(item) => item.connectionId == e.key
 			);
 			fetchPublicLinkData(data[0]);
+			setChangeShare(false);
 		} else if (e.keyPath && e.keyPath.includes(MENU_CONFIG.SHARED_CONNECTION)) {
 			setMenuKey(MENU_CONFIG.SHARED_CONNECTION);
 			const id = Number(e.key);
@@ -164,40 +175,37 @@ const Home = () => {
 		}
 	};
 
-  // 退出登录
-  const showConfirm = () => {
-    confirm({
-      title: "即将退出！",
-      content: "你确定准备要退出该系统吗？",
-      onOk() {
-        console.log("OK");
-        route.replace({ pathname: "/", query: {} });
-        localStorage.removeItem("token");
-      },
-      onCancel() {
-        console.log("Cancel");
-      },
-      okText: "确定",
-      cancelText: "取消",
-    });
-  };
+	// 退出登录
+	const showConfirm = () => {
+		confirm({
+			title: "即将退出！",
+			content: "你确定准备要退出该系统吗？",
+			onOk() {
+				route.replace({ pathname: "/", query: {} });
+				localStorage.removeItem("token");
+			},
+			onCancel() {},
+			okText: "确定",
+			cancelText: "取消",
+		});
+	};
 
-  const addConnection = () => {
-    fetchData();
-  };
-  const resetLinks = () => {
-    setLinklist([]);
-  };
+	const addConnection = () => {
+		fetchData();
+	};
+	const resetLinks = () => {
+		setLinklist([]);
+	};
 
-  const fetchGetConnection = async () => {
-    const publicConnectionRes = await api.getPublicConnection();
-    if (publicConnectionRes.status === 200 && publicConnectionRes.data.data) {
-      setPublicConnectionItemList(publicConnectionRes.data.data);
-    }
-    const sharedConnectionRes = await api.getSharedConnection();
-    if (sharedConnectionRes.status === 200 && sharedConnectionRes.data.data) {
-      setSharedConnectionItemList(sharedConnectionRes.data.data);
-    }
+	const fetchGetConnection = async () => {
+		const publicConnectionRes = await api.getPublicConnection();
+		if (publicConnectionRes.status === 200 && publicConnectionRes.data.data) {
+			setPublicConnectionItemList(publicConnectionRes.data.data);
+		}
+		const sharedConnectionRes = await api.getSharedConnection();
+		if (sharedConnectionRes.status === 200 && sharedConnectionRes.data.data) {
+			setSharedConnectionItemList(sharedConnectionRes.data.data);
+		}
 
 		if (tabKey === "1") {
 			setMenuItem(
@@ -220,9 +228,7 @@ const Home = () => {
 						sharedConnectionRes?.data.data?.map((data) => {
 							return {
 								key: `${data.data.connectionId}`,
-								label: `${data.data.tableName}${
-									data.shareType == 0 ? "-只读" : ""
-								}`,
+								label: `${data.data.tableName}`,
 							};
 						})
 					),

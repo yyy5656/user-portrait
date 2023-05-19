@@ -36,11 +36,9 @@ export default function AddChar(props) {
 	const handleModalOkClick = () => {
 		//信息是否完善
 		if (name && selectCharType && selectProperty) {
-			console.log(selectedGroups.length);
 			if (selectedGroups.length) {
 				//复合型
 				let data = selectedGroups.map(async (item) => {
-					console.log(item.data);
 					const NAME = item.name;
 					const numDTOList = item.data.filter((elem) => elem.linkType === 0);
 					const nounsDTOList = item.data.filter((elem) => elem.linkType === 1);

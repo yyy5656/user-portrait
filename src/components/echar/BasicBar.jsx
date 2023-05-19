@@ -7,7 +7,7 @@ import { charTypeConfig, getCharOption } from "./constant";
 
 export default function BasicBar(props) {
 	const { name, property, type, data, status, viewId } = props.charOption;
-	const { setIsCompareOpen } = props;
+	const { setIsCompareOpen, changeShare } = props;
 	const dom = useRef();
 	useEffect(() => {
 		const myChart = echarts.init(dom.current, null, {
@@ -61,7 +61,7 @@ export default function BasicBar(props) {
 				>
 					<CloseOutlined />
 				</div>
-				{type === charTypeConfig.bar && (
+				{type === charTypeConfig.bar && changeShare && (
 					<Button
 						onClick={() => {
 							setIsCompareOpen(viewId);
@@ -70,7 +70,7 @@ export default function BasicBar(props) {
 						生成对比图
 					</Button>
 				)}
-				<div style={{ display: "flex", justifyContent:'space-evenly' }}>
+				<div style={{ display: "flex", justifyContent: "space-evenly" }}>
 					<div className={styles.basicBar} ref={dom}></div>
 					{type !== charTypeConfig.multiBar && (
 						<Table

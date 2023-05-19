@@ -8,6 +8,7 @@ import BasicBar from "./BasicBar";
 import Compare from "./Compare";
 import { useEffect, useState } from "react";
 import api from "@/utils/api";
+import { charTypeConfig } from "./constant";
 
 export default function CharContent(props) {
 	const { menuKey, linklist, changeShare, isLoading, setIsLoading } = props;
@@ -43,7 +44,10 @@ export default function CharContent(props) {
 			return item.viewData;
 		});
 		const newData = data.map((item) => {
-			if (item.type != "PIE") {
+			if (item.type != charTypeConfig.pie) {
+				if(item.type === charTypeConfig.multiBar){
+					return item
+				}
 				return {
 					...item,
 					data: {
@@ -179,6 +183,7 @@ export default function CharContent(props) {
 									key={item.viewId}
 									index={index}
 									charOption={item}
+									changeShare={changeShare}
 									changeStatus={changeStatus}
 									setIsCompareOpen={setIsCompareOpen}
 									linklist={linklist}

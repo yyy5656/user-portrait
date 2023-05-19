@@ -21,7 +21,7 @@ export default function Composition(props) {
 				label: item.name,
 				options: [...nounsGroups, ...numsGroups]
 					.filter((obj) => obj.linkId === item.linkId)
-					.map((item, index) => {
+					.map((item) => {
 						idx++;
 						return {
 							label: item.name,
@@ -104,6 +104,7 @@ export default function Composition(props) {
 											labelInValue
 											style={{ width: 250 }}
 											disabled={confirmed}
+											listHeight={180}
 											notFoundContent={
 												<Space align="center">
 													<WarningOutlined />

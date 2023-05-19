@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Modal, Form, Input, Select, Space, Button } from "antd";
 import { charTypeConfig } from "./constant";
+import api from "@/utils/api";
 
 export default function Compare(props) {
 	const { isCompareOpen, setIsCompareOpen, charList, addViewChar } = props;
@@ -27,10 +28,10 @@ export default function Compare(props) {
 		)[0];
 		const selectedBar = barList.map((item) => {
 			if (selectedBarId.includes(item.viewId)) {
-				return {...item,};
+				return { ...item };
 			}
 		});
-		selectedBar.unshift(currentBar)
+		selectedBar.unshift(currentBar);
 		const newData = {
 			name: data.charName,
 			type: charTypeConfig.multiBar,
@@ -42,8 +43,11 @@ export default function Compare(props) {
 					data: item.data.yAxisData,
 				})),
 			},
-		}
-		addViewChar(newData);
+		};
+		api.insertViewInfo({ viewData: JSON.stringify(newData) }).then((res) => {
+			const viewId = res.data.msg;
+			addViewChar(newData, viewId);
+		});
 		setIsCompareOpen(0);
 	};
 
@@ -53,7 +57,7 @@ export default function Compare(props) {
 				title="生成对比图"
 				width={600}
 				okText="生成"
-				open={isCompareOpen}
+				open={isCompareOpen === 0 ? false : true}
 				cancelText="取消"
 				destroyOnClose={true}
 				onCancel={onCancel}
@@ -101,60 +105,11 @@ export default function Compare(props) {
 										options={barList.map((item) => ({
 											label: item.name,
 											value: item.viewId,
-										}))}index
+										}))}
+										index
 										onChange={setSelectedBarId}
 									/>
 								</Form.Item>
-								{/* <Form.List name="newCategory">
-									{(fields, { add, remove }) => {
-										return (
-											<Space direction="vertical" size={"small"}>
-												<div>
-													进行比较的图表:{" "}
-													<Select
-														mode="multiple"
-														style={{ width: "auto", minWidth: 100 }}
-														options={barList.map((item) => ({
-															label: item.name,
-															value: item.viewId,
-														}))}
-														onChange={(value) => {
-															if (value.length - selectedBarId.length > 0) {
-																add();
-																if (value.length === 1) {
-																	add();
-																}
-															} else if (
-																value.length - selectedBarId.length <
-																0
-															) {
-																remove(value.length + 1);
-																if (value.length === 0) {
-																	remove(value.length);
-																}
-															}
-															setSelectedBarId(value);
-														}}
-													/>
-												</div>
-												{fields.map(({ key, name }, index) => {
-													return (
-														<Form.Item
-															key={key}
-															name={[name, `property`]}
-															label={`组名称${index + 1}`}
-															rules={[
-																{ required: true, message: "缺少组名称" },
-															]}
-														>
-															<Input style={{ width: 150 }} />
-														</Form.Item>
-													);
-												})}
-											</Space>
-										);
-									}}
-								</Form.List> */}
 								<Space
 									style={{
 										width: "100%",
