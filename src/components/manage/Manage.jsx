@@ -389,7 +389,7 @@ export default function Manage(props) {
                     cellpadding={1}
                   >
                     <tr>
-                      <th width="20%">primaryKey</th>
+                      <th width="20%">主键</th>
                       <th colspan={len} style={{ textAlign: "center" }}>
                         数据
                       </th>
@@ -415,7 +415,7 @@ export default function Manage(props) {
               },
             },
             {
-              title: "未匹配",
+              title: "数据库未匹配",
               dataIndex: "unMatchPrimaryKey",
               key: "unMatchPrimaryKey",
               render: (text) => {
@@ -430,6 +430,9 @@ export default function Manage(props) {
                       borderColor: "rgb(214 214 214)",
                     }}
                   >
+                    <tr>
+                      <th colSpan={999}>主键</th>
+                    </tr>
                     <tr>
                       {text.map((item, index) => (
                         <td
