@@ -393,13 +393,6 @@ const Home = () => {
 								}}
 							/>
 						</Content>
-						<Footer
-							style={{
-								textAlign: "center",
-							}}
-						>
-							User Portrait ©2023 Created by Hunter Li & Zhenyue Wang
-						</Footer>
 					</Layout>
 					{isConnectionModalOpen && (
 						<AddConnectionForm
