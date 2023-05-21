@@ -27,6 +27,7 @@ export default function ItemList(props) {
 			<div className={styles.container}>
 				<Row gutter={[4, 8]}>
 					{charList.map((item, index) => {
+						console.log(item.type);
 						return (
 							<Col key={item.viewId}>
 								<div key={index} className={styles.item_big_box}>

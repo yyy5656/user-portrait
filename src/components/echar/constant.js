@@ -8,6 +8,7 @@ export const charTypeName = {
 	[charTypeConfig.pie]: "饼状图",
 	[charTypeConfig.bar]: "柱形图",
 	[charTypeConfig.line]: "折线图",
+	[charTypeConfig.multiBar]: "对比",
 };
 
 export const charType = [
