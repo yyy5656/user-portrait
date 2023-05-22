@@ -144,18 +144,24 @@ export default function AddChar(props) {
 		}
 	}, [selectProperty, selectCharType]);
 
-	const addCharOption = (option) => {
+	const addCharOption = async (option) => {
 		const newOption = {
 			...option,
 			data: option.data.map((item) => ({
 				name: item.name,
 				value: item.value,
+				linkId: item.linkId
 			})),
 		};
+		let pieData = null
+		if(newOption.type === charTypeConfig.pie){
+			pieData = await api.getPiePersent(newOption.data)
+			newOption.data = pieData.data.data;
+		}
 		api.insertViewInfo({ viewData: JSON.stringify(newOption) }).then((res) => {
 			const viewId = res.data.msg;
 			if (selectCharType === charTypeConfig.pie) {
-				props.addViewChar(option, viewId);
+				props.addViewChar(newOption, viewId);
 			} else {
 				const newData = {
 					xAxisData: option.data.map((item) => item.name),

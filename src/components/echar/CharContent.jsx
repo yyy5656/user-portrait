@@ -178,6 +178,7 @@ export default function CharContent(props) {
 			{charList.length
 				? charList.map((item, index) => {
 						if (item.status === "open") {
+							//console.log(item);
 							return (
 								<BasicBar
 									key={item.viewId}
