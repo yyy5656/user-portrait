@@ -7,6 +7,7 @@ import { charTypeConfig, getCharOption } from "./constant";
 
 export default function BasicBar(props) {
 	const { name, property, type, data, status, viewId } = props.charOption;
+	//console.log(data);
 	const { setIsCompareOpen, changeShare } = props;
 	const dom = useRef();
 	useEffect(() => {
@@ -29,6 +30,9 @@ export default function BasicBar(props) {
 		})),
 		{ title: "数量", dataIndex: "value" },
 	];
+	if(type === charTypeConfig.pie){
+		columns.push({title:'占比', dataIndex: 'percent'})
+	}
 
 	//根据数据类型生成对应图表数据
 	const tableData = useMemo(() => {
@@ -36,6 +40,7 @@ export default function BasicBar(props) {
 			const tableData = data.map((item, idx) => ({
 				[property[0].linkComment]: item.name,
 				value: item.value,
+				percent: item.percent,
 				key: idx,
 			}));
 			return tableData;

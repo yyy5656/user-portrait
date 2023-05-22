@@ -1,5 +1,6 @@
 import QS from "qs";
 import HTTP, { SHAREDHTTP } from "@/service/request";
+import { headers } from "../../next.config";
 
 const api = {
   /**
@@ -291,22 +292,6 @@ const api = {
       },
     });
   },
-
-  // /**
-  //  * 19.查询后单条更新信息(该接口不用)
-  //  * @param data
-  //  * @returns {HTTP}
-  //  */
-  // updateDataById(data){
-  //     return HTTP({
-  //         url:"/data/updateDataById",
-  //         method:"POST",
-  //         headers:{
-  //             "Content-Type": "application/json;charset=UTF-8",
-  //         },
-  //         data
-  //     })
-  // },
 
   /**
    * 20.新增数据（属性）
@@ -725,6 +710,7 @@ const api = {
       data,
     });
   },
+  
   getAddInfo() {
     return HTTP({
       url: "/import/getAddInfo",
@@ -734,6 +720,17 @@ const api = {
       },
     });
   },
+
+  getPiePersent(data){
+    return HTTP({
+			url: "/data/getPIEPercent",
+      method:'post',
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+      data:{data}
+		});
+  }
 };
 
 export default api;
