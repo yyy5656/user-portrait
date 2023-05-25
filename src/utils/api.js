@@ -308,6 +308,16 @@ const api = {
       data,
     });
   },
+  importMoreData(data) {
+    return HTTP({
+      url: "/import/importMoreData",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+      data,
+    });
+  },
 
   /**
    * 21.处理名称数据分组
@@ -710,7 +720,7 @@ const api = {
       data,
     });
   },
-  
+
   getAddInfo() {
     return HTTP({
       url: "/import/getAddInfo",
@@ -721,16 +731,16 @@ const api = {
     });
   },
 
-  getPiePersent(data){
+  getPiePersent(data) {
     return HTTP({
-			url: "/data/getPIEPercent",
-      method:'post',
+      url: "/data/getPIEPercent",
+      method: "post",
       headers: {
         "Content-Type": "application/json;charset=UTF-8",
       },
-      data:{data}
-		});
-  }
+      data: { data },
+    });
+  },
 };
 
 export default api;

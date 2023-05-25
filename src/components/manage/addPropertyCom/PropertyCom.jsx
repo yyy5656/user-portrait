@@ -68,7 +68,7 @@ export default function PropertyCom(props) {
       category: stepThrSelectPropertyList,
     };
     api.addData(params).then((res) => {
-      if (res.data.data.code === 200) {
+      if (res.data.code === 200) {
         message.success("添加成功！");
         setIsOpenAddPropertyModal(false);
       } else {
@@ -86,7 +86,24 @@ export default function PropertyCom(props) {
       updateCategories: updateCategoriesList,
     };
     api.updateData(params).then((res) => {
-      if (res.data.data.code == 200) {
+      if (res.data.code == 200) {
+        message.success("更新成功！");
+        setIsOpenAddPropertyModal(false);
+      } else {
+        message.info(res.data.data.msg);
+      }
+    });
+  };
+
+  const fetchImportMoreData = () => {
+    const params = {
+      sheetIndex,
+      start: minNum,
+      end: maxNum,
+      updateCategories: updateCategoriesList,
+    };
+    api.importMoreData(params).then((res) => {
+      if (res.data.code == 200) {
         message.success("更新成功！");
         setIsOpenAddPropertyModal(false);
       } else {
@@ -136,9 +153,13 @@ export default function PropertyCom(props) {
       formData.append("excel", event.file);
       api.getProperty(formData).then((res) => {
         console.log(res.data);
-        message.success("上传成功！");
-        // setIsUpload(true);
-        sePpropertyData(res.data.data);
+        if (res.data.code === 200) {
+          message.success("上传成功！");
+          // setIsUpload(true);
+          sePpropertyData(res.data.data);
+        } else {
+          message.error("上传失败！");
+        }
       });
     },
     beforeUpload(file) {
@@ -170,100 +191,144 @@ export default function PropertyCom(props) {
       // disabled: !isUpload,
       buttonName: "下一步",
     },
-    {
-      title: "选择主键对应",
-      content: (
-        <>
-          <div>
-            当前表格为：{propertyData.fileName}
-            <div className={styles.add_property_div}>
-              <span className={styles.add_property_span}>选择表格:</span>
-              <Select
-                allowClear
-                style={{ width: "40%" }}
-                placeholder="选择表格"
-                onChange={(value) => {
-                  setSheetIndex(value);
-                  setMaxNum(Number(propertyData.sheetList[value].dataLine));
-                }}
-                options={
-                  propertyData.sheetList &&
-                  propertyData.sheetList.map((item) => {
-                    return {
-                      value: item.sheetIndex,
-                      label: item.sheetName,
-                    };
-                  })
-                }
-              />
-            </div>
-            {sheetIndex >= 0 && (
-              <>
+    type === 3
+      ? {
+          title: "选择表格",
+          content: (
+            <>
+              <div>
+                当前表格为：{propertyData?.fileName}
                 <div className={styles.add_property_div}>
-                  <span className={styles.add_property_span}>选择字段:</span>
+                  <span className={styles.add_property_span}>选择表格:</span>
                   <Select
                     allowClear
                     style={{ width: "40%" }}
-                    placeholder="选择字段"
-                    onChange={(_, option) => {
-                      setStepTwoSelectLink({
-                        linkComment: option.value,
-                        linkId: option.linkId,
-                        connectionId: option.connectionId,
-                        linkType: option.type,
-                      });
-                      filterChoosenLink(option.linkId, linkList);
-                    }}
-                    options={linkList.map((item) => ({
-                      label: item.linkComment,
-                      value: item.linkComment,
-                      linkId: item.linkId,
-                      connectionId: item.connectionId,
-                      linkType: item.linkType,
-                    }))}
-                  />
-                </div>
-                <div className={styles.add_property_div}>
-                  <span className={styles.add_property_span}>选择属性:</span>
-                  <Select
-                    allowClear
-                    style={{ width: "40%" }}
-                    placeholder="选择属性"
-                    onChange={(_, option) => {
-                      setStepTwoSelectProperty({
-                        categoryIndex: option.categoryIndex,
-                        categoryName: option.value,
-                        categoryType: option.type,
-                      });
+                    placeholder="选择表格"
+                    onChange={(value) => {
+                      setSheetIndex(value);
+                      setMaxNum(Number(propertyData.sheetList[value].dataLine));
                       filterChoosenPropetry(
-                        option.categoryIndex,
-                        propertyData.sheetList?.[sheetIndex]?.categoryList
+                        "-1",
+                        propertyData.sheetList?.[value]?.categoryList
                       );
+                      filterChoosenLink("-1", linkList);
                     }}
                     options={
-                      propertyData.sheetList?.[sheetIndex]
-                        ? propertyData.sheetList?.[sheetIndex].categoryList.map(
-                            (item) => {
-                              return {
-                                value: item.categoryName,
-                                label: item.categoryName,
-                                type: item.categoryType,
-                                categoryIndex: item.categoryIndex,
-                              };
-                            }
-                          )
-                        : []
+                      propertyData.sheetList &&
+                      propertyData.sheetList.map((item) => {
+                        return {
+                          value: item.sheetIndex,
+                          label: item.sheetName,
+                        };
+                      })
                     }
                   />
                 </div>
-              </>
-            )}
-          </div>
-        </>
-      ),
-      // disabled: !isUpload,
-      buttonName: "下一步",
-    },
+              </div>
+            </>
+          ),
+          // disabled: !isUpload,
+          buttonName: "下一步",
+        }
+      : {
+          title: "选择主键对应",
+          content: (
+            <>
+              <div>
+                当前表格为：{propertyData?.fileName}
+                <div className={styles.add_property_div}>
+                  <span className={styles.add_property_span}>选择表格:</span>
+                  <Select
+                    allowClear
+                    style={{ width: "40%" }}
+                    placeholder="选择表格"
+                    onChange={(value) => {
+                      setSheetIndex(value);
+                      setMaxNum(Number(propertyData.sheetList[value].dataLine));
+                    }}
+                    options={
+                      propertyData.sheetList &&
+                      propertyData.sheetList.map((item) => {
+                        return {
+                          value: item.sheetIndex,
+                          label: item.sheetName,
+                        };
+                      })
+                    }
+                  />
+                </div>
+                {sheetIndex >= 0 && (
+                  <>
+                    <div className={styles.add_property_div}>
+                      <span className={styles.add_property_span}>
+                        选择字段:
+                      </span>
+                      <Select
+                        allowClear
+                        style={{ width: "40%" }}
+                        placeholder="选择字段"
+                        onChange={(_, option) => {
+                          setStepTwoSelectLink({
+                            linkComment: option.value,
+                            linkId: option.linkId,
+                            connectionId: option.connectionId,
+                            linkType: option.type,
+                          });
+                          filterChoosenLink(option.linkId, linkList);
+                        }}
+                        options={linkList.map((item) => ({
+                          label: item.linkComment,
+                          value: item.linkComment,
+                          linkId: item.linkId,
+                          connectionId: item.connectionId,
+                          linkType: item.linkType,
+                        }))}
+                      />
+                    </div>
+                    <div className={styles.add_property_div}>
+                      <span className={styles.add_property_span}>
+                        选择属性:
+                      </span>
+                      <Select
+                        allowClear
+                        style={{ width: "40%" }}
+                        placeholder="选择属性"
+                        onChange={(_, option) => {
+                          setStepTwoSelectProperty({
+                            categoryIndex: option.categoryIndex,
+                            categoryName: option.value,
+                            categoryType: option.type,
+                          });
+                          filterChoosenPropetry(
+                            option.categoryIndex,
+                            propertyData.sheetList?.[sheetIndex]?.categoryList
+                          );
+                        }}
+                        options={
+                          propertyData.sheetList?.[sheetIndex]
+                            ? propertyData.sheetList?.[
+                                sheetIndex
+                              ].categoryList.map((item) => {
+                                return {
+                                  value: item.categoryName,
+                                  label: item.categoryName,
+                                  type: item.categoryType,
+                                  categoryIndex: item.categoryIndex,
+                                };
+                              })
+                            : []
+                        }
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+            </>
+          ),
+          // disabled: !isUpload,
+          buttonName: "下一步",
+        },
+
     type == 1
       ? {
           title: "选择属性",
@@ -505,6 +570,8 @@ export default function PropertyCom(props) {
                 fetchAddData();
               } else if (type === 2) {
                 fetchUpdateData();
+              } else if (type === 3) {
+                fetchImportMoreData();
               }
             } else {
               setStepIndex(stepIndex + 1);
