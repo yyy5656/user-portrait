@@ -44,6 +44,17 @@ export default function AddProperty(props) {
                 />
               ),
             },
+             {
+              key: "3",
+              label: "导入数据",
+              children: (
+                <PropertyCom
+                  connectionId={connectionId}
+                  setIsOpenAddPropertyModal={setIsOpenAddPropertyModal}
+                  type={3}
+                />
+              ),
+            },
           ]}
         ></Tabs>
       </Modal>
