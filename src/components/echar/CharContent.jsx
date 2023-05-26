@@ -1,12 +1,11 @@
+import { useEffect, useState } from "react";
 import { Button, message, Spin } from "antd";
-
 import styles from "@/styles/CharContent.module.scss";
 import ShowProperty from "./ShowProperty";
 import AddChar from "./AddChar";
 import ItemList from "@/components/echar/ItemList";
 import BasicBar from "./BasicBar";
 import Compare from "./Compare";
-import { useEffect, useState } from "react";
 import api from "@/utils/api";
 import { charTypeConfig } from "./constant";
 
