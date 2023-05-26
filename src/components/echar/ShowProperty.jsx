@@ -1,16 +1,17 @@
-import {Collapse, Tag, theme} from "antd";
+import { Collapse, Space, Tag, theme } from "antd";
 import styles from "@/styles/ShowProperty.module.scss";
 
-const {Panel} = Collapse;
+const { Panel } = Collapse;
 
 export default function ShowProperty(props) {
-    const {
-        token: {colorBgContainer}
-    } = theme.useToken();
+	const { property } = props;
+	const {
+		token: { colorBgContainer },
+	} = theme.useToken();
 
-    return (
-        <div>
-            <Collapse
+	return (
+		<div>
+			{/* <Collapse
                 expandIconPosition="end"
                 style={{backgroundColor: colorBgContainer}}
             >
@@ -38,8 +39,22 @@ export default function ShowProperty(props) {
                         })
                     }
                 </Panel>
-            </Collapse>
-            <div className={styles.count_items}>共{props.property.length}条数据</div>
-        </div>
-    );
+            </Collapse> */}
+			<Space wrap>
+				<span>已导入属性：</span>
+				{[
+					property.map((item, index) => (
+						<Tag
+							color="#6e84c9"
+							style={{ padding: "3px 15px", marginBottom: "5px" }}
+							key={index}
+						>
+							{item}
+						</Tag>
+					)),
+				]}
+			</Space>
+			<div className={styles.count_items}>共{props.property.length}条数据</div>
+		</div>
+	);
 }
