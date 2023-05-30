@@ -1,0 +1,30 @@
+@charset "UTF-8";
+.title {
+  font-family: "黑体", serif;
+  font-size: 20px;
+  margin: 2vh 0.5vw;
+}
+
+.site_layout_content_show {
+  min-height: 350px;
+}
+
+.property_containe {
+  min-height: 180px;
+  width: 100%;
+  border-radius: 8px;
+  /* background-color: #d7dbdf; */
+  display: flex;
+  justify-content: space-around;
+}
+
+.content_title {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px 0px;
+}
+
+.delete_connection_btn {
+  padding: 0 10px;
+  margin-left: 10px;
+}

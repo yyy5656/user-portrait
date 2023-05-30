@@ -1,0 +1,27 @@
+.basicBar_container {
+    // display: flex;
+    margin-top: 10px;
+    border: 1px solid #d7dbdf;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: white;
+}
+
+.basicBar {
+    width: 500px;
+    margin-left: 15%;
+    transform: translateX(-50%);
+    left: 40px;
+
+}
+
+.left {
+    width: 20%;
+    padding-top: 30px;
+}
+
+.cancel {
+    position: absolute;
+    right: 15px;
+    cursor: pointer;
+}
