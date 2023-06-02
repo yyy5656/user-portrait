@@ -44,7 +44,7 @@ export default function CharContent(props) {
 			return item.viewData;
 		});
 		const newData = data.map((item) => {
-			if (item.type != charTypeConfig.pie) {
+			if (item.type !== charTypeConfig.pie) {
 				if (item.type === charTypeConfig.multiBar) {
 					return item;
 				}
