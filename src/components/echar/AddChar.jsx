@@ -6,7 +6,6 @@ import {
 	Space,
 	Divider,
 	Tag,
-	Tooltip,
 	Button,
 } from "antd";
 import { useEffect, useMemo, useState } from "react";
@@ -43,7 +42,7 @@ export default function AddChar(props) {
 					const numDTOList = item.data.filter((elem) => elem.linkType === 0);
 					const nounsDTOList = item.data.filter((elem) => elem.linkType === 1);
 					const reqData = { numDTOList, nounsDTOList };
-					const response = await api.getNounsAndNumerical(reqData);
+					const response = await api.getNounsAndNumerical(reqData, props.menuKey);
 					return { name: NAME, value: response.data.data };
 				});
 				Promise.all(data).then((res) => {
@@ -62,7 +61,7 @@ export default function AddChar(props) {
 						start: curScope.start,
 						end: curScope.end,
 						link: selectProperty,
-					})
+					}, props.menuKey)
 					.then((res) => {
 						const data = { name, value: res.data.data };
 						addCharOption({
@@ -115,7 +114,7 @@ export default function AddChar(props) {
 					linkComment: selectProperty.linkComment,
 					connectionId: props.connectionId.current,
 					linkType: selectProperty.linkType,
-				})
+				}, props.menuKey)
 				.then((res) => {
 					const data = res.data.data;
 					const newData = Object.keys(data).map((key) => ({
@@ -128,15 +127,17 @@ export default function AddChar(props) {
 		}
 		//获取数值属性数据
 		if (selectProperty.linkType === linkType.intervalLink) {
-			api
-				.getNumericalScope({
-					link: {
-						linkId: selectProperty.linkId,
-						linkComment: selectProperty.linkComment,
-						connectionId: props.connectionId.current,
-						linkType: selectProperty.linkType,
+			api.getNumericalScope(
+					{
+						link: {
+							linkId: selectProperty.linkId,
+							linkComment: selectProperty.linkComment,
+							connectionId: props.connectionId.current,
+							linkType: selectProperty.linkType,
+						},
 					},
-				})
+					props.menuKey
+				)
 				.then((res) => {
 					setNumberScope(res.data.data);
 					setCurScope({ start: res.data.data.min, end: res.data.data.max });
@@ -155,10 +156,10 @@ export default function AddChar(props) {
 		};
 		let pieData = null
 		if(newOption.type === charTypeConfig.pie){
-			pieData = await api.getPiePersent(newOption.data)
+			pieData = await api.getPiePersent(newOption.data, props.menuKey)
 			newOption.data = pieData.data.data;
 		}
-		api.insertViewInfo({ viewData: JSON.stringify(newOption) }).then((res) => {
+		api.insertViewInfo({ viewData: JSON.stringify(newOption) }, props.menuKey).then((res) => {
 			const viewId = res.data.msg;
 			if (selectCharType === charTypeConfig.pie) {
 				props.addViewChar(newOption, viewId);
@@ -315,9 +316,13 @@ export default function AddChar(props) {
 												.filter((tags) => tags.linkId === item.linkId)
 												.map((tag) => (
 													<Tag
+														key={tag.name}
 														style={{ marginBottom: 5 }}
 														closable={!confirmed}
 														onClose={(e) => {
+															setNumsGroups((pre) => {
+																return pre.filter((item) => tag.name !== item.name);
+															})
 															setNounsGroups((pre) => {
 																return pre.filter((item) => tag.name !== item.name);
 															});

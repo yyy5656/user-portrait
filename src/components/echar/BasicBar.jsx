@@ -7,7 +7,6 @@ import { charTypeConfig, getCharOption } from "./constant";
 
 export default function BasicBar(props) {
 	const { name, property, type, data, status, viewId } = props.charOption;
-	//console.log(data);
 	const { setIsCompareOpen, changeShare } = props;
 	const dom = useRef();
 	useEffect(() => {

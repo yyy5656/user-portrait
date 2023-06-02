@@ -44,7 +44,8 @@ export default function Compare(props) {
 				})),
 			},
 		};
-		api.insertViewInfo({ viewData: JSON.stringify(newData) }).then((res) => {
+		api.insertViewInfo({ viewData: JSON.stringify(newData)}, props.menuKey).then((res) => {
+			console.log(res);
 			const viewId = res.data.msg;
 			addViewChar(newData, viewId);
 		});

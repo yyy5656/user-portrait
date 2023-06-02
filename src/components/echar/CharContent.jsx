@@ -3,7 +3,7 @@ import { Button, message, Spin } from "antd";
 import styles from "../../styles/CharContent.module.scss";
 import ShowProperty from "./ShowProperty";
 import AddChar from "./AddChar";
-import ItemList from "../echar/ItemList"
+import ItemList from "../echar/ItemList";
 import BasicBar from "./BasicBar";
 import Compare from "./Compare";
 import { useEffect, useState } from "react";
@@ -45,8 +45,8 @@ export default function CharContent(props) {
 		});
 		const newData = data.map((item) => {
 			if (item.type != charTypeConfig.pie) {
-				if(item.type === charTypeConfig.multiBar){
-					return item
+				if (item.type === charTypeConfig.multiBar) {
+					return item;
 				}
 				return {
 					...item,
@@ -61,7 +61,7 @@ export default function CharContent(props) {
 		});
 		setCharList(newData);
 	};
-	
+
 	// 增加图表
 	const addViewChar = (viewData, viewId) => {
 		const data = { ...viewData, viewId, status: "open" };
@@ -71,7 +71,7 @@ export default function CharContent(props) {
 	// 删除图表
 	const deleteChar = (index) => {
 		const viewId = charList[index].viewId;
-		api.deleteViewInfo({ viewId }).then((res) => {
+		api.deleteViewInfo({ viewId }, menuKey).then((res) => {
 			message.success(res.data.msg);
 		});
 		setCharList((pre) => pre.filter((item) => item.viewId !== viewId));
@@ -96,11 +96,19 @@ export default function CharContent(props) {
 	const handleClick = () => {
 		// 点击后请求属性
 		setIsModalOpen(true);
-		api.getLinksByType().then((res) => {
-			if (res.status === 200 && res.data.data) {
-				setPropertyList(res.data.data);
-			}
-		});
+		if (props.menuKey === "SHARED_CONNECTION") {
+			api.getLinksByType("share").then((res) => {
+				if (res.status === 200 && res.data.data) {
+					setPropertyList(res.data.data);
+				}
+			});
+		} else {
+			api.getLinksByType().then((res) => {
+				if (res.status === 200 && res.data.data) {
+					setPropertyList(res.data.data);
+				}
+			});
+		}
 	};
 
 	//修改图表
@@ -156,6 +164,7 @@ export default function CharContent(props) {
 			)}
 			{isModalOpen && (
 				<AddChar
+					menuKey={props.menuKey}
 					charList={charList}
 					isModalOpen={isModalOpen}
 					setIsModalOpen={setIsModalOpen}
@@ -169,6 +178,7 @@ export default function CharContent(props) {
 			)}
 			{isCompareOpen !== 0 && (
 				<Compare
+					menuKey={menuKey}
 					addViewChar={addViewChar}
 					charList={charList}
 					isCompareOpen={isCompareOpen}
@@ -178,7 +188,6 @@ export default function CharContent(props) {
 			{charList.length
 				? charList.map((item, index) => {
 						if (item.status === "open") {
-							//console.log(item);
 							return (
 								<BasicBar
 									key={item.viewId}
