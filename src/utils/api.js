@@ -368,7 +368,7 @@ const api = {
 	 * @returns {HTTP}
 	 */
 	getNumerical(data, menuKey) {
-		if (menuKey) {
+		if (menuKey === "SHARED_CONNECTION") {
 			return SHAREDHTTP({
 				url: "/share/getNumerical",
 				method: "POST",
@@ -501,7 +501,7 @@ const api = {
 	 * @returns {*}
 	 */
 	insertViewInfo(data, menuKey) {
-		if (menuKey) {
+		if (menuKey === "SHARED_CONNECTION") {
 			return SHAREDHTTP({
 				url: "/share/insertViewInfo",
 				method: "POST",
@@ -575,7 +575,7 @@ const api = {
 	 * @returns {*}
 	 */
 	deleteViewInfo(data, menuKey) {
-		if (menuKey) {
+		if (menuKey === "SHARED_CONNECTION") {
 			return SHAREDHTTP({
 				url: "/share/deleteViewInfo",
 				method: "POST",
@@ -774,7 +774,7 @@ const api = {
 	},
 
 	getNounsAndNumerical(data, menuKey) {
-		if (menuKey) {
+		if (menuKey === "SHARED_CONNECTION") {
 			return SHAREDHTTP({
 				url: "/share/getNounsAndNumerical",
 				method: "POST",
@@ -806,7 +806,7 @@ const api = {
 	},
 
 	getPiePersent(data, menuKey) {
-		if (menuKey) {
+		if (menuKey === "SHARED_CONNECTION") {
 			return SHAREDHTTP({
 				url: "/share/getPIEPercent",
 				method: "post",

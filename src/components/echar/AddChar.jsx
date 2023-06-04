@@ -160,6 +160,8 @@ export default function AddChar(props) {
 			newOption.data = pieData.data.data;
 		}
 		api.insertViewInfo({ viewData: JSON.stringify(newOption) }, props.menuKey).then((res) => {
+			console.log(props.menuKey);
+			console.log(res);
 			const viewId = res.data.msg;
 			if (selectCharType === charTypeConfig.pie) {
 				props.addViewChar(newOption, viewId);
